@@ -1042,11 +1042,30 @@
       drawVictoryScene();
     }
 
-    function loop() {
-      update();
+    // Preserve the original 60 Hz gameplay pace on any display refresh rate.
+    const SIMULATION_STEP_MS = 1000 / 60;
+    let previousFrameTime = null;
+    let accumulatedTime = 0;
+
+    function loop(timestamp = performance.now()) {
+      if (previousFrameTime === null) previousFrameTime = timestamp;
+      const elapsed = Math.min(100, Math.max(0, timestamp - previousFrameTime));
+      previousFrameTime = timestamp;
+      accumulatedTime += elapsed;
+
+      while (accumulatedTime + 1e-7 >= SIMULATION_STEP_MS) {
+        update();
+        accumulatedTime -= SIMULATION_STEP_MS;
+      }
       render();
       requestAnimationFrame(loop);
     }
+
+    // Discard hidden-tab time instead of fast-forwarding on return.
+    document.addEventListener('visibilitychange', () => {
+      previousFrameTime = null;
+      accumulatedTime = 0;
+    });
 
     devModeToggle.addEventListener('change', updateToolControls);
     devToolsToggleBtn.addEventListener('click', toggleDevToolsPanel);
@@ -1056,6 +1075,8 @@
     window.addEventListener('keydown', (e) => {
       if (e.code === 'Space' || e.code === 'ArrowUp') {
         e.preventDefault();
+        // A held key must not consume the second jump through auto-repeat.
+        if (e.repeat) return;
         jump();
       }
     });
