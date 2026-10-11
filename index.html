@@ -1,0 +1,1071 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Space Cat Dash</title>
+  <style>
+    :root {
+      --bg-top: #0a1028;
+      --bg-bottom: #1d2a5d;
+      --panel: #0f1737;
+      --line: #6de7ff;
+      --text: #e9f7ff;
+      --accent: #ffd166;
+      --danger: #ff5d8f;
+      --ok: #79e7a6;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      font-family: "Trebuchet MS", "PingFang SC", "Microsoft YaHei", sans-serif;
+      background: radial-gradient(1200px 500px at 20% 10%, #2f438f55, transparent),
+                  linear-gradient(180deg, var(--bg-top), var(--bg-bottom));
+      color: var(--text);
+      padding: 18px;
+    }
+
+    .game-wrap {
+      width: min(1120px, 100%);
+      border: 2px solid #6de7ff66;
+      border-radius: 16px;
+      background: linear-gradient(180deg, #0f1737cc, #131a38cc);
+      box-shadow: 0 20px 60px #01051299;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .hud {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 8px;
+      align-items: center;
+      padding: 10px 14px;
+      border-bottom: 1px solid #6de7ff33;
+      background: #0a122dcc;
+      font-size: 13px;
+    }
+
+    .hud > div {
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .title {
+      font-weight: 700;
+      letter-spacing: 0.4px;
+      color: var(--accent);
+      text-align: left;
+    }
+
+    #game {
+      display: block;
+      width: 100%;
+      height: auto;
+      background: transparent;
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+
+    .hint {
+      position: absolute;
+      inset: auto 0 16px;
+      text-align: center;
+      font-size: 13px;
+      opacity: 0.92;
+      pointer-events: none;
+      color: #c9dbff;
+      text-shadow: 0 2px 6px #000;
+      padding: 0 10px;
+      z-index: 4;
+    }
+
+    .start-screen {
+      position: absolute;
+      inset: 54px 0 0;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(180deg, #020816cc, #0d1737e8);
+      z-index: 5;
+      padding: 18px;
+    }
+
+    .start-panel {
+      width: min(640px, 100%);
+      border: 1px solid #6de7ff55;
+      border-radius: 14px;
+      background: #0e183bcc;
+      box-shadow: 0 12px 28px #00000066;
+      padding: 18px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .start-title {
+      font-size: 24px;
+      color: #fff0c0;
+      text-align: center;
+      font-weight: 700;
+    }
+
+    .field-label {
+      font-size: 13px;
+      color: #b8d5ff;
+      margin-bottom: 4px;
+      display: block;
+    }
+
+    input[type="text"],
+    select {
+      width: 100%;
+      background: #0a1230;
+      color: #e8f6ff;
+      border: 1px solid #6de7ff55;
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .tool-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      align-items: center;
+      font-size: 14px;
+    }
+
+    .tool-row label {
+      display: inline-flex;
+      gap: 6px;
+      align-items: center;
+      color: #d6e9ff;
+    }
+
+    .tool-box {
+      border: 1px dashed #6de7ff55;
+      border-radius: 10px;
+      padding: 10px;
+      display: grid;
+      gap: 8px;
+    }
+
+    .btn-start {
+      border: none;
+      background: linear-gradient(90deg, #ffd166, #ff9f52);
+      color: #1c1228;
+      font-weight: 700;
+      border-radius: 10px;
+      padding: 11px 14px;
+      font-size: 15px;
+      cursor: pointer;
+    }
+
+    .btn-mini {
+      border: 1px solid #6de7ff66;
+      background: #0a1230;
+      color: #d7ecff;
+      border-radius: 8px;
+      padding: 6px 10px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .btn-restart {
+      position: absolute;
+      left: 50%;
+      bottom: 64px;
+      transform: translateX(-50%);
+      border: none;
+      background: linear-gradient(90deg, #79e7a6, #6de7ff);
+      color: #0d1a35;
+      font-weight: 700;
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 14px;
+      cursor: pointer;
+      z-index: 6;
+      box-shadow: 0 8px 20px #00000066;
+    }
+
+    .helper {
+      color: #9bc4ff;
+      font-size: 12px;
+      text-align: center;
+    }
+
+    .hidden { display: none; }
+
+    @media (max-width: 860px) {
+      .hud {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+      .title {
+        grid-column: 1 / -1;
+      }
+      .start-screen {
+        inset: 88px 0 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="game-wrap">
+    <div class="hud">
+      <div class="title">Space Cat Dash</div>
+      <div id="nameText">Name Player</div>
+      <div id="difficultyText">Difficulty Medium</div>
+      <div id="scoreText">Score 00000</div>
+      <div id="foodText">Food 0/5</div>
+      <div id="skinText">Looks 1/5</div>
+      <div id="toolText">Items None</div>
+      <div id="shieldText">Shield 0.0s</div>
+      <div id="bestText">Best 00000</div>
+    </div>
+
+    <canvas id="game" width="1080" height="400" aria-label="Space Cat Dash"></canvas>
+    <div class="hint" id="hint">Press <strong>Space / ↑</strong> or <strong>tap</strong> to jump (double jump available). Collect food and dodge meteors.</div>
+
+    <div class="start-screen" id="startScreen">
+      <div class="start-panel">
+        <div class="start-title">Ready for Takeoff</div>
+
+        <div>
+          <label class="field-label" for="nicknameInput">Name</label>
+          <input id="nicknameInput" type="text" maxlength="12" placeholder="Enter your nickname" value="Player" />
+        </div>
+
+        <div>
+          <label class="field-label" for="difficultySelect">Difficulty</label>
+          <select id="difficultySelect">
+            <option value="easy">Easy</option>
+            <option value="medium" selected>Medium</option>
+            <option value="hard">Hard</option>
+          </select>
+        </div>
+
+        <div class="tool-box">
+          <label class="field-label" style="margin:0;">Power-ups</label>
+          <div class="tool-row">
+            <label><input id="itemModeToggle" type="checkbox" /> Item Mode (random power-ups)</label>
+          </div>
+          <div class="tool-row" id="toolOptionsRow">
+            <label><input id="devModeToggle" type="checkbox" /> Developer Mode (choose starting power-ups)</label>
+            <button id="devToolsToggleBtn" class="btn-mini hidden" type="button">Show Options</button>
+          </div>
+          <div class="tool-row hidden" id="devToolsPanel">
+            <label><input id="magnetToggle" type="checkbox" disabled /> Starting Magnet (attracts food for 5s)</label>
+            <label><input id="shieldToggle" type="checkbox" disabled /> Starting Shield (invincible for 5s)</label>
+          </div>
+        </div>
+
+        <button class="btn-start" id="startBtn">Start Game</button>
+        <div class="helper">Item Mode spawns power-ups. Developer Mode lets you choose starting power-ups.</div>
+      </div>
+    </div>
+
+    <button class="btn-restart hidden" id="victoryRestartBtn">Play Again</button>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('game');
+    const ctx = canvas.getContext('2d');
+
+    const scoreText = document.getElementById('scoreText');
+    const foodText = document.getElementById('foodText');
+    const skinText = document.getElementById('skinText');
+    const bestText = document.getElementById('bestText');
+    const hint = document.getElementById('hint');
+    const nameText = document.getElementById('nameText');
+    const difficultyText = document.getElementById('difficultyText');
+    const toolText = document.getElementById('toolText');
+    const shieldText = document.getElementById('shieldText');
+
+    const startScreen = document.getElementById('startScreen');
+    const startBtn = document.getElementById('startBtn');
+    const nicknameInput = document.getElementById('nicknameInput');
+    const difficultySelect = document.getElementById('difficultySelect');
+    const itemModeToggle = document.getElementById('itemModeToggle');
+    const devModeToggle = document.getElementById('devModeToggle');
+    const devToolsToggleBtn = document.getElementById('devToolsToggleBtn');
+    const devToolsPanel = document.getElementById('devToolsPanel');
+    const magnetToggle = document.getElementById('magnetToggle');
+    const shieldToggle = document.getElementById('shieldToggle');
+    const victoryRestartBtn = document.getElementById('victoryRestartBtn');
+
+    const GROUND_Y = 330;
+    const GRAVITY = 0.85;
+    const JUMP_VELOCITY = -14.8;
+    const FOOD_PER_EVOLVE = 5;
+    const VICTORY_MIN_TICKS = 420;
+    const MAGNET_DURATION_TICKS = 300;
+    const SHIELD_DURATION_TICKS = 300;
+
+    const DIFFICULTY = {
+      easy: {
+        label: 'Easy',
+        startSpeed: 5.8,
+        speedUp: 0.0011,
+        obstacleBaseGap: 124,
+        obstacleGapMin: 64,
+        foodBaseGap: 122,
+        foodGapRand: 46,
+        foodHeightRange: 95,
+        scoreMul: 1
+      },
+      medium: {
+        label: 'Medium',
+        startSpeed: 6.6,
+        speedUp: 0.0015,
+        obstacleBaseGap: 106,
+        obstacleGapMin: 52,
+        foodBaseGap: 145,
+        foodGapRand: 60,
+        foodHeightRange: 120,
+        scoreMul: 1.15
+      },
+      hard: {
+        label: 'Hard',
+        startSpeed: 7.6,
+        speedUp: 0.0019,
+        obstacleBaseGap: 92,
+        obstacleGapMin: 40,
+        foodBaseGap: 175,
+        foodGapRand: 80,
+        foodHeightRange: 152,
+        scoreMul: 1.35
+      }
+    };
+
+    const CAT_SKINS = [
+      { name: 'Snowball', body: '#f2f4ff', head: '#f8fbff', ear: '#ffc9de', leg: '#e5ebff', tail: '#d4dcff', mark: '#ffb3c9' },
+      { name: 'Marmalade', body: '#ffcf8d', head: '#ffdba8', ear: '#ffb173', leg: '#f5b66f', tail: '#e9a45e', mark: '#ff8e54' },
+      { name: 'Cloud', body: '#bcc8dd', head: '#d2dbeb', ear: '#9fb1cf', leg: '#a5b4cc', tail: '#91a4c0', mark: '#6f87ad' },
+      { name: 'Mint', body: '#a7efd2', head: '#c4f7e3', ear: '#7addbc', leg: '#8edebf', tail: '#6fc6a7', mark: '#3ab994' },
+      { name: 'Starry Night', body: '#2f3b87', head: '#4152a6', ear: '#8295ff', leg: '#5061be', tail: '#293375', mark: '#ffd166' }
+    ];
+
+    let gameState = 'menu';
+    let running = false;
+    let gameOver = false;
+    let victory = false;
+
+    let score = 0;
+    let best = Number(localStorage.getItem('spacecat_best') || 0);
+    let speed = DIFFICULTY.medium.startSpeed;
+    let spawnTick = 0;
+    let foodSpawnTick = 0;
+    let itemSpawnTick = 0;
+    let winTick = 0;
+    let victoryRestartReady = false;
+
+    let currentSkin = 0;
+    let foodCount = 0;
+    let playerName = 'Player';
+    let difficultyKey = 'medium';
+    let difficultyCfg = DIFFICULTY[difficultyKey];
+
+    let itemMode = false;
+    let devMode = false;
+    let devToolsOpen = false;
+    let magnetTicks = 0;
+    let shieldTicks = 0;
+
+    const unlockedSkins = new Set([0]);
+
+    const player = {
+      x: 95,
+      y: GROUND_Y - 50,
+      w: 52,
+      h: 50,
+      vy: 0,
+      onGround: true,
+      blinkTimer: 0,
+      maxJumps: 2,
+      jumpsUsed: 0
+    };
+
+    const obstacles = [];
+    const foods = [];
+    const toolItems = [];
+    const stars = Array.from({ length: 70 }, () => ({
+      x: Math.random() * canvas.width,
+      y: Math.random() * (GROUND_Y - 40),
+      r: Math.random() * 1.8 + 0.4,
+      s: Math.random() * 0.6 + 0.2
+    }));
+
+    function updateToolControls() {
+      const enabled = devModeToggle.checked;
+      magnetToggle.disabled = !enabled;
+      shieldToggle.disabled = !enabled;
+      if (!enabled) {
+        magnetToggle.checked = false;
+        shieldToggle.checked = false;
+        devToolsOpen = false;
+        devToolsPanel.classList.add('hidden');
+        devToolsToggleBtn.classList.add('hidden');
+        devToolsToggleBtn.textContent = 'Show Options';
+      } else {
+        devToolsToggleBtn.classList.remove('hidden');
+        devToolsToggleBtn.textContent = devToolsOpen ? 'Hide Options' : 'Show Options';
+        if (devToolsOpen) devToolsPanel.classList.remove('hidden');
+        else devToolsPanel.classList.add('hidden');
+      }
+    }
+
+    function toggleDevToolsPanel() {
+      if (!devModeToggle.checked) return;
+      devToolsOpen = !devToolsOpen;
+      updateToolControls();
+    }
+
+    function beginRunFromMenu() {
+      playerName = (nicknameInput.value || '').trim().slice(0, 12) || 'Player';
+      difficultyKey = difficultySelect.value;
+      difficultyCfg = DIFFICULTY[difficultyKey] || DIFFICULTY.medium;
+
+      itemMode = itemModeToggle.checked;
+      devMode = devModeToggle.checked;
+      magnetTicks = devMode && magnetToggle.checked ? MAGNET_DURATION_TICKS : 0;
+      shieldTicks = devMode && shieldToggle.checked ? SHIELD_DURATION_TICKS : 0;
+
+      running = false;
+      gameOver = false;
+      victory = false;
+      gameState = 'playing';
+
+      score = 0;
+      speed = difficultyCfg.startSpeed;
+      spawnTick = 0;
+      foodSpawnTick = 0;
+      itemSpawnTick = 0;
+      winTick = 0;
+      foodCount = 0;
+      currentSkin = 0;
+      unlockedSkins.clear();
+      unlockedSkins.add(0);
+
+      obstacles.length = 0;
+      foods.length = 0;
+      toolItems.length = 0;
+      player.y = GROUND_Y - player.h;
+      player.vy = 0;
+      player.onGround = true;
+      player.jumpsUsed = 0;
+      player.jumpsUsed = 0;
+
+      startScreen.classList.add('hidden');
+      victoryRestartBtn.classList.add('hidden');
+      hint.textContent = `${playerName}, press Space / ↑ or tap to start running.`;
+      updateHUD();
+      render();
+    }
+
+    function backToMenu() {
+      gameState = 'menu';
+      running = false;
+      gameOver = false;
+      victory = false;
+      obstacles.length = 0;
+      foods.length = 0;
+      toolItems.length = 0;
+      player.y = GROUND_Y - player.h;
+      player.vy = 0;
+      player.onGround = true;
+      speed = difficultyCfg.startSpeed;
+      victoryRestartReady = false;
+      victoryRestartBtn.classList.add('hidden');
+      hint.textContent = 'Choose your nickname, difficulty and power-ups to begin.';
+      startScreen.classList.remove('hidden');
+      updateHUD();
+    }
+
+    function updateHUD() {
+      scoreText.textContent = `Score ${String(Math.floor(score)).padStart(5, '0')}`;
+      foodText.textContent = `Food ${foodCount % FOOD_PER_EVOLVE}/${FOOD_PER_EVOLVE}`;
+      skinText.textContent = `Looks ${unlockedSkins.size}/${CAT_SKINS.length}`;
+      bestText.textContent = `Best ${String(best).padStart(5, '0')}`;
+      nameText.textContent = `Name ${playerName}`;
+      difficultyText.textContent = `Difficulty ${difficultyCfg.label}`;
+
+      const tools = [];
+      if (itemMode) tools.push('Item Mode');
+      if (devMode) tools.push('Developer Mode');
+      if (magnetTicks > 0) tools.push(`Magnet ${(magnetTicks / 60).toFixed(1)}s`);
+      if (shieldTicks > 0) tools.push(`Shield${(shieldTicks / 60).toFixed(1)}s`);
+      toolText.textContent = `Items ${tools.length ? tools.join('+') : 'None'}`;
+      shieldText.textContent = `Shield ${(shieldTicks / 60).toFixed(1)}s`;
+    }
+
+    function jump() {
+      if (gameState === 'menu') return;
+
+      if (gameOver || victory) {
+        if (gameOver) backToMenu();
+        return;
+      }
+
+      if (!running) {
+        running = true;
+        hint.textContent = `${playerName}, collect 5 food items to unlock a random look!`;
+      }
+
+      if (player.jumpsUsed < player.maxJumps) {
+        player.vy = JUMP_VELOCITY;
+        player.onGround = false;
+        player.jumpsUsed += 1;
+      }
+    }
+
+    function spawnObstacle() {
+      const type = Math.random();
+      const size = type < 0.7 ? 30 + Math.random() * 16 : 20 + Math.random() * 12;
+      const h = size;
+      const w = size + (Math.random() * 10 - 3);
+      obstacles.push({
+        x: canvas.width + 20,
+        y: GROUND_Y - h,
+        w,
+        h,
+        rot: Math.random() * Math.PI,
+        spin: (Math.random() * 0.06 + 0.01) * (Math.random() < 0.5 ? -1 : 1)
+      });
+    }
+
+    function spawnFood() {
+      const y = GROUND_Y - 36 - Math.random() * difficultyCfg.foodHeightRange;
+      foods.push({
+        x: canvas.width + 24,
+        y,
+        w: 24,
+        h: 24,
+        wobble: Math.random() * Math.PI * 2
+      });
+    }
+
+    function spawnToolItem() {
+      const type = Math.random() < 0.5 ? 'magnet' : 'shield';
+      const y = GROUND_Y - 34 - Math.random() * (difficultyCfg.foodHeightRange * 0.75);
+      toolItems.push({
+        type,
+        x: canvas.width + 24,
+        y,
+        w: 24,
+        h: 24,
+        spin: Math.random() * Math.PI * 2
+      });
+    }
+
+    function collide(a, b, pad = 7) {
+      return (
+        a.x + pad < b.x + b.w &&
+        a.x + a.w - pad > b.x &&
+        a.y + pad < b.y + b.h &&
+        a.y + a.h - pad > b.y
+      );
+    }
+
+    function evolveSkin() {
+      const remaining = CAT_SKINS.map((_, i) => i).filter((i) => !unlockedSkins.has(i));
+      if (remaining.length === 0) {
+        triggerVictory();
+        return;
+      }
+
+      const next = remaining[Math.floor(Math.random() * remaining.length)];
+      currentSkin = next;
+      unlockedSkins.add(next);
+
+      if (unlockedSkins.size >= CAT_SKINS.length) {
+        triggerVictory();
+      } else {
+        hint.textContent = `New look: ${CAT_SKINS[currentSkin].name}! Collect 5 more food items to evolve.`;
+      }
+    }
+
+    function triggerVictory() {
+      victory = true;
+      running = false;
+      gameOver = false;
+      foods.length = 0;
+      obstacles.length = 0;
+      toolItems.length = 0;
+      winTick = 0;
+      victoryRestartReady = false;
+      victoryRestartBtn.classList.add('hidden');
+      best = Math.max(best, Math.floor(score));
+      localStorage.setItem('spacecat_best', String(best));
+      hint.textContent = `${playerName}, mission complete! Enjoy the journey home...`;
+      updateHUD();
+    }
+
+    function returnToMenuFromVictory() {
+      if (!victory || !victoryRestartReady) return;
+      backToMenu();
+    }
+
+    function damageOrConsumeShield(hitIndex) {
+      if (shieldTicks > 0) {
+        obstacles.splice(hitIndex, 1);
+        hint.textContent = `Invincible! Shield: ${(shieldTicks / 60).toFixed(1)}s remaining.`;
+        return;
+      }
+
+      gameOver = true;
+      running = false;
+      best = Math.max(best, Math.floor(score));
+      localStorage.setItem('spacecat_best', String(best));
+      hint.textContent = `${playerName} hit a meteor. Press Space / ↑ or tap to return to the lobby.`;
+    }
+
+    function update() {
+      for (const s of stars) {
+        const base = victory ? 1.5 : 1;
+        s.x -= (s.s + speed * 0.07) * base;
+        if (s.x < -2) {
+          s.x = canvas.width + Math.random() * 100;
+          s.y = Math.random() * (GROUND_Y - 40);
+        }
+      }
+
+      if (gameState === 'menu') {
+        updateHUD();
+        return;
+      }
+
+      if (victory) {
+        winTick += 1;
+        if (!victoryRestartReady && winTick >= VICTORY_MIN_TICKS) {
+          victoryRestartReady = true;
+          victoryRestartBtn.classList.remove('hidden');
+          hint.textContent = 'Journey complete! Click "Play Again" to return to the lobby.';
+        }
+        updateHUD();
+        return;
+      }
+
+      if (!running || gameOver) return;
+
+      if (magnetTicks > 0) magnetTicks -= 1;
+      if (shieldTicks > 0) shieldTicks -= 1;
+
+      player.vy += GRAVITY;
+      player.y += player.vy;
+
+      if (player.y >= GROUND_Y - player.h) {
+        player.y = GROUND_Y - player.h;
+        player.vy = 0;
+        player.onGround = true;
+        player.jumpsUsed = 0;
+      }
+
+      spawnTick += 1;
+      foodSpawnTick += 1;
+      itemSpawnTick += 1;
+
+      const obstacleGap = Math.max(difficultyCfg.obstacleGapMin, difficultyCfg.obstacleBaseGap - speed * 7);
+      if (spawnTick > obstacleGap + Math.random() * 40) {
+        spawnObstacle();
+        spawnTick = 0;
+      }
+
+      const foodGap = Math.max(90, difficultyCfg.foodBaseGap - speed * 3);
+      if (foodSpawnTick > foodGap + Math.random() * difficultyCfg.foodGapRand) {
+        spawnFood();
+        foodSpawnTick = 0;
+      }
+
+      if (itemMode) {
+        const toolGap = Math.max(170, 360 - speed * 8);
+        if (itemSpawnTick > toolGap + Math.random() * 120) {
+          spawnToolItem();
+          itemSpawnTick = 0;
+        }
+      }
+
+      speed += difficultyCfg.speedUp;
+      score += speed * 0.11 * difficultyCfg.scoreMul;
+
+      for (let i = obstacles.length - 1; i >= 0; i--) {
+        const o = obstacles[i];
+        o.x -= speed;
+        o.rot += o.spin;
+        if (o.x + o.w < -20) obstacles.splice(i, 1);
+      }
+
+      for (let i = foods.length - 1; i >= 0; i--) {
+        const f = foods[i];
+        f.x -= speed * 0.92;
+        f.wobble += 0.08;
+        f.y += Math.sin(f.wobble) * 0.35;
+
+        if (magnetTicks > 0) {
+          const px = player.x + player.w / 2;
+          const py = player.y + player.h / 2;
+          const fx = f.x + f.w / 2;
+          const fy = f.y + f.h / 2;
+          const dx = px - fx;
+          const dy = py - fy;
+          const dist = Math.hypot(dx, dy);
+          const magnetRange = 150;
+
+          if (dist < magnetRange && dist > 0.01) {
+            const pull = (magnetRange - dist) / magnetRange;
+            f.x += (dx / dist) * (1.4 + pull * 3.2);
+            f.y += (dy / dist) * (1.2 + pull * 2.8);
+          }
+        }
+
+        if (f.x + f.w < -20) {
+          foods.splice(i, 1);
+          continue;
+        }
+
+        if (collide(player, f, 9)) {
+          foods.splice(i, 1);
+          foodCount += 1;
+          score += 45 * difficultyCfg.scoreMul;
+          if (foodCount % FOOD_PER_EVOLVE === 0) evolveSkin();
+        }
+      }
+
+      for (let i = toolItems.length - 1; i >= 0; i--) {
+        const t = toolItems[i];
+        t.x -= speed * 0.95;
+        t.spin += 0.08;
+        if (t.x + t.w < -20) {
+          toolItems.splice(i, 1);
+          continue;
+        }
+
+        if (collide(player, t, 8)) {
+          if (t.type === 'magnet') {
+            magnetTicks = Math.max(magnetTicks, MAGNET_DURATION_TICKS);
+            hint.textContent = 'Magnet collected: attracts food for 5 seconds!';
+          } else {
+            shieldTicks = Math.max(shieldTicks, SHIELD_DURATION_TICKS);
+            hint.textContent = 'Shield collected: invincible for 5 seconds!';
+          }
+          toolItems.splice(i, 1);
+        }
+      }
+
+      for (let i = obstacles.length - 1; i >= 0; i--) {
+        if (collide(player, obstacles[i])) {
+          damageOrConsumeShield(i);
+          break;
+        }
+      }
+
+      updateHUD();
+    }
+
+    function drawGround() {
+      ctx.strokeStyle = '#6de7ff99';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(0, GROUND_Y + 1);
+      ctx.lineTo(canvas.width, GROUND_Y + 1);
+      ctx.stroke();
+
+      ctx.strokeStyle = '#6de7ff44';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      for (let x = 0; x < canvas.width; x += 26) {
+        const y = GROUND_Y + (Math.sin((x + performance.now() * 0.02) * 0.04) * 2.4);
+        if (x === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+    }
+
+    function drawStars() {
+      for (const s of stars) {
+        ctx.fillStyle = '#e7f5ff';
+        ctx.globalAlpha = 0.6 + Math.sin((s.x + s.y) * 0.03) * 0.35;
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+    }
+
+    function drawFood(f) {
+      ctx.save();
+      ctx.translate(f.x + f.w / 2, f.y + f.h / 2);
+      const pulse = 1 + Math.sin(f.wobble * 2) * 0.08;
+      ctx.scale(pulse, pulse);
+
+      ctx.fillStyle = '#ffdb66';
+      ctx.beginPath();
+      ctx.moveTo(-10, -2);
+      ctx.quadraticCurveTo(0, -14, 10, -2);
+      ctx.quadraticCurveTo(6, 10, -6, 10);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.fillStyle = '#ffbe44';
+      ctx.fillRect(-3, 8, 6, 8);
+
+      ctx.fillStyle = '#fff4c2';
+      ctx.fillRect(-6, -2, 3, 2);
+      ctx.fillRect(2, -4, 3, 2);
+
+      if (magnetTicks > 0 && running) {
+        ctx.strokeStyle = '#9df3ff99';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.arc(0, 0, 14, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+
+      ctx.restore();
+    }
+
+    function drawToolItem(t) {
+      ctx.save();
+      ctx.translate(t.x + t.w / 2, t.y + t.h / 2);
+      ctx.rotate(Math.sin(t.spin) * 0.25);
+
+      if (t.type === 'magnet') {
+        ctx.strokeStyle = '#8de8ff';
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.arc(0, 0, 8, 0.2, Math.PI - 0.2);
+        ctx.stroke();
+        ctx.fillStyle = '#ff6e7a';
+        ctx.fillRect(-9, -9, 6, 5);
+        ctx.fillRect(3, -9, 6, 5);
+      } else {
+        ctx.fillStyle = '#79e7a6';
+        ctx.beginPath();
+        ctx.moveTo(0, -10);
+        ctx.lineTo(9, -4);
+        ctx.lineTo(6, 10);
+        ctx.lineTo(-6, 10);
+        ctx.lineTo(-9, -4);
+        ctx.closePath();
+        ctx.fill();
+        ctx.strokeStyle = '#e9fff2';
+        ctx.lineWidth = 1.4;
+        ctx.stroke();
+      }
+
+      ctx.restore();
+    }
+
+    function drawPlayer(x = player.x, y = player.y) {
+      const skin = CAT_SKINS[currentSkin];
+      player.blinkTimer += 1;
+
+      ctx.save();
+      ctx.translate(x, y);
+
+      ctx.fillStyle = skin.body;
+      ctx.fillRect(10, 14, 30, 24);
+
+      ctx.fillStyle = skin.head;
+      ctx.fillRect(16, 4, 26, 18);
+
+      ctx.fillStyle = skin.ear;
+      ctx.beginPath();
+      ctx.moveTo(18, 6); ctx.lineTo(23, -4); ctx.lineTo(28, 6);
+      ctx.moveTo(34, 6); ctx.lineTo(39, -4); ctx.lineTo(44, 6);
+      ctx.fill();
+
+      const blink = Math.floor(player.blinkTimer / 18) % 12 === 0;
+      ctx.fillStyle = '#111';
+      if (blink) {
+        ctx.fillRect(24, 12, 6, 2);
+        ctx.fillRect(35, 12, 6, 2);
+      } else {
+        ctx.fillRect(24, 10, 4, 4);
+        ctx.fillRect(36, 10, 4, 4);
+      }
+
+      ctx.fillStyle = skin.mark;
+      ctx.fillRect(31, 14, 4, 3);
+
+      ctx.fillStyle = skin.leg;
+      const legOffset = player.onGround ? Math.sin(performance.now() * 0.03) * 2 : 0;
+      ctx.fillRect(12, 38, 8, 10 + legOffset);
+      ctx.fillRect(30, 38, 8, 10 - legOffset);
+
+      ctx.fillStyle = skin.tail;
+      ctx.fillRect(6, 20, 8, 4);
+
+      if (!player.onGround) {
+        ctx.fillStyle = '#6de7ffcc';
+        ctx.fillRect(20, 40, 2, 10);
+        ctx.fillRect(34, 40, 2, 10);
+      }
+
+      if (shieldTicks > 0 && gameState === 'playing') {
+        const pulse = 20 + Math.sin(performance.now() * 0.015) * 3;
+        ctx.strokeStyle = '#79e7a688';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(26, 22, pulse, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+
+      ctx.restore();
+    }
+
+    function drawMeteor(o) {
+      ctx.save();
+      ctx.translate(o.x + o.w / 2, o.y + o.h / 2);
+      ctx.rotate(o.rot);
+      ctx.fillStyle = '#7d6a7f';
+      ctx.beginPath();
+      ctx.arc(0, 0, o.w / 2, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#5c4f68';
+      ctx.beginPath();
+      ctx.arc(-o.w * 0.12, -o.h * 0.1, o.w * 0.12, 0, Math.PI * 2);
+      ctx.arc(o.w * 0.18, o.h * 0.04, o.w * 0.08, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+
+    function drawGameOver() {
+      if (!gameOver) return;
+      ctx.fillStyle = '#01070fcc';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#ffedf4';
+      ctx.font = 'bold 42px Trebuchet MS';
+      ctx.textAlign = 'center';
+      ctx.fillText('GAME OVER', canvas.width / 2, 136);
+      ctx.fillStyle = '#ffd166';
+      ctx.font = '20px Trebuchet MS';
+      ctx.fillText(`Final Score ${Math.floor(score)}`, canvas.width / 2, 178);
+      ctx.font = '16px Trebuchet MS';
+      ctx.fillStyle = '#cde8ff';
+      ctx.fillText('Press Space / ↑ or tap to return to the lobby', canvas.width / 2, 214);
+      ctx.textAlign = 'left';
+    }
+
+    function drawVictoryScene() {
+      if (!victory) return;
+
+      const t = winTick;
+      const rocketX = 170 + Math.min(420, t * 1.8);
+      const rocketY = 210 - Math.min(130, t * 0.62);
+
+      ctx.fillStyle = '#02102acc';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      const earthX = canvas.width - 110;
+      const earthY = 72;
+      ctx.fillStyle = '#4fa8ff';
+      ctx.beginPath();
+      ctx.arc(earthX, earthY, 46, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#6ed79b';
+      ctx.beginPath();
+      ctx.ellipse(earthX - 14, earthY - 4, 18, 10, 0.2, 0, Math.PI * 2);
+      ctx.ellipse(earthX + 13, earthY + 12, 14, 8, -0.3, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.save();
+      ctx.translate(rocketX, rocketY);
+
+      ctx.fillStyle = '#d8e7ff';
+      ctx.beginPath();
+      ctx.moveTo(0, -34);
+      ctx.lineTo(18, -4);
+      ctx.lineTo(18, 30);
+      ctx.lineTo(-18, 30);
+      ctx.lineTo(-18, -4);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.fillStyle = '#ff5d8f';
+      ctx.beginPath();
+      ctx.moveTo(0, -46);
+      ctx.lineTo(10, -29);
+      ctx.lineTo(-10, -29);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.fillStyle = '#7bb4ff';
+      ctx.beginPath();
+      ctx.arc(0, -8, 8, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = '#ff7f5f';
+      ctx.beginPath();
+      ctx.moveTo(-8, 30);
+      ctx.lineTo(0, 52 + Math.sin(t * 0.24) * 5);
+      ctx.lineTo(8, 30);
+      ctx.closePath();
+      ctx.fill();
+
+      drawPlayer(-26, -6);
+      ctx.restore();
+
+      ctx.fillStyle = '#fff1c9';
+      ctx.font = 'bold 34px Trebuchet MS';
+      ctx.textAlign = 'center';
+      ctx.fillText('MISSION CLEAR', canvas.width / 2, 132);
+
+      ctx.font = '19px Trebuchet MS';
+      ctx.fillStyle = '#cfe6ff';
+      ctx.fillText(`${playerName} unlocked all 5 looks! Heading back to Earth!`, canvas.width / 2, 168);
+      ctx.font = '15px Trebuchet MS';
+      if (victoryRestartReady) {
+        ctx.fillText('Journey complete! Click "Play Again" below.', canvas.width / 2, 200);
+      } else {
+        const left = Math.max(0, Math.ceil((VICTORY_MIN_TICKS - winTick) / 60));
+        ctx.fillText(`Heading home... ${left}s`, canvas.width / 2, 200);
+      }
+      ctx.textAlign = 'left';
+    }
+
+    function render() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      drawStars();
+      drawGround();
+      for (const o of obstacles) drawMeteor(o);
+      for (const f of foods) drawFood(f);
+      for (const t of toolItems) drawToolItem(t);
+      drawPlayer();
+      drawGameOver();
+      drawVictoryScene();
+    }
+
+    function loop() {
+      update();
+      render();
+      requestAnimationFrame(loop);
+    }
+
+    devModeToggle.addEventListener('change', updateToolControls);
+    devToolsToggleBtn.addEventListener('click', toggleDevToolsPanel);
+    startBtn.addEventListener('click', beginRunFromMenu);
+    victoryRestartBtn.addEventListener('click', returnToMenuFromVictory);
+
+    window.addEventListener('keydown', (e) => {
+      if (e.code === 'Space' || e.code === 'ArrowUp') {
+        e.preventDefault();
+        jump();
+      }
+    });
+
+    canvas.addEventListener('pointerdown', jump);
+
+    updateToolControls();
+    updateHUD();
+    backToMenu();
+    loop();
+  </script>
+</body>
+</html>
