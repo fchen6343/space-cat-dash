@@ -1,36 +1,33 @@
 # Space Cat Dash
 
-A small, offline Canvas game about a space cat dodging meteors and collecting food. Built with HTML, CSS and JavaScript in a single file, with no backend, external assets or online APIs.
+An offline Canvas endless runner about a space cat dodging meteors, eating food and growing strong enough to defeat Bosses. Built with HTML, CSS and JavaScript in one file, without a backend or external assets.
 
 ## Play
 
-Open [the browser game](https://fchen6343.github.io/space-cat-dash/), or download `index.html` and open it in a browser to play offline.
+[Play in your browser](https://fchen6343.github.io/space-cat-dash/), or download `index.html` and open it offline.
 
-- Choose Easy, Medium or Hard and enter a nickname.
-- Press Space or Up Arrow, or tap the game, to jump. Double jumping is available.
-- Collect food to unlock five cat looks and reach the rocket journey back to Earth.
-- Enable Item Mode for random power-ups. Developer Mode lets you select starting power-ups for testing.
-- Base magnet and shield durations are five seconds; equipped original skins can modify gameplay. Scores and collection progress are saved locally in the browser.
+- Choose Easy, Medium or Hard. Leave Item Mode off for Classic play, or enable it for random magnets and shields.
+- Press Space or Up Arrow, tap the playfield, or use the mobile jump button. Two separate presses give a double jump. Holding a key does not spend the second jump.
+- Eat food to grow: Hungry → Fed → Fit → Strong → Mighty. Your body, running pace and jump height change while your equipped skin stays the same.
+- Prepare for Bosses at 1,200m intervals on Easy, 1,500m on Medium and 1,800m on Hard. The first Easy/Medium Boss needs Strong; Hard and later Bosses need Mighty. Enough strength wins the encounter and lets you keep running; too little ends the run.
+- Use the upper-left icon or Esc to pause. Continue, restart with the same settings or return home. Failure animations vary with distance before replay becomes available.
+
+## Food upgrades and skins
+
+Each food item collected during normal play earns one food credit. Spend credits in the home-screen Power-up Workshop to upgrade magnet range/time and shield duration/reach. Each track has five levels, costing 10, 20, 30, 40 and 50 food. Upgrades apply on your next run and can stack with an equipped skin's bonus.
+
+The Skin Cabinet displays the exact mode, difficulty, task and progress for each skin. Six Boss rewards are now playable; stronger legendary skins require Hard-mode achievements. Existing earned skins stay unlocked when updating.
+
+Ten future designs still use `?` previews and Coming Soon labels. Their mode-specific unlock reservations are tracked, but they cannot be equipped and their planned modifiers are inactive. Challenge Mode is also Coming Soon; this release does not include playable levels.
+
+Developer Mode does not earn food credits, skins or achievements. Saves are local to this browser and site, with a session-only fallback if storage is blocked. They do not sync between devices. Earlier saved normal-play food is converted once to the new wallet.
 
 ## Product and development
 
-I independently planned the theme, gameplay and iteration requirements, and used Codex to assist with code implementation. This project reflects product planning, hands-on playtesting and AI-assisted development; it is not a claim that I independently hand-wrote all the code.
+I independently planned the theme, gameplay and iteration requirements, using Codex to assist code implementation and checks. Several friends playtested the original game. Their feedback and my own testing led to difficulty choices; I also improved the original ending's pacing and manual restart. This is a product-planning and AI-assisted development project, not a claim that I hand-wrote all the code.
 
-I invited several friends to playtest the game. Their feedback, together with my own testing, showed that the original difficulty was too high for the intended relaxing experience. I added difficulty choices and a Developer Mode to support further testing. I also extended the victory animation and changed the ending to require a manual restart, so players could see the full sequence.
+The unchanged original upload is preserved in [the first release](https://github.com/fchen6343/space-cat-dash/tree/4e2beac9bb4ee1c23dd3cb16deba71cc047a9f76). The previous 20-food victory flow is documented as history in [DEVLOG.md](DEVLOG.md); endless growth and Bosses now replace it.
 
-The original uploaded source is preserved in [the first release](https://github.com/fchen6343/space-cat-dash/tree/4e2beac9bb4ee1c23dd3cb16deba71cc047a9f76). Later updates are recorded in [DEVLOG.md](DEVLOG.md).
+## Checks
 
-
-## Controls and collection
-
-Collect 20 food items to discover all five original looks and finish a run. The HUD shows total food progress, distance and remaining jumps. Easy has a gentle speed ceiling.
-
-Use the upper-left pause icon or Esc on desktop. Continue, restart with the same settings, or return home. On phones, use the jump button or tap the playfield. Holding a jump key does not spend your second jump.
-
-The home-screen Skin Cabinet keeps collected original looks, lets you equip them, and shows ten future skin slots with question-mark previews, unlock conditions and planned bonuses. Meeting a future condition reserves its unlock; those skins and their bonuses remain unavailable until release. Challenge Mode currently opens a Coming Soon notice.
-
-Developer Mode does not earn collection progress. Progress is local to this browser and site, with a session-only fallback when storage is unavailable; it does not sync across devices.
-
-## Regression checks
-
-With Node.js installed, run `node tests.cjs index.html`. The tests use only Node's built-in modules. They simulate gameplay to check pause, replay, victory, persistence, skin conditions and bonuses, Easy's speed cap, storage fallback, and consistent timing across rendering rates. Responsive browser checks complement these tests; they do not replace testing on real phones.
+Run `node tests.cjs index.html` with Node.js. The dependency-free tests cover progression, gated unlocks, upgrades and currency, save migration, Boss outcomes, failure animations, pause/replay and timing. Browser visual checks complement these simulations; they do not replace further player feedback or exhaustive real-phone testing.

@@ -286,6 +286,10 @@
       .skin-card { padding:12px; }
     }
     @media (max-width:380px) { .collection-grid { grid-template-columns:1fr; } }
+    .skin-card.legendary { border-color:#e19cfc; background:linear-gradient(145deg,#49255b,#101b3e); }
+    .skin-card.rare { border-color:#ffbc6477; }
+    #upgradeGrid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+    @media(max-width:380px) { #upgradeGrid { grid-template-columns:1fr; } }
   </style>
 </head>
 <body>
@@ -298,7 +302,7 @@
     <main class="start-screen" id="startScreen">
       <div class="start-panel">
         <h1 class="start-title">Ready for Takeoff</h1>
-        <p class="goal-copy">Collect <strong>20 food items</strong> to discover all <strong>5 cat looks</strong> and fly home.<br>Press Space / ↑ or tap twice to double jump.</p>
+        <p class="goal-copy">Run endlessly. Eat food to grow from <strong>Hungry → Strong → Mighty</strong>.<br>Prepare for the next Boss. Press Space / ↑ or tap twice to double jump.</p>
         <div class="home-stats" id="homeStats"></div>
         <div><label class="field-label" for="nicknameInput">Name</label><input id="nicknameInput" type="text" maxlength="12" placeholder="Enter your nickname" value="Player" /></div>
         <div><label class="field-label" for="difficultySelect">Difficulty</label><select id="difficultySelect"><option value="easy">Easy</option><option value="medium" selected>Medium</option><option value="hard">Hard</option></select></div>
@@ -308,33 +312,35 @@
           <div class="tool-row" id="toolOptionsRow"><label><input id="devModeToggle" type="checkbox" /> Developer Mode (choose starting power-ups)</label><button id="devToolsToggleBtn" class="btn-mini hidden" type="button">Show Options</button></div>
           <div class="tool-row hidden" id="devToolsPanel"><label><input id="magnetToggle" type="checkbox" disabled /> Starting Magnet (attracts food for 5s)</label><label><input id="shieldToggle" type="checkbox" disabled /> Starting Shield (invincible for 5s)</label></div>
         </div>
-        <button class="btn-start" id="startBtn">Start Game</button>
+        <button class="btn-start" id="startBtn">Start Endless Run</button>
+        <button class="btn-secondary" id="workshopBtn">Power-up Workshop · 道具升级</button>
         <div class="home-actions"><button id="collectionBtn" class="btn-secondary">Skin Cabinet · 收藏柜</button><button id="challengeBtn" class="btn-secondary">Challenge Mode · 闯关</button></div>
         <p class="helper" id="equippedText">Equipped: Snowball</p>
-        <p class="helper">Progress stays in this browser. Developer Mode does not earn collection progress.</p>
+        <p class="helper">Bank food from normal runs to upgrade power-ups. Developer Mode does not earn food, skins or achievements.</p>
         <p class="storage-note hidden" id="storageNotice">Saving is unavailable in this browser. Progress will last for this session only.</p>
       </div>
     </main>
     <section id="gameArea" class="hidden" aria-label="Current run">
       <div class="hud">
         <div id="nameText">Name Player</div><div id="difficultyText">Difficulty Medium</div><div id="scoreText">Score 00000</div><div id="bestText">Best 00000</div>
-        <div id="foodText">Food 0/20</div><div id="skinText">Looks 1/5</div><div id="jumpText">Jumps 2/2</div><div id="distanceText">Distance 0m</div><div id="toolText">Items None</div><div id="shieldText">Shield 0.0s</div>
+        <div id="foodText">Food 0</div><div id="skinText">Hungry · Lv 1</div><div id="jumpText">Jumps 2/2</div><div id="distanceText">Distance 0m</div><div id="toolText">Items None</div><div id="shieldText">Shield 0.0s</div>
       </div>
-      <div class="goal-bar"><span>Journey home</span><progress id="foodProgress" max="20" value="0" aria-label="Food collected toward victory"></progress></div>
+      <div class="goal-bar"><span id="growthGoal">Growth</span><progress id="foodProgress" max="5" value="0" aria-label="Food toward next strength level"></progress></div>
       <div class="canvas-shell">
         <canvas id="game" width="1080" height="400" aria-label="Space Cat Dash"></canvas>
         <div id="pausePanel" class="overlay hidden"><div class="overlay-card"><h2>Paused</h2><p>Take a breather. Your run is waiting.</p><div class="panel-actions"><button id="resumeBtn" class="btn-start">Continue</button><button id="pauseRetryBtn" class="btn-secondary">Restart run</button><button id="pauseHomeBtn" class="btn-secondary">Back to home</button></div><p class="helper">Esc to continue</p></div></div>
         <div id="endPanel" class="overlay hidden"><div class="overlay-card"><h2 id="endTitle">Run complete</h2><p id="endSummary"></p><div class="panel-actions"><button id="retryBtn" class="btn-start">Play again</button><button id="victoryRestartBtn" class="btn-restart hidden">Back to home</button><button id="endHomeBtn" class="btn-secondary">Back to home</button></div></div></div>
       </div>
+      <div id="bossText" class="goal-bar">Boss ahead</div>
       <div class="hint" id="hint">Press Space / ↑ or tap to jump.</div>
       <button id="jumpBtn" class="mobile-jump">JUMP · Tap twice for a double jump</button>
     </section>
   </div>
   <dialog id="collectionDialog" aria-labelledby="collectionTitle">
     <div class="dialog-header"><h2 id="collectionTitle">Skin Cabinet · 皮肤收藏柜</h2><button id="closeCollectionBtn" class="icon-button" aria-label="Close skin cabinet">×</button></div>
-    <p class="dialog-intro">Discover the five original looks during normal runs and keep them forever. Equip a collected look for its bonus. Your starting skin's bonus lasts for the whole run.</p>
+    <p class="dialog-intro">Skins stay equipped while your cat grows stronger. Complete the specified mode and difficulty tasks to unlock looks. Legacy collections are preserved. Boss skins must be earned in their matching mode and difficulty.</p>
     <div id="releasedGrid" class="collection-grid"></div>
-    <h3 class="future-heading">Next arrivals · 10 待推出皮肤</h3>
+    <h3 class="future-heading">Future designs · 10 待推出皮肤</h3>
     <p class="dialog-intro">Meet each condition to reserve a permanent unlock. Previews stay <strong>?</strong> until release. Planned bonuses become active only after release and equipping.</p>
     <div id="futureGrid" class="collection-grid"></div>
     <p class="helper">Unlocked progress is stored locally. Developer Mode is excluded.</p>
@@ -342,9 +348,14 @@
   <dialog id="challengeDialog" aria-labelledby="challengeTitle">
     <div class="dialog-header"><h2 id="challengeTitle">Challenge Mode · 闯关模式</h2><button id="closeChallengeBtn" class="icon-button" aria-label="Close challenge mode">×</button></div>
     <div class="coming-hero" aria-hidden="true">✦</div><h3 style="text-align:center">Coming Soon · 待推出</h3>
-    <p class="dialog-intro" style="text-align:center">A new journey is on the horizon. Levels are not available yet.<br>You can still play the classic game from the home screen.</p>
+    <p class="dialog-intro" style="text-align:center">A new journey is on the horizon. Levels are not available yet.<br>Endless runs and Boss encounters are available from the home screen.</p>
   </dialog>
 
+  <dialog id="workshopDialog" aria-labelledby="workshopTitle">
+    <div class="dialog-header"><h2 id="workshopTitle">Power-up Workshop · 道具升级</h2><button class="icon-button" id="closeWorkshopBtn" aria-label="Close workshop">×</button></div>
+    <p class="dialog-intro" id="walletText"></p><p class="dialog-intro">Each food item collected in a normal run earns one food credit. Upgrades last across runs. Level costs: 10, 20, 30, 40 and 50 food.</p>
+    <div id="upgradeGrid" class="collection-grid"></div>
+  </dialog>
   <script>
     const canvas = document.getElementById('game');
     const ctx = canvas.getContext('2d');
@@ -422,127 +433,185 @@
       { name: 'Cloud', body: '#bcc8dd', head: '#d2dbeb', ear: '#9fb1cf', leg: '#a5b4cc', tail: '#91a4c0', mark: '#6f87ad' },
       { name: 'Mint', body: '#a7efd2', head: '#c4f7e3', ear: '#7addbc', leg: '#8edebf', tail: '#6fc6a7', mark: '#3ab994' },
       { name: 'Starry Night', body: '#2f3b87', head: '#4152a6', ear: '#8295ff', leg: '#5061be', tail: '#293375', mark: '#ffd166' }
+      ,{name:'Pebble Pal',body:'#b7a5a0',head:'#dbc8b6',ear:'#a98678',leg:'#887474',tail:'#9e8f87',mark:'#fff0b8'},
+      {name:'Solar Knight',body:'#ffbb55',head:'#ffe6a0',ear:'#ff9255',leg:'#cc8844',tail:'#b97c42',mark:'#fff7cf'},
+      {name:'Void Sovereign',body:'#9565db',head:'#c7a5ff',ear:'#eeaaef',leg:'#7046b8',tail:'#613aa0',mark:'#fff0a0'},
+      {name:'Lunar Mechanic',body:'#7ccbdc',head:'#b7eff9',ear:'#90b8ee',leg:'#4786b1',tail:'#558aa9',mark:'#f9dc89'},
+      {name:'Aurora Hunter',body:'#6cdeb6',head:'#b7ffe5',ear:'#f29cde',leg:'#45a986',tail:'#52bca3',mark:'#fff8ae'},
+      {name:'Nebula Emperor',body:'#e07bc7',head:'#ffb8e8',ear:'#9867dc',leg:'#a45ab4',tail:'#8153a2',mark:'#fff2a9'}
     ];
 
-    const byId = (id) => document.getElementById(id);
-    const gameArea = byId('gameArea'), pauseBtn = byId('pauseBtn');
-    const pausePanel = byId('pausePanel'), endPanel = byId('endPanel');
-    const resumeBtn = byId('resumeBtn'), pauseRetryBtn = byId('pauseRetryBtn');
-    const retryBtn = byId('retryBtn'), pauseHomeBtn = byId('pauseHomeBtn'), endHomeBtn = byId('endHomeBtn');
-    const endTitle = byId('endTitle'), endSummary = byId('endSummary');
-    const jumpText = byId('jumpText'), distanceText = byId('distanceText'), foodProgress = byId('foodProgress');
-    const jumpBtn = byId('jumpBtn'), homeStats = byId('homeStats'), equippedText = byId('equippedText');
-    const collectionBtn = byId('collectionBtn'), challengeBtn = byId('challengeBtn');
-    const collectionDialog = byId('collectionDialog'), challengeDialog = byId('challengeDialog');
-    const closeCollectionBtn = byId('closeCollectionBtn'), closeChallengeBtn = byId('closeChallengeBtn');
-    const releasedGrid = byId('releasedGrid'), futureGrid = byId('futureGrid');
-    const storageNotice = byId('storageNotice');
-    let storageAvailable = true;
-
-    function safeRead(key, fallback) {
-      try { return localStorage.getItem(key) || fallback; }
-      catch { storageAvailable = false; return fallback; }
-    }
-    function safeWrite(key, value) {
-      try { localStorage.setItem(key, value); }
-      catch { storageAvailable = false; }
-      storageNotice.classList.toggle('hidden', storageAvailable);
-    }
-    function loadProgress() {
-      let data;
-      try { data = JSON.parse(safeRead('spacecat_collection_v1', '{}')); }
-      catch { data = {}; }
-      if (!data || typeof data !== 'object') data = {};
-      const number = (n) => Number.isFinite(n) ? Math.max(0, n) : 0;
-      const released = [...new Set([0, ...(Array.isArray(data.released) ? data.released.filter(n => Number.isInteger(n) && n >= 0 && n < 5) : [])])];
-      return { wins: Math.floor(number(data.wins)), totalMeters: number(data.totalMeters), totalFood: Math.floor(number(data.totalFood)), runs: Math.floor(number(data.runs)),
-        winsByDifficulty: Object.fromEntries(['easy','medium','hard'].map(k => [k, Math.floor(number(data.winsByDifficulty?.[k]))])),
-        released, upcoming: Array.isArray(data.upcoming) ? data.upcoming.filter(n => Number.isInteger(n) && n >= 1 && n <= 10) : [],
-        equipped: released.includes(data.equipped) ? data.equipped : 0 };
-    }
-    const progress = loadProgress();
-    const RELEASED_BONUSES = [
-      { label:'Classic balance · no modifier' },
-      { label:'Food score +5%', food:1.05 },
-      { label:'Collected shields last +0.5s', shieldTicks:30 },
-      { label:'Magnet attraction range +20px', magnetRange:20 },
-      { label:'Running score +5%', score:1.05 }
-    ];
-    const FUTURE_SKINS = [
-      {id:1, name:'First Flight', field:'wins', target:1, condition:'Win your first run', bonus:'Food score +8%'},
-      {id:2, name:'Homeward Bound', field:'wins', target:3, condition:'Win 3 runs', bonus:'Shield duration +0.5s'},
-      {id:3, name:'Orbit Keeper', field:'wins', target:10, condition:'Win 10 runs', bonus:'Magnet duration +1s'},
-      {id:4, name:'Starlight Captain', field:'wins', target:25, condition:'Win 25 runs', bonus:'Running score +8%'},
-      {id:5, name:'Moon Walker', field:'totalMeters', target:500, condition:'Run 500m in total', bonus:'Magnet attraction range +15%'},
-      {id:6, name:'Comet Chaser', field:'totalMeters', target:2000, condition:'Run 2,000m in total', bonus:'Food score +10%'},
-      {id:7, name:'Galaxy Voyager', field:'totalMeters', target:10000, condition:'Run 10,000m in total', bonus:'Shield duration +1s'},
-      {id:8, name:'Snack Scout', field:'totalFood', target:50, condition:'Collect 50 food items in total', bonus:'Food collection radius +10%'},
-      {id:9, name:'Cosmic Chef', field:'totalFood', target:200, condition:'Collect 200 food items in total', bonus:'Magnet duration +1.5s'},
-      {id:10, name:'Three Star Pilot', field:'difficulties', target:3, condition:'Win on Easy, Medium and Hard', bonus:'Running score +10%'}
-    ];
-    let paused = false, runStarted = false, runRecorded = false, runMeters = 0, saveTicks = 0;
-    let activeBonus = RELEASED_BONUSES[progress.equipped];
-    function milestoneValue(skin) {
-      return skin.field === 'difficulties' ? Object.values(progress.winsByDifficulty).filter(n => n > 0).length : progress[skin.field];
-    }
-    function saveProgress() {
-      for (const skin of FUTURE_SKINS) {
-        if (milestoneValue(skin) >= skin.target && !progress.upcoming.includes(skin.id)) progress.upcoming.push(skin.id);
+    const byId=id=>document.getElementById(id);
+    const gameArea=byId('gameArea'),pauseBtn=byId('pauseBtn'),pausePanel=byId('pausePanel'),endPanel=byId('endPanel');
+    const resumeBtn=byId('resumeBtn'),pauseRetryBtn=byId('pauseRetryBtn'),retryBtn=byId('retryBtn'),pauseHomeBtn=byId('pauseHomeBtn'),endHomeBtn=byId('endHomeBtn');
+    const endTitle=byId('endTitle'),endSummary=byId('endSummary'),jumpText=byId('jumpText'),distanceText=byId('distanceText'),foodProgress=byId('foodProgress'),growthGoal=byId('growthGoal'),bossText=byId('bossText');
+    const jumpBtn=byId('jumpBtn'),homeStats=byId('homeStats'),equippedText=byId('equippedText'),collectionBtn=byId('collectionBtn'),challengeBtn=byId('challengeBtn');
+    const collectionDialog=byId('collectionDialog'),challengeDialog=byId('challengeDialog'),closeCollectionBtn=byId('closeCollectionBtn'),closeChallengeBtn=byId('closeChallengeBtn');
+    const releasedGrid=byId('releasedGrid'),futureGrid=byId('futureGrid'),storageNotice=byId('storageNotice');
+    const workshopBtn=byId('workshopBtn'),workshopDialog=byId('workshopDialog'),closeWorkshopBtn=byId('closeWorkshopBtn'),upgradeGrid=byId('upgradeGrid'),walletText=byId('walletText');
+    let storageAvailable=true;
+    function safeRead(key,fallback){try{return localStorage.getItem(key)||fallback;}catch{storageAvailable=false;return fallback;}}
+    function safeWrite(key,value){try{localStorage.setItem(key,value);}catch{storageAvailable=false;}storageNotice.classList.toggle('hidden',storageAvailable);}
+    function loadProgress(){
+      let p;try{p=JSON.parse(safeRead('spacecat_collection_v1','{}'));}catch{p={};}if(!p||typeof p!=='object')p={};
+      const num=n=>Number.isFinite(n)?Math.max(0,n):0;
+      const modeStats={};for(const mode of ['classic','items'])for(const difficulty of ['easy','medium','hard']){
+        const key=mode+'_'+difficulty,r=p.modeStats?.[key]||{};
+        modeStats[key]=Object.fromEntries(['meters','bestMeters','strongBestMeters','food','items','bosses'].map(k=>[k,num(r[k])]));
       }
-      safeWrite('spacecat_collection_v1', JSON.stringify(progress));
+      const released=[...new Set([0,...(Array.isArray(p.released)?p.released.filter(n=>Number.isInteger(n)&&n>=0&&n<CAT_SKINS.length):[])])];
+      return {version:2,wins:Math.floor(num(p.wins)),totalMeters:num(p.totalMeters),totalFood:Math.floor(num(p.totalFood)),totalItems:Math.floor(num(p.totalItems)),runs:Math.floor(num(p.runs)),wallet:Math.floor(num(p.wallet===undefined?p.totalFood:p.wallet)),
+        winsByDifficulty:Object.fromEntries(['easy','medium','hard'].map(k=>[k,Math.floor(num(p.winsByDifficulty?.[k]))])),modeStats,
+        upgrades:Object.fromEntries(['magnetRange','magnetTime','shieldTime','shieldArea'].map(k=>[k,Math.min(5,Math.floor(num(p.upgrades?.[k])))])),
+        released,upcoming:Array.isArray(p.upcoming)?p.upcoming.filter(n=>Number.isInteger(n)&&n>=1&&n<=10):[],equipped:released.includes(p.equipped)?p.equipped:0};
     }
-    function updateHome() {
-      homeStats.textContent = `${progress.wins} wins · ${Math.floor(progress.totalMeters).toLocaleString()}m travelled · ${progress.released.length}/5 original looks collected`;
-      equippedText.textContent = `Equipped: ${CAT_SKINS[progress.equipped].name} · ${RELEASED_BONUSES[progress.equipped].label}`;
-      storageNotice.classList.toggle('hidden', storageAvailable);
+    const progress=loadProgress();
+    const RELEASED_BONUSES=[
+      {label:'Classic balance'}, {label:'Food score +5%',food:1.05}, {label:'Shield duration +0.5s',shieldTicks:30},
+      {label:'Magnet range +20',magnetRange:20},{label:'Running score +5%',score:1.05},
+      {label:'Food score +8%',food:1.08},{label:'Shield duration +1s',shieldTicks:60},
+      {label:'Running score +15%; jump height +6%',score:1.15,jump:1.06},
+      {label:'Magnet range +25',magnetRange:25},{label:'Magnet duration +1s; range +30',magnetTicks:60,magnetRange:30},
+      {label:'Food score +15%; both item durations +1s',food:1.15,shieldTicks:60,magnetTicks:60}
+    ];
+    const SKIN_TASKS=[
+      null,
+      {mode:'items',difficulty:'easy',field:'items',target:10,condition:'Item Mode · Easy: collect 10 power-ups in total'},
+      {mode:'classic',difficulty:'medium',field:'bestMeters',target:1000,condition:'Classic · Medium: reach 1,000m in one run'},
+      {mode:'items',difficulty:'medium',field:'items',target:25,condition:'Item Mode · Medium: collect 25 power-ups in total'},
+      {mode:'classic',difficulty:'hard',field:'strongBestMeters',target:1200,condition:'Classic · Hard: reach 1,200m while Strong or Mighty'},
+      {mode:'classic',difficulty:'easy',field:'bosses',target:1,condition:'Classic · Easy: defeat the Stone Warden'},
+      {mode:'classic',difficulty:'medium',field:'bosses',target:1,condition:'Classic · Medium: defeat the Solar Warden'},
+      {mode:'classic',difficulty:'hard',field:'bosses',target:1,condition:'Classic · Hard: defeat the Void Warden'},
+      {mode:'items',difficulty:'easy',field:'bosses',target:1,condition:'Item Mode · Easy: defeat the Lunar Warden'},
+      {mode:'items',difficulty:'medium',field:'bosses',target:1,condition:'Item Mode · Medium: defeat the Aurora Warden'},
+      {mode:'items',difficulty:'hard',field:'bosses',target:1,condition:'Item Mode · Hard: defeat the Nebula Warden'}
+    ];
+    const FUTURE_SKINS=[
+      {id:1,name:'First Flight',mode:'classic',difficulty:'easy',field:'bosses',target:3,condition:'Classic · Easy: defeat 3 Bosses',bonus:'Food score +8%'},
+      {id:2,name:'Homeward Bound',mode:'classic',difficulty:'medium',field:'bosses',target:5,condition:'Classic · Medium: defeat 5 Bosses',bonus:'Shield duration +1s'},
+      {id:3,name:'Orbit Keeper',mode:'items',difficulty:'medium',field:'items',target:50,condition:'Item Mode · Medium: collect 50 power-ups',bonus:'Magnet duration +1.5s'},
+      {id:4,name:'Starlight Captain',mode:'classic',difficulty:'hard',field:'bosses',target:5,condition:'Classic · Hard: defeat 5 Bosses',bonus:'Running score +18%'},
+      {id:5,name:'Moon Walker',mode:'classic',difficulty:'easy',field:'bestMeters',target:2500,condition:'Classic · Easy: reach 2,500m in one run',bonus:'Magnet range +15%'},
+      {id:6,name:'Comet Chaser',mode:'items',difficulty:'hard',field:'strongBestMeters',target:2500,condition:'Item Mode · Hard: reach 2,500m while Strong or Mighty',bonus:'Food score +18%'},
+      {id:7,name:'Galaxy Voyager',mode:'classic',difficulty:'hard',field:'meters',target:10000,condition:'Classic · Hard: run 10,000m in total',bonus:'Shield duration +1.5s'},
+      {id:8,name:'Snack Scout',mode:'items',difficulty:'easy',field:'food',target:100,condition:'Item Mode · Easy: collect 100 food',bonus:'Food collection radius +10%'},
+      {id:9,name:'Cosmic Chef',mode:'items',difficulty:'hard',field:'items',target:100,condition:'Item Mode · Hard: collect 100 power-ups',bonus:'Magnet duration +2s'},
+      {id:10,name:'Three Star Pilot',mode:'classic',difficulty:'hard',field:'bosses',target:10,condition:'Classic · Hard: defeat 10 Bosses',bonus:'Running score +20%'}
+    ];
+    const GROWTH=[
+      {name:'Hungry',food:0,scale:.74,speed:.9,jump:.9},
+      {name:'Fed',food:5,scale:.87,speed:1,jump:1},
+      {name:'Fit',food:12,scale:1,speed:1.06,jump:1.06},
+      {name:'Strong',food:20,scale:1.12,speed:1.12,jump:1.13},
+      {name:'Mighty',food:35,scale:1.2,speed:1.18,jump:1.2}
+    ];
+    const BOSS_INTERVAL={easy:1200,medium:1500,hard:1800};
+    const BOSS_NAMES={classic:{easy:'Stone Warden',medium:'Solar Warden',hard:'Void Warden'},items:{easy:'Lunar Warden',medium:'Aurora Warden',hard:'Nebula Warden'}};
+    const FAILURE_TICKS=150;
+    const UPGRADE_INFO={
+      magnetRange:{name:'Magnet range',description:l=>`${150+l*25} attraction range`,next:l=>`${150+(l+1)*25} attraction range`},
+      magnetTime:{name:'Magnet duration',description:l=>`${5+l}s active`,next:l=>`${6+l}s active`},
+      shieldTime:{name:'Shield duration',description:l=>`${5+l}s active`,next:l=>`${6+l}s active`},
+      shieldArea:{name:'Shield reach',description:l=>`${l*15} extra protection radius`,next:l=>`${(l+1)*15} extra protection radius`}
+    };
+    let paused=false,runStarted=false,runRecorded=false,runMeters=0,saveTicks=0,runItems=0;
+    let growthLevel=0,bossEncounter=null,bossNumber=0,nextBossAt=1200,failureTick=0,failureReason='',failureStyle='tumble';
+    let activeBonus=RELEASED_BONUSES[progress.equipped],liveUpgrades={...progress.upgrades};
+    function growthStage(){return GROWTH[growthLevel];}
+    function modeKey(){return (itemMode?'items':'classic')+'_'+difficultyKey;}
+    function modeRecord(){return progress.modeStats[modeKey()];}
+    function milestoneValue(task){return progress.modeStats[task.mode+'_'+task.difficulty][task.field];}
+    function saveProgress(){
+      SKIN_TASKS.forEach((task,index)=>{if(task&&milestoneValue(task)>=task.target&&!progress.released.includes(index))progress.released.push(index);});
+      for(const task of FUTURE_SKINS)if(milestoneValue(task)>=task.target&&!progress.upcoming.includes(task.id))progress.upcoming.push(task.id);
+      safeWrite('spacecat_collection_v1',JSON.stringify(progress));
     }
-    function renderCollection() {
+    function updateHome(){
+      homeStats.textContent=`${progress.wallet} food credits · ${progress.wins} wins / Bosses · ${Math.floor(progress.totalMeters).toLocaleString()}m · ${progress.released.length}/${CAT_SKINS.length} skins`;
+      equippedText.textContent=`Equipped: ${CAT_SKINS[progress.equipped].name} · ${RELEASED_BONUSES[progress.equipped].label}`;
+      storageNotice.classList.toggle('hidden',storageAvailable);
+    }
+    function renderCollection(){
       saveProgress();
-      releasedGrid.innerHTML = CAT_SKINS.map((skin, index) => {
-        const owned = progress.released.includes(index);
-        return `<article class="skin-card ${owned ? 'earned' : ''}"><div class="skin-preview">${owned ? `<span class="mini-cat" style="--cat:${skin.body}"></span>` : '?'}</div><h3>${skin.name}</h3><span class="skin-badge">${owned ? 'Collected · 已收藏' : 'Locked · 待解锁'}</span><p>${index === 0 ? 'Your original travelling companion.' : 'Discover this look by collecting food in a normal run.'}</p><p>Bonus: ${RELEASED_BONUSES[index].label}</p><button class="btn-secondary" data-equip="${index}" ${!owned || progress.equipped === index ? 'disabled' : ''}>${progress.equipped === index ? 'Equipped' : owned ? 'Equip' : 'Not collected'}</button></article>`;
+      releasedGrid.innerHTML=CAT_SKINS.map((skin,index)=>{
+        const owned=progress.released.includes(index),task=SKIN_TASKS[index],value=task?Math.min(task.target,Math.floor(milestoneValue(task))):1;
+        const rarity=index===7||index===10?'Legendary':index>=5?'Rare':'Original';
+        return `<article class="skin-card ${owned?'earned':''} ${rarity.toLowerCase()}"><div class="skin-preview">${owned?`<span class="mini-cat" style="--cat:${skin.body}"></span>`:'?'}</div><h3>${skin.name}</h3><span class="skin-badge">${rarity} · ${owned?'Collected · 已收藏':'Locked · 待解锁'}</span><p>${task?task.condition:'Your original companion.'}</p>${task?`<progress value="${value}" max="${task.target}" aria-label="${skin.name} task progress"></progress><p>${owned&&value<task.target?'Previously collected · carried over':`${value.toLocaleString()} / ${task.target.toLocaleString()}`}</p>`:''}<p>Bonus: ${RELEASED_BONUSES[index].label}</p><button class="btn-secondary" data-equip="${index}" ${!owned||progress.equipped===index?'disabled':''}>${progress.equipped===index?'Equipped':owned?'Equip':'Not unlocked'}</button></article>`;
       }).join('');
-      futureGrid.innerHTML = FUTURE_SKINS.map(skin => {
-        const earned = progress.upcoming.includes(skin.id), value = Math.min(skin.target, Math.floor(milestoneValue(skin)));
-        return `<article class="skin-card ${earned ? 'earned' : ''}"><div class="skin-preview" aria-label="Unrevealed skin">?</div><h3>Slot ${String(skin.id).padStart(2,'0')} · ${skin.name}</h3><span class="skin-badge">Coming Soon · 待推出</span><p>${skin.condition}</p><progress max="${skin.target}" value="${value}" aria-label="${skin.name} unlock progress"></progress><p>${value.toLocaleString()} / ${skin.target.toLocaleString()}${skin.field === 'totalMeters' ? 'm' : ''} · ${earned ? 'Condition met · 已达成，解锁已保留' : 'Locked · 待解锁'}</p><p>Planned bonus: ${skin.bonus}</p><p>Available after release · 推出后生效</p></article>`;
+      futureGrid.innerHTML=FUTURE_SKINS.map(task=>{const earned=progress.upcoming.includes(task.id),value=Math.min(task.target,Math.floor(milestoneValue(task)));return `<article class="skin-card ${earned?'earned':''}"><div class="skin-preview" aria-label="Unrevealed skin">?</div><h3>Slot ${String(task.id).padStart(2,'0')} · ${task.name}</h3><span class="skin-badge">Coming Soon · 待推出</span><p>${task.condition}</p><progress max="${task.target}" value="${value}" aria-label="${task.name} unlock progress"></progress><p>${value.toLocaleString()} / ${task.target.toLocaleString()} · ${earned?'Reserved unlock · 已保留':'Locked · 待解锁'}</p><p>Planned bonus: ${task.bonus}</p><p>Available after release · 推出后生效</p></article>`;}).join('');
+    }
+    function renderWorkshop(){
+      walletText.textContent=`Available food: ${progress.wallet}. Permanent upgrades apply to your next run; skin bonuses stack with them.`;
+      upgradeGrid.innerHTML=Object.entries(UPGRADE_INFO).map(([key,info])=>{
+        const level=progress.upgrades[key],cost=(level+1)*10,max=level>=5;
+        return `<article class="skin-card"><h3>${info.name}</h3><span class="skin-badge">Level ${level}/5</span><p>Current: ${info.description(level)}</p><p>${max?'Maximum level':`Next: ${info.next(level)}`}</p><button data-upgrade="${key}" class="btn-secondary" ${max||progress.wallet<cost?'disabled':''}>${max?'Max level':`Upgrade · ${cost} food`}</button></article>`;
       }).join('');
     }
-    function recordRun(won) {
-      if (!runStarted || runRecorded) return;
-      runRecorded = true;
-      if (!devMode) {
-        if (won) { progress.wins++; progress.winsByDifficulty[difficultyKey]++; }
-        saveProgress();
-      }
+    function buyUpgrade(key){
+      if(gameState!=='menu'||!Object.hasOwn(UPGRADE_INFO,key))return false;
+      const level=progress.upgrades[key],cost=(level+1)*10;
+      if(level>=5||progress.wallet<cost)return false;
+      progress.wallet-=cost;progress.upgrades[key]++;saveProgress();return true;
     }
-    function collectFood() {
-      foodCount++;
-      score += 45 * difficultyCfg.scoreMul * (activeBonus.food || 1);
-      if (!devMode) { progress.totalFood++; saveProgress(); }
-      if (foodCount % FOOD_PER_EVOLVE === 0) evolveSkin();
+    function itemDuration(type){return 300+(type==='magnet'?liveUpgrades.magnetTime*60+(activeBonus.magnetTicks||0):liveUpgrades.shieldTime*60+(activeBonus.shieldTicks||0));}
+    function recordRun(){if(!runStarted||runRecorded)return;runRecorded=true;if(!devMode)saveProgress();}
+    function updateGrowth(){
+      const previous=growthLevel;growthLevel=GROWTH.reduce((level,stage,i)=>foodCount>=stage.food?i:level,0);
+      if(previous!==growthLevel)hint.textContent=`${growthStage().name}! Faster running and higher jumps. Keep preparing for the Boss.`;
     }
-    function setPaused(value) {
-      if (gameState !== 'playing' || gameOver || victory) return;
-      paused = value;
-      pausePanel.classList.toggle('hidden', !paused);
-      pauseBtn.textContent = paused ? '▶' : 'Ⅱ';
-      pauseBtn.setAttribute('aria-label', paused ? 'Continue game' : 'Pause game');
-      if (paused) saveProgress();
-      updateHUD();
+    function collectFood(){
+      foodCount++;score+=45*difficultyCfg.scoreMul*(activeBonus.food||1);updateGrowth();
+      if(!devMode){progress.totalFood++;progress.wallet++;modeRecord().food++;if(growthLevel>=3)modeRecord().strongBestMeters=Math.max(modeRecord().strongBestMeters,runMeters);saveProgress();}
     }
-    function updateRunPanels() {
-      const showEnd = gameOver || (victory && victoryRestartReady);
-      endPanel.classList.toggle('hidden', !showEnd);
-      endTitle.textContent = victory ? 'Mission complete!' : 'One more try?';
-      endSummary.textContent = `Score ${Math.floor(score)} · ${Math.floor(runMeters)}m · Food ${Math.min(20,foodCount)}/20${devMode ? ' · Developer run (not saved to collection)' : ''}`;
-      endHomeBtn.classList.toggle('hidden', victory);
-      pauseBtn.disabled = gameState === 'menu' || gameOver || victory;
-      jumpBtn.disabled = paused || gameOver || victory;
+    function collectTool(type){
+      runItems++;if(type==='magnet')magnetTicks=itemDuration('magnet');else shieldTicks=itemDuration('shield');
+      hint.textContent=`${type==='magnet'?'Magnet':'Shield'} collected · ${(itemDuration(type)/60).toFixed(1)}s`;
+      if(!devMode){progress.totalItems++;modeRecord().items++;saveProgress();}
     }
-    function resizeGame() {
-      canvas.width = window.innerWidth <= 600 ? 640 : 1080;
-      if (typeof render === 'function') render();
+    function setPaused(value){
+      if(gameState!=='playing'||gameOver)return;paused=value;pausePanel.classList.toggle('hidden',!paused);
+      pauseBtn.textContent=paused?'▶':'Ⅱ';pauseBtn.setAttribute('aria-label',paused?'Continue game':'Pause game');if(paused)saveProgress();updateHUD();
     }
+    function updateRunPanels(){
+      endPanel.classList.toggle('hidden',!(gameOver&&failureTick>=FAILURE_TICKS));
+      endTitle.textContent=failureReason==='boss'?'Not strong enough':'One more try?';
+      endSummary.textContent=`${failureStyle==='tumble'?'A rough landing':failureStyle==='orbit'?'Lost in orbit':'Caught in a meteor storm'} · ${Math.floor(runMeters)}m · ${foodCount} food · ${growthStage().name}${devMode?' · Developer run (not banked)':''}`;
+      endHomeBtn.classList.remove('hidden');victoryRestartBtn.classList.add('hidden');pauseBtn.disabled=gameState==='menu'||gameOver;jumpBtn.disabled=paused||gameOver||!!bossEncounter;
+    }
+    function startBoss(){
+      bossNumber++;const required=(difficultyKey==='hard'||bossNumber>1)?4:3;
+      bossEncounter={tick:0,required,won:growthLevel>=required,reward:5+({easy:0,medium:1,hard:2}[difficultyKey])+(itemMode?3:0),name:BOSS_NAMES[itemMode?'items':'classic'][difficultyKey],credited:false};
+      obstacles.length=0;foods.length=0;toolItems.length=0;player.y=GROUND_Y-player.h;player.vy=0;player.onGround=true;player.jumpsUsed=0;
+      hint.textContent=`${bossEncounter.name} approaches! Requires ${GROWTH[required].name}. You are ${growthStage().name}.`;
+    }
+    function creditBoss(){
+      if(!bossEncounter||bossEncounter.credited)return;bossEncounter.credited=true;
+      score+=500*difficultyCfg.scoreMul;
+      if(!devMode){progress.wins++;progress.winsByDifficulty[difficultyKey]++;modeRecord().bosses++;if(!progress.released.includes(bossEncounter.reward))progress.released.push(bossEncounter.reward);saveProgress();}
+      best=Math.max(best,Math.floor(score));safeWrite('spacecat_best',String(best));
+      hint.textContent=devMode?'Boss defeated · test reward not saved':`Boss defeated! ${CAT_SKINS[bossEncounter.reward].name} is in your cabinet. Keep running!`;
+    }
+    function updateBoss(){
+      bossEncounter.tick++;
+      if(bossEncounter.tick===120){if(bossEncounter.won)creditBoss();else{failRun('boss');return;}}
+      if(bossEncounter.tick>=240){bossEncounter=null;nextBossAt+=BOSS_INTERVAL[difficultyKey];}
+    }
+    function failRun(reason){
+      if(gameOver)return;recordRun();gameOver=true;running=false;failureTick=0;failureReason=reason;
+      failureStyle=runMeters<500?'tumble':runMeters<1500?'orbit':'storm';
+      best=Math.max(best,Math.floor(score));safeWrite('spacecat_best',String(best));hint.textContent=reason==='boss'?`The Boss needed more strength. Eat more food before your next encounter.`:'Your food credits and collection progress are safe. Try again!';updateHUD();
+    }
+    function drawBoss(){
+      if(!bossEncounter)return;const b=bossEncounter,t=b.tick,x=canvas.width-100-Math.min(180,t*1.8),y=220;
+      ctx.save();ctx.translate(x,y);ctx.globalAlpha=b.won&&t>120?Math.max(0,1-(t-120)/100):1;
+      ctx.fillStyle=['#a59086','#e2a756','#9560c4'][{easy:0,medium:1,hard:2}[difficultyKey]];ctx.beginPath();ctx.arc(0,0,60+Math.sin(t*.05)*3,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle='#2e2046';ctx.fillRect(-30,-20,18,12);ctx.fillRect(12,-20,18,12);ctx.fillRect(-25,20,50,8);
+      if(itemMode){ctx.strokeStyle='#6de7ff';ctx.lineWidth=5;ctx.beginPath();ctx.ellipse(0,0,90,35,t*.015,0,Math.PI*2);ctx.stroke();}
+      if(t>=90){ctx.strokeStyle=b.won?'#79e7a6':'#ff5d8f';ctx.lineWidth=6;ctx.beginPath();ctx.moveTo(-40,0);ctx.lineTo(player.x-x+26,player.y-y+22);ctx.stroke();}
+      ctx.restore();ctx.fillStyle='#fff0c0';ctx.font='bold 22px Trebuchet MS';ctx.textAlign='center';ctx.fillText(t<120?`${b.name} · ${GROWTH[b.required].name} required`:b.won?'BOSS DEFEATED':'NOT STRONG ENOUGH',canvas.width/2,60);ctx.textAlign='left';
+    }
+    function resizeGame(){canvas.width=window.innerWidth<=600?640:1080;if(typeof render==='function')render();}
 
     let gameState = 'menu';
     let running = false;
@@ -622,13 +691,15 @@
     function beginRunFromMenu() {
       recordRun(false);
       playerName = (nicknameInput.value || '').trim().slice(0, 12) || 'Player';
-      difficultyKey = difficultySelect.value;
+      difficultyKey = Object.hasOwn(DIFFICULTY, difficultySelect.value) ? difficultySelect.value : 'medium';
       difficultyCfg = DIFFICULTY[difficultyKey] || DIFFICULTY.medium;
 
+      activeBonus = RELEASED_BONUSES[progress.equipped];
+      liveUpgrades = {...progress.upgrades};
       itemMode = itemModeToggle.checked;
       devMode = devModeToggle.checked;
-      magnetTicks = devMode && magnetToggle.checked ? MAGNET_DURATION_TICKS : 0;
-      shieldTicks = devMode && shieldToggle.checked ? SHIELD_DURATION_TICKS : 0;
+      magnetTicks = devMode && magnetToggle.checked ? itemDuration("magnet") : 0;
+      shieldTicks = devMode && shieldToggle.checked ? itemDuration("shield") : 0;
 
       running = false;
       gameOver = false;
@@ -640,6 +711,9 @@
       runMeters = 0;
       saveTicks = 0;
       activeBonus = RELEASED_BONUSES[progress.equipped];
+      growthLevel = 0; bossEncounter = null; bossNumber = 0; failureTick = 0; runItems = 0;
+      nextBossAt = BOSS_INTERVAL[difficultyKey];
+      liveUpgrades = {...progress.upgrades};
       gameArea.classList.remove('hidden');
       pausePanel.classList.add('hidden');
       endPanel.classList.add('hidden');
@@ -701,29 +775,23 @@
       updateHUD();
     }
 
-    function updateHUD() {
-      scoreText.textContent = `Score ${String(Math.floor(score)).padStart(5, '0')}`;
-      foodText.textContent = `Food ${Math.min(foodCount, 20)}/20`;
-      foodProgress.value = Math.min(foodCount, 20);
-      jumpText.textContent = `Jumps ${Math.max(0, 2 - player.jumpsUsed)}/2`;
-      distanceText.textContent = `Distance ${Math.floor(runMeters)}m`;
-      skinText.textContent = `Looks ${unlockedSkins.size}/${CAT_SKINS.length}`;
-      bestText.textContent = `Best ${String(best).padStart(5, '0')}`;
-      nameText.textContent = `Name ${playerName}`;
-      difficultyText.textContent = `Difficulty ${difficultyCfg.label}`;
-
-      const tools = [];
-      if (itemMode) tools.push('Item Mode');
-      if (devMode) tools.push('Developer Mode');
-      if (magnetTicks > 0) tools.push(`Magnet ${(magnetTicks / 60).toFixed(1)}s`);
-      if (shieldTicks > 0) tools.push(`Shield${(shieldTicks / 60).toFixed(1)}s`);
-      toolText.textContent = `Items ${tools.length ? tools.join('+') : 'None'}`;
-      shieldText.textContent = `Shield ${(shieldTicks / 60).toFixed(1)}s`;
+    function updateHUD(){
+      scoreText.textContent=`Score ${String(Math.floor(score)).padStart(5,'0')}`;
+      foodText.textContent=`Food ${foodCount} · Items ${runItems}`;skinText.textContent=`${growthStage().name} · Lv ${growthLevel+1}`;
+      const next=GROWTH[growthLevel+1];foodProgress.max=next?next.food-growthStage().food:1;foodProgress.value=next?foodCount-growthStage().food:1;
+      growthGoal.textContent=next?`${next.name}: ${foodCount}/${next.food} food`:'Mighty · full strength';
+      jumpText.textContent=`Jumps ${Math.max(0,2-player.jumpsUsed)}/2`;distanceText.textContent=`Distance ${Math.floor(runMeters)}m`;
+      bestText.textContent=`Best ${String(Math.floor(best)).padStart(5,'0')}`;nameText.textContent=`Name ${playerName}`;
+      difficultyText.textContent=`${itemMode?'Items':'Classic'} · ${difficultyCfg.label}`;
+      const tools=[];if(devMode)tools.push('Developer');if(magnetTicks>0)tools.push(`Magnet ${(magnetTicks/60).toFixed(1)}s`);if(shieldTicks>0)tools.push(`Shield ${(shieldTicks/60).toFixed(1)}s`);
+      toolText.textContent=`Items ${tools.join(' · ')||'None'}`;shieldText.textContent=`Shield ${(shieldTicks/60).toFixed(1)}s`;
+      const required=(difficultyKey==='hard'||bossNumber>0)?4:3;
+      bossText.textContent=bossEncounter?`${bossEncounter.name} · ${GROWTH[bossEncounter.required].name} required · You: ${growthStage().name}`:`Boss in ${Math.max(0,Math.ceil(nextBossAt-runMeters))}m · Need ${GROWTH[required].name}`;
       updateRunPanels();
     }
 
     function jump() {
-      if (gameState === 'menu' || paused) return;
+      if (gameState === 'menu' || paused || bossEncounter || (gameOver && failureTick < FAILURE_TICKS)) return;
 
       if (gameOver || victory) {
         if (gameOver) beginRunFromMenu();
@@ -736,11 +804,11 @@
           runStarted = true;
           if (!devMode) { progress.runs += 1; saveProgress(); }
         }
-        hint.textContent = `${playerName}, collect 5 food items to unlock a random look!`;
+        hint.textContent = `${playerName}, eat food to grow stronger before the Boss arrives!`;
       }
 
       if (player.jumpsUsed < player.maxJumps) {
-        player.vy = JUMP_VELOCITY;
+        player.vy = JUMP_VELOCITY * growthStage().jump * (activeBonus.jump || 1);
         player.onGround = false;
         player.jumpsUsed += 1;
       }
@@ -795,209 +863,43 @@
     }
 
     function evolveSkin() {
-      const remaining = CAT_SKINS.map((_, i) => i).filter((i) => !unlockedSkins.has(i));
-      if (remaining.length === 0) {
-        triggerVictory();
-        return;
-      }
-
-      const next = remaining[Math.floor(Math.random() * remaining.length)];
-      currentSkin = next;
-      unlockedSkins.add(next);
-      if (!devMode && !progress.released.includes(next)) {
-        progress.released.push(next);
-        saveProgress();
-      }
-
-      if (unlockedSkins.size >= CAT_SKINS.length) {
-        triggerVictory();
-      } else {
-        hint.textContent = `New look: ${CAT_SKINS[currentSkin].name}! Collect 5 more food items to evolve.`;
-      }
+      // Food changes strength, never the equipped cosmetic skin.
+      updateGrowth();
     }
 
-    function triggerVictory() {
-      if (victory) return;
-      recordRun(true);
-      victory = true;
-      running = false;
-      gameOver = false;
-      foods.length = 0;
-      obstacles.length = 0;
-      toolItems.length = 0;
-      winTick = 0;
-      victoryRestartReady = false;
-      victoryRestartBtn.classList.add('hidden');
-      best = Math.max(best, Math.floor(score));
-      safeWrite('spacecat_best', String(best));
-      hint.textContent = `${playerName}, mission complete! Enjoy the journey home...`;
-      updateHUD();
-    }
 
-    function returnToMenuFromVictory() {
-      if (!victory || !victoryRestartReady) return;
-      backToMenu();
-    }
 
-    function damageOrConsumeShield(hitIndex) {
-      if (shieldTicks > 0) {
-        obstacles.splice(hitIndex, 1);
-        hint.textContent = `Invincible! Shield: ${(shieldTicks / 60).toFixed(1)}s remaining.`;
-        return;
-      }
 
-      recordRun(false);
-      gameOver = true;
-      running = false;
-      best = Math.max(best, Math.floor(score));
-      safeWrite('spacecat_best', String(best));
-      hint.textContent = `${playerName} hit a meteor. Play again with the same settings, or return home.`;
-    }
-
-    function update() {
-      if (paused) return;
-      for (const s of stars) {
-        const base = victory ? 1.5 : 1;
-        s.x -= (s.s + speed * 0.07) * base;
-        if (s.x < -2) {
-          s.x = canvas.width + Math.random() * 100;
-          s.y = Math.random() * (GROUND_Y - 40);
-        }
-      }
-
-      if (gameState === 'menu') {
-        updateHUD();
-        return;
-      }
-
-      if (victory) {
-        winTick += 1;
-        if (!victoryRestartReady && winTick >= VICTORY_MIN_TICKS) {
-          victoryRestartReady = true;
-          victoryRestartBtn.classList.remove('hidden');
-          hint.textContent = 'Journey complete! Click "Play Again" to return to the lobby.';
-        }
-        updateHUD();
-        return;
-      }
-
-      if (!running || gameOver) return;
-
-      if (magnetTicks > 0) magnetTicks -= 1;
-      if (shieldTicks > 0) shieldTicks -= 1;
-
-      player.vy += GRAVITY;
-      player.y += player.vy;
-
-      if (player.y >= GROUND_Y - player.h) {
-        player.y = GROUND_Y - player.h;
-        player.vy = 0;
-        player.onGround = true;
-        player.jumpsUsed = 0;
-      }
-
-      spawnTick += 1;
-      foodSpawnTick += 1;
-      itemSpawnTick += 1;
-
-      const obstacleGap = Math.max(difficultyCfg.obstacleGapMin, difficultyCfg.obstacleBaseGap - speed * 7);
-      if (spawnTick > obstacleGap + Math.random() * 40) {
-        spawnObstacle();
-        spawnTick = 0;
-      }
-
-      const foodGap = Math.max(90, difficultyCfg.foodBaseGap - speed * 3);
-      if (foodSpawnTick > foodGap + Math.random() * difficultyCfg.foodGapRand) {
-        spawnFood();
-        foodSpawnTick = 0;
-      }
-
-      if (itemMode) {
-        const toolGap = Math.max(170, 360 - speed * 8);
-        if (itemSpawnTick > toolGap + Math.random() * 120) {
-          spawnToolItem();
-          itemSpawnTick = 0;
-        }
-      }
-
-      speed = Math.min(difficultyCfg.maxSpeed || Infinity, speed + difficultyCfg.speedUp);
-      runMeters += speed / 10;
-      if (!devMode) {
-        progress.totalMeters += speed / 10;
-        if (++saveTicks >= 60) { saveTicks = 0; saveProgress(); }
-      }
-      score += speed * 0.11 * difficultyCfg.scoreMul * (activeBonus.score || 1);
-
-      for (let i = obstacles.length - 1; i >= 0; i--) {
-        const o = obstacles[i];
-        o.x -= speed;
-        o.rot += o.spin;
-        if (o.x + o.w < -20) obstacles.splice(i, 1);
-      }
-
-      for (let i = foods.length - 1; i >= 0; i--) {
-        const f = foods[i];
-        f.x -= speed * 0.92;
-        f.wobble += 0.08;
-        f.y += Math.sin(f.wobble) * 0.35;
-
-        if (magnetTicks > 0) {
-          const px = player.x + player.w / 2;
-          const py = player.y + player.h / 2;
-          const fx = f.x + f.w / 2;
-          const fy = f.y + f.h / 2;
-          const dx = px - fx;
-          const dy = py - fy;
-          const dist = Math.hypot(dx, dy);
-          const magnetRange = 150 + (activeBonus.magnetRange || 0);
-
-          if (dist < magnetRange && dist > 0.01) {
-            const pull = (magnetRange - dist) / magnetRange;
-            f.x += (dx / dist) * (1.4 + pull * 3.2);
-            f.y += (dy / dist) * (1.2 + pull * 2.8);
-          }
-        }
-
-        if (f.x + f.w < -20) {
-          foods.splice(i, 1);
-          continue;
-        }
-
-        if (collide(player, f, 9)) {
-          foods.splice(i, 1);
-          collectFood();
-          if (victory) { updateHUD(); return; }
-        }
-      }
-
-      for (let i = toolItems.length - 1; i >= 0; i--) {
-        const t = toolItems[i];
-        t.x -= speed * 0.95;
-        t.spin += 0.08;
-        if (t.x + t.w < -20) {
-          toolItems.splice(i, 1);
-          continue;
-        }
-
-        if (collide(player, t, 8)) {
-          if (t.type === 'magnet') {
-            magnetTicks = Math.max(magnetTicks, MAGNET_DURATION_TICKS);
-            hint.textContent = 'Magnet collected: attracts food for 5 seconds!';
-          } else {
-            shieldTicks = Math.max(shieldTicks, SHIELD_DURATION_TICKS + (activeBonus.shieldTicks || 0));
-            hint.textContent = 'Shield collected: invincible for 5 seconds!';
-          }
-          toolItems.splice(i, 1);
-        }
-      }
-
-      for (let i = obstacles.length - 1; i >= 0; i--) {
-        if (collide(player, obstacles[i])) {
-          damageOrConsumeShield(i);
-          break;
-        }
-      }
-
+    function update(){
+      if(paused)return;
+      if(gameOver){failureTick=Math.min(FAILURE_TICKS,failureTick+1);updateHUD();return;}
+      for(const s of stars){s.x-=(s.s+speed*.07);if(s.x< -2){s.x=canvas.width+Math.random()*100;s.y=Math.random()*(GROUND_Y-40);}}
+      if(gameState==='menu'){updateHUD();return;}
+      if(!running)return;
+      if(bossEncounter){updateBoss();updateHUD();return;}
+      if(magnetTicks>0)magnetTicks--;if(shieldTicks>0)shieldTicks--;
+      player.vy+=GRAVITY;player.y+=player.vy;
+      if(player.y>=GROUND_Y-player.h){player.y=GROUND_Y-player.h;player.vy=0;player.onGround=true;player.jumpsUsed=0;}
+      speed=Math.min(difficultyCfg.maxSpeed||12,speed+difficultyCfg.speedUp);
+      const pace=speed*growthStage().speed;
+      runMeters+=pace/10;
+      if(!devMode){const r=modeRecord();progress.totalMeters+=pace/10;r.meters+=pace/10;r.bestMeters=Math.max(r.bestMeters,runMeters);if(growthLevel>=3)r.strongBestMeters=Math.max(r.strongBestMeters,runMeters);if(++saveTicks>=60){saveTicks=0;saveProgress();}}
+      score+=pace*.11*difficultyCfg.scoreMul*(activeBonus.score||1);
+      if(runMeters>=nextBossAt){startBoss();updateHUD();return;}
+      spawnTick++;foodSpawnTick++;itemSpawnTick++;
+      const obstacleGap=Math.max(difficultyCfg.obstacleGapMin,difficultyCfg.obstacleBaseGap-pace*7);
+      if(spawnTick>obstacleGap+Math.random()*40){spawnObstacle();spawnTick=0;}
+      const foodGap=difficultyKey==='easy'?65:difficultyKey==='medium'?50:30;
+      if(foodSpawnTick>foodGap+Math.random()*15){spawnFood();foodSpawnTick=0;}
+      if(itemMode&&itemSpawnTick>180+Math.random()*60){spawnToolItem();itemSpawnTick=0;}
+      for(let i=obstacles.length-1;i>=0;i--){const o=obstacles[i];o.x-=pace;o.rot+=o.spin;if(o.x+o.w< -20)obstacles.splice(i,1);}
+      for(let i=foods.length-1;i>=0;i--){const f=foods[i];f.x-=pace*.92;f.wobble+=.08;f.y+=Math.sin(f.wobble)*.35;
+        if(magnetTicks>0){const dx=player.x+player.w/2-f.x-f.w/2,dy=player.y+player.h/2-f.y-f.h/2,dist=Math.hypot(dx,dy),range=150+liveUpgrades.magnetRange*25+(activeBonus.magnetRange||0);if(dist<range&&dist>.01){const pull=(range-dist)/range;f.x+=dx/dist*(1.4+pull*3.2);f.y+=dy/dist*(1.2+pull*2.8);}}
+        if(f.x+f.w< -20){foods.splice(i,1);continue;}if(collide(player,f,9)){foods.splice(i,1);collectFood();}}
+      for(let i=toolItems.length-1;i>=0;i--){const t=toolItems[i];t.x-=pace*.95;t.spin+=.08;if(t.x+t.w< -20){toolItems.splice(i,1);continue;}if(collide(player,t,8)){collectTool(t.type);toolItems.splice(i,1);}}
+      for(let i=obstacles.length-1;i>=0;i--){const o=obstacles[i],radius=liveUpgrades.shieldArea*15;
+        const aura=shieldTicks>0&&radius>0&&Math.hypot(o.x+o.w/2-player.x-player.w/2,o.y+o.h/2-player.y-player.h/2)<radius+35;
+        if(aura){obstacles.splice(i,1);continue;}if(collide(player,o)){if(shieldTicks>0)obstacles.splice(i,1);else{failRun('meteor');break;}}}
       updateHUD();
     }
 
@@ -1100,10 +1002,18 @@
       player.blinkTimer += 1;
 
       ctx.save();
-      ctx.translate(x, y);
+      const size = growthStage().scale;
+      ctx.translate(x + player.w * (1 - size) / 2, y + player.h * (1 - size));
+      ctx.scale(size, size);
 
+      if (currentSkin === 7 || currentSkin === 10) {
+        ctx.fillStyle = skin.ear; ctx.beginPath(); ctx.moveTo(6, 18); ctx.lineTo(-10, 8); ctx.lineTo(4, 34); ctx.moveTo(42, 18); ctx.lineTo(60, 8); ctx.lineTo(46, 34); ctx.fill();
+        ctx.strokeStyle = '#ffd166'; ctx.lineWidth = 2; ctx.beginPath(); ctx.ellipse(30, -12, 15, 4, 0, 0, Math.PI * 2); ctx.stroke();
+      }
       ctx.fillStyle = skin.body;
       ctx.fillRect(10, 14, 30, 24);
+      if (growthLevel >= 3) { ctx.fillRect(6, 20, 8, 16); ctx.fillRect(36, 20, 8, 16); }
+      if (currentSkin >= 5) { ctx.fillStyle = '#fff0b8'; ctx.fillRect(22, 1, 4, 5); ctx.fillRect(31, -2, 4, 8); ctx.fillRect(40, 1, 4, 5); }
 
       ctx.fillStyle = skin.head;
       ctx.fillRect(16, 4, 26, 18);
@@ -1136,13 +1046,11 @@
       ctx.fillRect(6, 20, 8, 4);
 
       if (!player.onGround) {
-        ctx.fillStyle = '#6de7ffcc';
-        ctx.fillRect(20, 40, 2, 10);
-        ctx.fillRect(34, 40, 2, 10);
+        // No jump exhaust bars: the cat's feet remain clear.
       }
 
       if (shieldTicks > 0 && gameState === 'playing') {
-        const pulse = 20 + Math.sin(performance.now() * 0.015) * 3;
+        const pulse = 20 + progress.upgrades.shieldArea * 15 + Math.sin(performance.now() * 0.015) * 3;
         ctx.strokeStyle = '#79e7a688';
         ctx.lineWidth = 2;
         ctx.beginPath();
@@ -1169,99 +1077,24 @@
       ctx.restore();
     }
 
-    function drawGameOver() {
-      if (!gameOver) return;
-      ctx.fillStyle = '#01070fcc';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = '#ffedf4';
-      ctx.font = 'bold 42px Trebuchet MS';
-      ctx.textAlign = 'center';
-      ctx.fillText('GAME OVER', canvas.width / 2, 136);
-      ctx.fillStyle = '#ffd166';
-      ctx.font = '20px Trebuchet MS';
-      ctx.fillText(`Final Score ${Math.floor(score)}`, canvas.width / 2, 178);
-      ctx.font = '16px Trebuchet MS';
-      ctx.fillStyle = '#cde8ff';
-      ctx.fillText('Choose Play again or Back to home', canvas.width / 2, 214);
-      ctx.textAlign = 'left';
-    }
-
-    function drawVictoryScene() {
-      if (!victory) return;
-
-      const t = winTick;
-      const rocketX = 170 + Math.min(420, t * 1.8);
-      const rocketY = 210 - Math.min(130, t * 0.62);
-
-      ctx.fillStyle = '#02102acc';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      const earthX = canvas.width - 110;
-      const earthY = 72;
-      ctx.fillStyle = '#4fa8ff';
-      ctx.beginPath();
-      ctx.arc(earthX, earthY, 46, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.fillStyle = '#6ed79b';
-      ctx.beginPath();
-      ctx.ellipse(earthX - 14, earthY - 4, 18, 10, 0.2, 0, Math.PI * 2);
-      ctx.ellipse(earthX + 13, earthY + 12, 14, 8, -0.3, 0, Math.PI * 2);
-      ctx.fill();
-
-      ctx.save();
-      ctx.translate(rocketX, rocketY);
-
-      ctx.fillStyle = '#d8e7ff';
-      ctx.beginPath();
-      ctx.moveTo(0, -34);
-      ctx.lineTo(18, -4);
-      ctx.lineTo(18, 30);
-      ctx.lineTo(-18, 30);
-      ctx.lineTo(-18, -4);
-      ctx.closePath();
-      ctx.fill();
-
-      ctx.fillStyle = '#ff5d8f';
-      ctx.beginPath();
-      ctx.moveTo(0, -46);
-      ctx.lineTo(10, -29);
-      ctx.lineTo(-10, -29);
-      ctx.closePath();
-      ctx.fill();
-
-      ctx.fillStyle = '#7bb4ff';
-      ctx.beginPath();
-      ctx.arc(0, -8, 8, 0, Math.PI * 2);
-      ctx.fill();
-
-      ctx.fillStyle = '#ff7f5f';
-      ctx.beginPath();
-      ctx.moveTo(-8, 30);
-      ctx.lineTo(0, 52 + Math.sin(t * 0.24) * 5);
-      ctx.lineTo(8, 30);
-      ctx.closePath();
-      ctx.fill();
-
-      drawPlayer(-26, -6);
-      ctx.restore();
-
-      ctx.fillStyle = '#fff1c9';
-      ctx.font = 'bold 34px Trebuchet MS';
-      ctx.textAlign = 'center';
-      ctx.fillText('MISSION CLEAR', canvas.width / 2, 132);
-
-      ctx.font = '19px Trebuchet MS';
-      ctx.fillStyle = '#cfe6ff';
-      ctx.fillText(`${playerName} unlocked all 5 looks! Heading back to Earth!`, canvas.width / 2, 168);
-      ctx.font = '15px Trebuchet MS';
-      if (victoryRestartReady) {
-        ctx.fillText('Journey complete! Click "Play Again" below.', canvas.width / 2, 200);
-      } else {
-        const left = Math.max(0, Math.ceil((VICTORY_MIN_TICKS - winTick) / 60));
-        ctx.fillText(`Heading home... ${left}s`, canvas.width / 2, 200);
+    function drawGameOver(){
+      if(!gameOver)return;
+      const t=failureTick/FAILURE_TICKS;
+      ctx.save();ctx.fillStyle=`rgba(2,8,25,${Math.min(.7,t*.8)})`;ctx.fillRect(0,0,canvas.width,canvas.height);
+      if(failureStyle==='tumble'){
+        ctx.translate(player.x+50+t*100,GROUND_Y-26);ctx.rotate(t*Math.PI*3);ctx.globalAlpha=1-t*.7;drawPlayer(-26,-25);
+        ctx.fillStyle='#ffd166';for(let i=0;i<6;i++)ctx.fillRect(Math.cos(i+t*8)*48,Math.sin(i+t*8)*40,4,4);
+      }else if(failureStyle==='orbit'){
+        ctx.globalAlpha=1-t*.8;ctx.translate(player.x+60+t*150,player.y-t*180);ctx.rotate(t*1.5);drawPlayer(-26,-25);
+        ctx.strokeStyle='#b7a5ff';ctx.beginPath();ctx.arc(0,0,40+t*40,0,Math.PI*2);ctx.stroke();
+      }else{
+        ctx.fillStyle='#ff9fa5';for(let i=0;i<18;i++){const x=(i*73+t*300)%canvas.width,y=(i*41+t*250)%canvas.height;ctx.beginPath();ctx.arc(x,y,4+i%5,0,Math.PI*2);ctx.fill();}
+        ctx.globalAlpha=Math.max(0,1-t);drawPlayer(player.x,player.y-60*t);
       }
-      ctx.textAlign = 'left';
+      ctx.restore();ctx.fillStyle='#fff0c0';ctx.textAlign='center';ctx.font='bold 24px Trebuchet MS';
+      ctx.fillText(failureStyle==='tumble'?'A ROUGH LANDING':failureStyle==='orbit'?'LOST IN ORBIT':'METEOR STORM',canvas.width/2,80);ctx.textAlign='left';
     }
+
 
     function render() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -1270,9 +1103,9 @@
       for (const o of obstacles) drawMeteor(o);
       for (const f of foods) drawFood(f);
       for (const t of toolItems) drawToolItem(t);
-      drawPlayer();
+      if (!gameOver) drawPlayer();
       drawGameOver();
-      drawVictoryScene();
+      drawBoss();
     }
 
     // Preserve the original 60 Hz gameplay pace on any display refresh rate.
@@ -1305,10 +1138,10 @@
     devModeToggle.addEventListener('change', updateToolControls);
     devToolsToggleBtn.addEventListener('click', toggleDevToolsPanel);
     startBtn.addEventListener('click', beginRunFromMenu);
-    victoryRestartBtn.addEventListener('click', returnToMenuFromVictory);
+    victoryRestartBtn.addEventListener('click', backToMenu);
 
     window.addEventListener('keydown', (e) => {
-      if (collectionDialog.open || challengeDialog.open) return;
+      if (collectionDialog.open || challengeDialog.open || workshopDialog.open) return;
       if (e.code === 'Escape' && gameState === 'playing') {
         e.preventDefault();
         if (!e.repeat) setPaused(!paused);
@@ -1339,8 +1172,14 @@
       const button = e.target.closest('[data-equip]');
       if (!button) return;
       const index = Number(button.dataset.equip);
-      if (!progress.released.includes(index)) return;
+      if (!progress.released.includes(index) || !CAT_SKINS[index]) return;
       progress.equipped = index; saveProgress(); updateHome(); renderCollection();
+    });
+    workshopBtn.addEventListener('click', () => { renderWorkshop(); workshopDialog.showModal(); });
+    closeWorkshopBtn.addEventListener('click', () => workshopDialog.close());
+    upgradeGrid.addEventListener('click', (e) => {
+      const button = e.target.closest('[data-upgrade]');
+      if (button) { buyUpgrade(button.dataset.upgrade); renderWorkshop(); updateHome(); }
     });
     window.addEventListener('pagehide', saveProgress);
 

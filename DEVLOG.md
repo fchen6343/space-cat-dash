@@ -103,3 +103,44 @@ The ten new skin designs, their actual gameplay modifiers, and challenge levels 
 ## Continuing this log
 
 For each future change, record the problem or feedback, the design decision, the implementation, what was actually checked, and any remaining limitations. Keep unreleased ideas separate from completed features.
+
+## 2026-10-12 — endless runs, growth, Boss skins and upgrades
+
+### Requested direction
+
+I requested six changes: remove the blue jump bars; add mode- and difficulty-specific skin tasks; let earned food upgrade power-ups; replace food-based random appearance changes with growth from hungry to strong; make normal play endless with strength-gated Boss encounters; and show different failure animations at different distances. I confirmed that endless play and Bosses should launch in this update, while Challenge Mode remains Coming Soon.
+
+### What changed
+
+- Removed the two blue exhaust rectangles beneath the cat during a jump.
+- Kept equipped skin and run strength separate. Food now changes growth level, body size, running pace and jump height without replacing the equipped skin.
+- Growth stages are Hungry at 0 food, Fed at 5, Fit at 12, Strong at 20 and Mighty at 35. Growth resets each run; the cosmetic collection and upgrades persist.
+- Each normal-play food item adds one spendable food credit. Developer Mode adds no credits or achievement progress. Previously saved normal-play food is credited once when migrating the old save format; future reloads use the saved wallet balance.
+- Added four permanent upgrade tracks: magnet range, magnet duration, shield duration and shield reach. Each has five levels, costing 10/20/30/40/50 food. Range adds 25 per level, magnet and shield timers add one second per level, and shield reach adds 15 extra protection radius per level. Skin bonuses stack with upgrades. Purchases take effect on the next run.
+- Normal play no longer ends after collecting 20 food. It continues through repeated Boss encounters. Boss intervals are 1,200m on Easy, 1,500m on Medium and 1,800m on Hard.
+- The first Easy/Medium Boss requires Strong. The first Hard Boss and subsequent Bosses require Mighty. The encounter compares the prepared growth level automatically: enough strength defeats the Boss, awards its skin in normal play, and resumes the run; insufficient strength ends the run.
+- Increased food opportunities on Medium and Hard so their first Boss requirements are reachable with good collection. A perfect-collection simulation preserves food travel and encounter timing to check attainability; it is not a claim that a typical player will succeed.
+- Added six released Boss skins tied to Classic or Item Mode and a specific difficulty. Hard-exclusive legendary looks have crowns, wings and stronger modifiers. Skin tasks and progress are visible in the cabinet.
+- Updated the original skin requirements: Marmalade needs 10 Item Mode/Easy power-ups; Cloud needs a 1,000m Classic/Medium run; Mint needs 25 Item Mode/Medium power-ups; Starry Night needs 1,200m in Classic/Hard while Strong or Mighty. Existing collections are grandfathered rather than removed.
+- Updated the ten unreleased slots to route-specific tasks, including power-up collection, food collection, distance and Boss defeats. Earlier reserved unlocks remain preserved. These ten designs still show question marks and their planned bonuses remain inactive.
+- Added three 2.5-second failure animations: below 500m, a tumbling rough landing; 500–1,499m, drifting out of orbit; from 1,500m, a meteor storm. Replay controls appear after the animation.
+- Kept fixed simulation timing, reliable double jump, pause/Esc, same-settings replay, local persistence, storage fallback and responsive layouts.
+
+### Released Boss rewards
+
+| Mode | Difficulty | Boss | Skin | Bonus |
+|---|---|---|---|---|
+| Classic | Easy | Stone Warden | Pebble Pal | Food score +8% |
+| Classic | Medium | Solar Warden | Solar Knight | Shield duration +1s |
+| Classic | Hard | Void Warden | Void Sovereign | Running score +15%, jump height +6% |
+| Item Mode | Easy | Lunar Warden | Lunar Mechanic | Magnet range +25 |
+| Item Mode | Medium | Aurora Warden | Aurora Hunter | Magnet duration +1s, range +30 |
+| Item Mode | Hard | Nebula Warden | Nebula Emperor | Food score +15%, both item durations +1s |
+
+Food-score bonuses change score, not the one-credit-per-food wallet rate. All balance values are initial choices and remain candidates for further playtesting.
+
+### Checks performed
+
+Dependency-free simulations checked growth without skin replacement; real speed/jump/size modifiers; mode and difficulty gating; Developer Mode exclusions; legacy save migration without duplicate credits; purchases, insufficient funds, level caps and persistence; actual extended magnet attraction and shield protection; all six Boss reward routes; weak-Boss failure and strong-Boss continuation; distance-triggered encounters; all three failure paths; replay; pause; multi-refresh-rate timing and repeated-key double-jump protection.
+
+Browser checks covered a real workshop purchase followed by reload, the phone workshop layout, and controlled local QA scenes rendering the airborne cat, Mighty form, Boss result and all three failure animations. The QA scene controls are not shipped in the public game. These checks do not establish a measured difficulty balance or exhaustive compatibility with every phone.
