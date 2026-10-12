@@ -214,65 +214,136 @@
         inset: 88px 0 0;
       }
     }
+
+    .topbar { display:flex; align-items:center; gap:12px; padding:12px 16px; border-bottom:1px solid #6de7ff33; }
+    .brand { font-weight:700; color:var(--accent); letter-spacing:.4px; }
+    .icon-button { min-width:44px; min-height:44px; border:1px solid #6de7ff66; border-radius:12px; color:var(--text); background:#111f48; cursor:pointer; font-size:20px; }
+    button:disabled { cursor:default; opacity:.55; }
+    button:focus-visible, input:focus-visible, select:focus-visible { outline:3px solid var(--accent); outline-offset:3px; }
+    .topbar-note { margin-left:auto; font-size:12px; color:#9bc4ff; }
+    .start-screen { position:static; padding:24px; background:radial-gradient(ellipse at top,#263f7455,transparent); }
+    .start-panel { width:min(650px,100%); gap:14px; }
+    .start-title { font-size:30px; margin:0; }
+    .goal-copy { margin:0; text-align:center; color:#c9dbff; line-height:1.5; font-size:14px; }
+    .home-actions, .panel-actions { display:flex; gap:10px; flex-wrap:wrap; }
+    .home-actions button, .panel-actions button { flex:1; min-height:44px; }
+    .btn-secondary { background:#152653; border:1px solid #6de7ff66; color:var(--text); border-radius:10px; padding:11px 14px; cursor:pointer; font:inherit; font-size:14px; }
+    .home-stats { display:flex; justify-content:center; flex-wrap:wrap; gap:8px 20px; color:#b8d5ff; font-size:13px; }
+    .storage-note { color:#ffd166; font-size:12px; text-align:center; margin:0; }
+    .hud { grid-template-columns:repeat(4,minmax(0,1fr)); }
+    .hud > div { white-space:normal; line-height:1.35; overflow:visible; }
+    .goal-bar { display:flex; align-items:center; gap:12px; padding:10px 16px; background:#0a122dcc; font-size:12px; color:#c9dbff; }
+    .goal-bar progress { width:100%; height:9px; accent-color:#79e7a6; }
+    .goal-bar span { white-space:nowrap; }
+    .canvas-shell { position:relative; }
+    .hint { position:static; min-height:40px; padding:12px; background:#0a122d; pointer-events:auto; }
+    .overlay { position:absolute; inset:0; z-index:7; display:grid; place-items:center; padding:16px; background:#020816db; }
+    .overlay-card { width:min(440px,100%); padding:24px; border:1px solid #6de7ff66; background:#101c40; border-radius:16px; text-align:center; }
+    .overlay-card h2 { margin:0 0 12px; color:#fff0c0; }
+    .overlay-card p { color:#c9dbff; line-height:1.5; }
+    .btn-restart { position:static; transform:none; box-shadow:none; }
+    .mobile-jump { display:none; width:100%; min-height:56px; border:0; border-top:1px solid #6de7ff55; background:#1a3469; color:#e9f7ff; font:inherit; font-weight:bold; touch-action:manipulation; }
+    dialog { color:var(--text); background:#0f193a; border:1px solid #6de7ff66; border-radius:20px; width:min(960px,calc(100% - 24px)); max-height:85dvh; overflow:auto; padding:24px; }
+    dialog::backdrop { background:#020617d9; }
+    .dialog-header { display:flex; justify-content:space-between; gap:16px; align-items:center; position:sticky; top:0; background:#0f193a; z-index:2; padding-bottom:10px; }
+    .dialog-header h2 { margin:0; color:#fff0c0; font-size:24px; }
+    .dialog-intro { color:#aecbff; line-height:1.6; font-size:14px; }
+    .collection-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; }
+    .skin-card { min-width:0; border:1px solid #6de7ff33; border-radius:14px; padding:16px; background:linear-gradient(150deg,#17254b,#0c1530); }
+    .skin-card.earned { border-color:#79e7a680; }
+    .skin-card h3 { margin:12px 0 8px; font-size:16px; }
+    .skin-card p { font-size:12px; line-height:1.5; color:#b8d5ff; margin:6px 0; }
+    .skin-card progress { width:100%; height:7px; accent-color:#79e7a6; }
+    .skin-preview { height:64px; display:grid; place-items:center; font-size:40px; color:#8fa4d2; background:#081027; border-radius:10px; }
+    .mini-cat { width:34px; height:32px; position:relative; background:var(--cat); border-radius:4px; box-shadow:0 7px 0 -2px var(--cat); }
+    .mini-cat::before { content:''; position:absolute; top:-8px; left:0; border-left:7px solid var(--cat); border-right:7px solid var(--cat); border-top:8px solid transparent; width:20px; }
+    .mini-cat::after { content:'··'; color:#10203e; font-weight:bold; letter-spacing:7px; position:absolute; left:7px; top:-6px; font-size:22px; }
+    .skin-badge { display:inline-block; color:#ffd166; font-size:11px; border-radius:20px; padding:4px 8px; background:#ffd16615; }
+    .skin-card .btn-secondary { width:100%; margin-top:8px; min-height:40px; }
+    .future-heading { margin:24px 0 12px; font-size:17px; }
+    .coming-hero { font-size:60px; color:#6de7ff; text-align:center; padding:20px; }
+    .hidden { display:none !important; }
+    @media (max-width:600px) {
+      body { padding:10px; min-height:100dvh; align-content:start; }
+      .topbar { padding:10px; gap:8px; }
+      .topbar-note { font-size:10px; max-width:100px; text-align:right; }
+      .start-screen { padding:14px 10px; }
+      .start-panel { padding:16px; gap:12px; }
+      .start-title { font-size:26px; }
+      input[type=text], select { font-size:16px; min-height:44px; }
+      .hud { grid-template-columns:repeat(3,minmax(0,1fr)); padding:10px; gap:8px; font-size:11px; }
+      .hud #toolText { grid-column:1 / -1; }
+      .goal-bar { padding:8px 10px; }
+      .mobile-jump { display:block; }
+      #game { min-height:250px; }
+      .btn-start { min-height:44px; }
+      .overlay-card { padding:16px; }
+      .overlay-card h2 { font-size:20px; }
+      .overlay-card p { margin:8px 0; font-size:13px; }
+      .panel-actions { gap:6px; }
+      dialog { padding:16px; max-height:90dvh; }
+      .collection-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
+      .skin-card { padding:12px; }
+    }
+    @media (max-width:380px) { .collection-grid { grid-template-columns:1fr; } }
   </style>
 </head>
 <body>
   <div class="game-wrap">
-    <div class="hud">
-      <div class="title">Space Cat Dash</div>
-      <div id="nameText">Name Player</div>
-      <div id="difficultyText">Difficulty Medium</div>
-      <div id="scoreText">Score 00000</div>
-      <div id="foodText">Food 0/5</div>
-      <div id="skinText">Looks 1/5</div>
-      <div id="toolText">Items None</div>
-      <div id="shieldText">Shield 0.0s</div>
-      <div id="bestText">Best 00000</div>
-    </div>
-
-    <canvas id="game" width="1080" height="400" aria-label="Space Cat Dash"></canvas>
-    <div class="hint" id="hint">Press <strong>Space / ↑</strong> or <strong>tap</strong> to jump (double jump available). Collect food and dodge meteors.</div>
-
-    <div class="start-screen" id="startScreen">
+    <header class="topbar">
+      <button id="pauseBtn" class="icon-button" aria-label="Pause game" title="Pause / Esc" disabled>Ⅱ</button>
+      <span class="brand">Space Cat Dash</span>
+      <span class="topbar-note">Double jump · Offline play</span>
+    </header>
+    <main class="start-screen" id="startScreen">
       <div class="start-panel">
-        <div class="start-title">Ready for Takeoff</div>
-
-        <div>
-          <label class="field-label" for="nicknameInput">Name</label>
-          <input id="nicknameInput" type="text" maxlength="12" placeholder="Enter your nickname" value="Player" />
-        </div>
-
-        <div>
-          <label class="field-label" for="difficultySelect">Difficulty</label>
-          <select id="difficultySelect">
-            <option value="easy">Easy</option>
-            <option value="medium" selected>Medium</option>
-            <option value="hard">Hard</option>
-          </select>
-        </div>
-
+        <h1 class="start-title">Ready for Takeoff</h1>
+        <p class="goal-copy">Collect <strong>20 food items</strong> to discover all <strong>5 cat looks</strong> and fly home.<br>Press Space / ↑ or tap twice to double jump.</p>
+        <div class="home-stats" id="homeStats"></div>
+        <div><label class="field-label" for="nicknameInput">Name</label><input id="nicknameInput" type="text" maxlength="12" placeholder="Enter your nickname" value="Player" /></div>
+        <div><label class="field-label" for="difficultySelect">Difficulty</label><select id="difficultySelect"><option value="easy">Easy</option><option value="medium" selected>Medium</option><option value="hard">Hard</option></select></div>
         <div class="tool-box">
-          <label class="field-label" style="margin:0;">Power-ups</label>
-          <div class="tool-row">
-            <label><input id="itemModeToggle" type="checkbox" /> Item Mode (random power-ups)</label>
-          </div>
-          <div class="tool-row" id="toolOptionsRow">
-            <label><input id="devModeToggle" type="checkbox" /> Developer Mode (choose starting power-ups)</label>
-            <button id="devToolsToggleBtn" class="btn-mini hidden" type="button">Show Options</button>
-          </div>
-          <div class="tool-row hidden" id="devToolsPanel">
-            <label><input id="magnetToggle" type="checkbox" disabled /> Starting Magnet (attracts food for 5s)</label>
-            <label><input id="shieldToggle" type="checkbox" disabled /> Starting Shield (invincible for 5s)</label>
-          </div>
+          <span class="field-label">Power-ups</span>
+          <div class="tool-row"><label><input id="itemModeToggle" type="checkbox" /> Item Mode (random power-ups)</label></div>
+          <div class="tool-row" id="toolOptionsRow"><label><input id="devModeToggle" type="checkbox" /> Developer Mode (choose starting power-ups)</label><button id="devToolsToggleBtn" class="btn-mini hidden" type="button">Show Options</button></div>
+          <div class="tool-row hidden" id="devToolsPanel"><label><input id="magnetToggle" type="checkbox" disabled /> Starting Magnet (attracts food for 5s)</label><label><input id="shieldToggle" type="checkbox" disabled /> Starting Shield (invincible for 5s)</label></div>
         </div>
-
         <button class="btn-start" id="startBtn">Start Game</button>
-        <div class="helper">Item Mode spawns power-ups. Developer Mode lets you choose starting power-ups.</div>
+        <div class="home-actions"><button id="collectionBtn" class="btn-secondary">Skin Cabinet · 收藏柜</button><button id="challengeBtn" class="btn-secondary">Challenge Mode · 闯关</button></div>
+        <p class="helper" id="equippedText">Equipped: Snowball</p>
+        <p class="helper">Progress stays in this browser. Developer Mode does not earn collection progress.</p>
+        <p class="storage-note hidden" id="storageNotice">Saving is unavailable in this browser. Progress will last for this session only.</p>
       </div>
-    </div>
-
-    <button class="btn-restart hidden" id="victoryRestartBtn">Play Again</button>
+    </main>
+    <section id="gameArea" class="hidden" aria-label="Current run">
+      <div class="hud">
+        <div id="nameText">Name Player</div><div id="difficultyText">Difficulty Medium</div><div id="scoreText">Score 00000</div><div id="bestText">Best 00000</div>
+        <div id="foodText">Food 0/20</div><div id="skinText">Looks 1/5</div><div id="jumpText">Jumps 2/2</div><div id="distanceText">Distance 0m</div><div id="toolText">Items None</div><div id="shieldText">Shield 0.0s</div>
+      </div>
+      <div class="goal-bar"><span>Journey home</span><progress id="foodProgress" max="20" value="0" aria-label="Food collected toward victory"></progress></div>
+      <div class="canvas-shell">
+        <canvas id="game" width="1080" height="400" aria-label="Space Cat Dash"></canvas>
+        <div id="pausePanel" class="overlay hidden"><div class="overlay-card"><h2>Paused</h2><p>Take a breather. Your run is waiting.</p><div class="panel-actions"><button id="resumeBtn" class="btn-start">Continue</button><button id="pauseRetryBtn" class="btn-secondary">Restart run</button><button id="pauseHomeBtn" class="btn-secondary">Back to home</button></div><p class="helper">Esc to continue</p></div></div>
+        <div id="endPanel" class="overlay hidden"><div class="overlay-card"><h2 id="endTitle">Run complete</h2><p id="endSummary"></p><div class="panel-actions"><button id="retryBtn" class="btn-start">Play again</button><button id="victoryRestartBtn" class="btn-restart hidden">Back to home</button><button id="endHomeBtn" class="btn-secondary">Back to home</button></div></div></div>
+      </div>
+      <div class="hint" id="hint">Press Space / ↑ or tap to jump.</div>
+      <button id="jumpBtn" class="mobile-jump">JUMP · Tap twice for a double jump</button>
+    </section>
   </div>
+  <dialog id="collectionDialog" aria-labelledby="collectionTitle">
+    <div class="dialog-header"><h2 id="collectionTitle">Skin Cabinet · 皮肤收藏柜</h2><button id="closeCollectionBtn" class="icon-button" aria-label="Close skin cabinet">×</button></div>
+    <p class="dialog-intro">Discover the five original looks during normal runs and keep them forever. Equip a collected look for its bonus. Your starting skin's bonus lasts for the whole run.</p>
+    <div id="releasedGrid" class="collection-grid"></div>
+    <h3 class="future-heading">Next arrivals · 10 待推出皮肤</h3>
+    <p class="dialog-intro">Meet each condition to reserve a permanent unlock. Previews stay <strong>?</strong> until release. Planned bonuses become active only after release and equipping.</p>
+    <div id="futureGrid" class="collection-grid"></div>
+    <p class="helper">Unlocked progress is stored locally. Developer Mode is excluded.</p>
+  </dialog>
+  <dialog id="challengeDialog" aria-labelledby="challengeTitle">
+    <div class="dialog-header"><h2 id="challengeTitle">Challenge Mode · 闯关模式</h2><button id="closeChallengeBtn" class="icon-button" aria-label="Close challenge mode">×</button></div>
+    <div class="coming-hero" aria-hidden="true">✦</div><h3 style="text-align:center">Coming Soon · 待推出</h3>
+    <p class="dialog-intro" style="text-align:center">A new journey is on the horizon. Levels are not available yet.<br>You can still play the classic game from the home screen.</p>
+  </dialog>
 
   <script>
     const canvas = document.getElementById('game');
@@ -312,6 +383,7 @@
       easy: {
         label: 'Easy',
         startSpeed: 5.8,
+        maxSpeed: 7.2,
         speedUp: 0.0011,
         obstacleBaseGap: 124,
         obstacleGapMin: 64,
@@ -352,13 +424,133 @@
       { name: 'Starry Night', body: '#2f3b87', head: '#4152a6', ear: '#8295ff', leg: '#5061be', tail: '#293375', mark: '#ffd166' }
     ];
 
+    const byId = (id) => document.getElementById(id);
+    const gameArea = byId('gameArea'), pauseBtn = byId('pauseBtn');
+    const pausePanel = byId('pausePanel'), endPanel = byId('endPanel');
+    const resumeBtn = byId('resumeBtn'), pauseRetryBtn = byId('pauseRetryBtn');
+    const retryBtn = byId('retryBtn'), pauseHomeBtn = byId('pauseHomeBtn'), endHomeBtn = byId('endHomeBtn');
+    const endTitle = byId('endTitle'), endSummary = byId('endSummary');
+    const jumpText = byId('jumpText'), distanceText = byId('distanceText'), foodProgress = byId('foodProgress');
+    const jumpBtn = byId('jumpBtn'), homeStats = byId('homeStats'), equippedText = byId('equippedText');
+    const collectionBtn = byId('collectionBtn'), challengeBtn = byId('challengeBtn');
+    const collectionDialog = byId('collectionDialog'), challengeDialog = byId('challengeDialog');
+    const closeCollectionBtn = byId('closeCollectionBtn'), closeChallengeBtn = byId('closeChallengeBtn');
+    const releasedGrid = byId('releasedGrid'), futureGrid = byId('futureGrid');
+    const storageNotice = byId('storageNotice');
+    let storageAvailable = true;
+
+    function safeRead(key, fallback) {
+      try { return localStorage.getItem(key) || fallback; }
+      catch { storageAvailable = false; return fallback; }
+    }
+    function safeWrite(key, value) {
+      try { localStorage.setItem(key, value); }
+      catch { storageAvailable = false; }
+      storageNotice.classList.toggle('hidden', storageAvailable);
+    }
+    function loadProgress() {
+      let data;
+      try { data = JSON.parse(safeRead('spacecat_collection_v1', '{}')); }
+      catch { data = {}; }
+      if (!data || typeof data !== 'object') data = {};
+      const number = (n) => Number.isFinite(n) ? Math.max(0, n) : 0;
+      const released = [...new Set([0, ...(Array.isArray(data.released) ? data.released.filter(n => Number.isInteger(n) && n >= 0 && n < 5) : [])])];
+      return { wins: Math.floor(number(data.wins)), totalMeters: number(data.totalMeters), totalFood: Math.floor(number(data.totalFood)), runs: Math.floor(number(data.runs)),
+        winsByDifficulty: Object.fromEntries(['easy','medium','hard'].map(k => [k, Math.floor(number(data.winsByDifficulty?.[k]))])),
+        released, upcoming: Array.isArray(data.upcoming) ? data.upcoming.filter(n => Number.isInteger(n) && n >= 1 && n <= 10) : [],
+        equipped: released.includes(data.equipped) ? data.equipped : 0 };
+    }
+    const progress = loadProgress();
+    const RELEASED_BONUSES = [
+      { label:'Classic balance · no modifier' },
+      { label:'Food score +5%', food:1.05 },
+      { label:'Collected shields last +0.5s', shieldTicks:30 },
+      { label:'Magnet attraction range +20px', magnetRange:20 },
+      { label:'Running score +5%', score:1.05 }
+    ];
+    const FUTURE_SKINS = [
+      {id:1, name:'First Flight', field:'wins', target:1, condition:'Win your first run', bonus:'Food score +8%'},
+      {id:2, name:'Homeward Bound', field:'wins', target:3, condition:'Win 3 runs', bonus:'Shield duration +0.5s'},
+      {id:3, name:'Orbit Keeper', field:'wins', target:10, condition:'Win 10 runs', bonus:'Magnet duration +1s'},
+      {id:4, name:'Starlight Captain', field:'wins', target:25, condition:'Win 25 runs', bonus:'Running score +8%'},
+      {id:5, name:'Moon Walker', field:'totalMeters', target:500, condition:'Run 500m in total', bonus:'Magnet attraction range +15%'},
+      {id:6, name:'Comet Chaser', field:'totalMeters', target:2000, condition:'Run 2,000m in total', bonus:'Food score +10%'},
+      {id:7, name:'Galaxy Voyager', field:'totalMeters', target:10000, condition:'Run 10,000m in total', bonus:'Shield duration +1s'},
+      {id:8, name:'Snack Scout', field:'totalFood', target:50, condition:'Collect 50 food items in total', bonus:'Food collection radius +10%'},
+      {id:9, name:'Cosmic Chef', field:'totalFood', target:200, condition:'Collect 200 food items in total', bonus:'Magnet duration +1.5s'},
+      {id:10, name:'Three Star Pilot', field:'difficulties', target:3, condition:'Win on Easy, Medium and Hard', bonus:'Running score +10%'}
+    ];
+    let paused = false, runStarted = false, runRecorded = false, runMeters = 0, saveTicks = 0;
+    let activeBonus = RELEASED_BONUSES[progress.equipped];
+    function milestoneValue(skin) {
+      return skin.field === 'difficulties' ? Object.values(progress.winsByDifficulty).filter(n => n > 0).length : progress[skin.field];
+    }
+    function saveProgress() {
+      for (const skin of FUTURE_SKINS) {
+        if (milestoneValue(skin) >= skin.target && !progress.upcoming.includes(skin.id)) progress.upcoming.push(skin.id);
+      }
+      safeWrite('spacecat_collection_v1', JSON.stringify(progress));
+    }
+    function updateHome() {
+      homeStats.textContent = `${progress.wins} wins · ${Math.floor(progress.totalMeters).toLocaleString()}m travelled · ${progress.released.length}/5 original looks collected`;
+      equippedText.textContent = `Equipped: ${CAT_SKINS[progress.equipped].name} · ${RELEASED_BONUSES[progress.equipped].label}`;
+      storageNotice.classList.toggle('hidden', storageAvailable);
+    }
+    function renderCollection() {
+      saveProgress();
+      releasedGrid.innerHTML = CAT_SKINS.map((skin, index) => {
+        const owned = progress.released.includes(index);
+        return `<article class="skin-card ${owned ? 'earned' : ''}"><div class="skin-preview">${owned ? `<span class="mini-cat" style="--cat:${skin.body}"></span>` : '?'}</div><h3>${skin.name}</h3><span class="skin-badge">${owned ? 'Collected · 已收藏' : 'Locked · 待解锁'}</span><p>${index === 0 ? 'Your original travelling companion.' : 'Discover this look by collecting food in a normal run.'}</p><p>Bonus: ${RELEASED_BONUSES[index].label}</p><button class="btn-secondary" data-equip="${index}" ${!owned || progress.equipped === index ? 'disabled' : ''}>${progress.equipped === index ? 'Equipped' : owned ? 'Equip' : 'Not collected'}</button></article>`;
+      }).join('');
+      futureGrid.innerHTML = FUTURE_SKINS.map(skin => {
+        const earned = progress.upcoming.includes(skin.id), value = Math.min(skin.target, Math.floor(milestoneValue(skin)));
+        return `<article class="skin-card ${earned ? 'earned' : ''}"><div class="skin-preview" aria-label="Unrevealed skin">?</div><h3>Slot ${String(skin.id).padStart(2,'0')} · ${skin.name}</h3><span class="skin-badge">Coming Soon · 待推出</span><p>${skin.condition}</p><progress max="${skin.target}" value="${value}" aria-label="${skin.name} unlock progress"></progress><p>${value.toLocaleString()} / ${skin.target.toLocaleString()}${skin.field === 'totalMeters' ? 'm' : ''} · ${earned ? 'Condition met · 已达成，解锁已保留' : 'Locked · 待解锁'}</p><p>Planned bonus: ${skin.bonus}</p><p>Available after release · 推出后生效</p></article>`;
+      }).join('');
+    }
+    function recordRun(won) {
+      if (!runStarted || runRecorded) return;
+      runRecorded = true;
+      if (!devMode) {
+        if (won) { progress.wins++; progress.winsByDifficulty[difficultyKey]++; }
+        saveProgress();
+      }
+    }
+    function collectFood() {
+      foodCount++;
+      score += 45 * difficultyCfg.scoreMul * (activeBonus.food || 1);
+      if (!devMode) { progress.totalFood++; saveProgress(); }
+      if (foodCount % FOOD_PER_EVOLVE === 0) evolveSkin();
+    }
+    function setPaused(value) {
+      if (gameState !== 'playing' || gameOver || victory) return;
+      paused = value;
+      pausePanel.classList.toggle('hidden', !paused);
+      pauseBtn.textContent = paused ? '▶' : 'Ⅱ';
+      pauseBtn.setAttribute('aria-label', paused ? 'Continue game' : 'Pause game');
+      if (paused) saveProgress();
+      updateHUD();
+    }
+    function updateRunPanels() {
+      const showEnd = gameOver || (victory && victoryRestartReady);
+      endPanel.classList.toggle('hidden', !showEnd);
+      endTitle.textContent = victory ? 'Mission complete!' : 'One more try?';
+      endSummary.textContent = `Score ${Math.floor(score)} · ${Math.floor(runMeters)}m · Food ${Math.min(20,foodCount)}/20${devMode ? ' · Developer run (not saved to collection)' : ''}`;
+      endHomeBtn.classList.toggle('hidden', victory);
+      pauseBtn.disabled = gameState === 'menu' || gameOver || victory;
+      jumpBtn.disabled = paused || gameOver || victory;
+    }
+    function resizeGame() {
+      canvas.width = window.innerWidth <= 600 ? 640 : 1080;
+      if (typeof render === 'function') render();
+    }
+
     let gameState = 'menu';
     let running = false;
     let gameOver = false;
     let victory = false;
 
     let score = 0;
-    let best = Number(localStorage.getItem('spacecat_best') || 0);
+    let best = Math.max(0, Number(safeRead('spacecat_best', '0')) || 0);
     let speed = DIFFICULTY.medium.startSpeed;
     let spawnTick = 0;
     let foodSpawnTick = 0;
@@ -428,6 +620,7 @@
     }
 
     function beginRunFromMenu() {
+      recordRun(false);
       playerName = (nicknameInput.value || '').trim().slice(0, 12) || 'Player';
       difficultyKey = difficultySelect.value;
       difficultyCfg = DIFFICULTY[difficultyKey] || DIFFICULTY.medium;
@@ -441,6 +634,18 @@
       gameOver = false;
       victory = false;
       gameState = 'playing';
+      paused = false;
+      runStarted = false;
+      runRecorded = false;
+      runMeters = 0;
+      saveTicks = 0;
+      activeBonus = RELEASED_BONUSES[progress.equipped];
+      gameArea.classList.remove('hidden');
+      pausePanel.classList.add('hidden');
+      endPanel.classList.add('hidden');
+      pauseBtn.disabled = false;
+      pauseBtn.textContent = 'Ⅱ';
+      pauseBtn.setAttribute('aria-label', 'Pause game');
 
       score = 0;
       speed = difficultyCfg.startSpeed;
@@ -449,9 +654,9 @@
       itemSpawnTick = 0;
       winTick = 0;
       foodCount = 0;
-      currentSkin = 0;
+      currentSkin = progress.equipped;
       unlockedSkins.clear();
-      unlockedSkins.add(0);
+      unlockedSkins.add(currentSkin);
 
       obstacles.length = 0;
       foods.length = 0;
@@ -470,6 +675,14 @@
     }
 
     function backToMenu() {
+      recordRun(false);
+      paused = false;
+      runStarted = false;
+      gameArea.classList.add('hidden');
+      pausePanel.classList.add('hidden');
+      endPanel.classList.add('hidden');
+      pauseBtn.disabled = true;
+      updateHome();
       gameState = 'menu';
       running = false;
       gameOver = false;
@@ -490,7 +703,10 @@
 
     function updateHUD() {
       scoreText.textContent = `Score ${String(Math.floor(score)).padStart(5, '0')}`;
-      foodText.textContent = `Food ${foodCount % FOOD_PER_EVOLVE}/${FOOD_PER_EVOLVE}`;
+      foodText.textContent = `Food ${Math.min(foodCount, 20)}/20`;
+      foodProgress.value = Math.min(foodCount, 20);
+      jumpText.textContent = `Jumps ${Math.max(0, 2 - player.jumpsUsed)}/2`;
+      distanceText.textContent = `Distance ${Math.floor(runMeters)}m`;
       skinText.textContent = `Looks ${unlockedSkins.size}/${CAT_SKINS.length}`;
       bestText.textContent = `Best ${String(best).padStart(5, '0')}`;
       nameText.textContent = `Name ${playerName}`;
@@ -503,18 +719,23 @@
       if (shieldTicks > 0) tools.push(`Shield${(shieldTicks / 60).toFixed(1)}s`);
       toolText.textContent = `Items ${tools.length ? tools.join('+') : 'None'}`;
       shieldText.textContent = `Shield ${(shieldTicks / 60).toFixed(1)}s`;
+      updateRunPanels();
     }
 
     function jump() {
-      if (gameState === 'menu') return;
+      if (gameState === 'menu' || paused) return;
 
       if (gameOver || victory) {
-        if (gameOver) backToMenu();
+        if (gameOver) beginRunFromMenu();
         return;
       }
 
       if (!running) {
         running = true;
+        if (!runStarted) {
+          runStarted = true;
+          if (!devMode) { progress.runs += 1; saveProgress(); }
+        }
         hint.textContent = `${playerName}, collect 5 food items to unlock a random look!`;
       }
 
@@ -583,6 +804,10 @@
       const next = remaining[Math.floor(Math.random() * remaining.length)];
       currentSkin = next;
       unlockedSkins.add(next);
+      if (!devMode && !progress.released.includes(next)) {
+        progress.released.push(next);
+        saveProgress();
+      }
 
       if (unlockedSkins.size >= CAT_SKINS.length) {
         triggerVictory();
@@ -592,6 +817,8 @@
     }
 
     function triggerVictory() {
+      if (victory) return;
+      recordRun(true);
       victory = true;
       running = false;
       gameOver = false;
@@ -602,7 +829,7 @@
       victoryRestartReady = false;
       victoryRestartBtn.classList.add('hidden');
       best = Math.max(best, Math.floor(score));
-      localStorage.setItem('spacecat_best', String(best));
+      safeWrite('spacecat_best', String(best));
       hint.textContent = `${playerName}, mission complete! Enjoy the journey home...`;
       updateHUD();
     }
@@ -619,14 +846,16 @@
         return;
       }
 
+      recordRun(false);
       gameOver = true;
       running = false;
       best = Math.max(best, Math.floor(score));
-      localStorage.setItem('spacecat_best', String(best));
-      hint.textContent = `${playerName} hit a meteor. Press Space / ↑ or tap to return to the lobby.`;
+      safeWrite('spacecat_best', String(best));
+      hint.textContent = `${playerName} hit a meteor. Play again with the same settings, or return home.`;
     }
 
     function update() {
+      if (paused) return;
       for (const s of stars) {
         const base = victory ? 1.5 : 1;
         s.x -= (s.s + speed * 0.07) * base;
@@ -691,8 +920,13 @@
         }
       }
 
-      speed += difficultyCfg.speedUp;
-      score += speed * 0.11 * difficultyCfg.scoreMul;
+      speed = Math.min(difficultyCfg.maxSpeed || Infinity, speed + difficultyCfg.speedUp);
+      runMeters += speed / 10;
+      if (!devMode) {
+        progress.totalMeters += speed / 10;
+        if (++saveTicks >= 60) { saveTicks = 0; saveProgress(); }
+      }
+      score += speed * 0.11 * difficultyCfg.scoreMul * (activeBonus.score || 1);
 
       for (let i = obstacles.length - 1; i >= 0; i--) {
         const o = obstacles[i];
@@ -715,7 +949,7 @@
           const dx = px - fx;
           const dy = py - fy;
           const dist = Math.hypot(dx, dy);
-          const magnetRange = 150;
+          const magnetRange = 150 + (activeBonus.magnetRange || 0);
 
           if (dist < magnetRange && dist > 0.01) {
             const pull = (magnetRange - dist) / magnetRange;
@@ -731,9 +965,8 @@
 
         if (collide(player, f, 9)) {
           foods.splice(i, 1);
-          foodCount += 1;
-          score += 45 * difficultyCfg.scoreMul;
-          if (foodCount % FOOD_PER_EVOLVE === 0) evolveSkin();
+          collectFood();
+          if (victory) { updateHUD(); return; }
         }
       }
 
@@ -751,7 +984,7 @@
             magnetTicks = Math.max(magnetTicks, MAGNET_DURATION_TICKS);
             hint.textContent = 'Magnet collected: attracts food for 5 seconds!';
           } else {
-            shieldTicks = Math.max(shieldTicks, SHIELD_DURATION_TICKS);
+            shieldTicks = Math.max(shieldTicks, SHIELD_DURATION_TICKS + (activeBonus.shieldTicks || 0));
             hint.textContent = 'Shield collected: invincible for 5 seconds!';
           }
           toolItems.splice(i, 1);
@@ -949,7 +1182,7 @@
       ctx.fillText(`Final Score ${Math.floor(score)}`, canvas.width / 2, 178);
       ctx.font = '16px Trebuchet MS';
       ctx.fillStyle = '#cde8ff';
-      ctx.fillText('Press Space / ↑ or tap to return to the lobby', canvas.width / 2, 214);
+      ctx.fillText('Choose Play again or Back to home', canvas.width / 2, 214);
       ctx.textAlign = 'left';
     }
 
@@ -1063,6 +1296,8 @@
 
     // Discard hidden-tab time instead of fast-forwarding on return.
     document.addEventListener('visibilitychange', () => {
+      if (document.hidden && gameState === 'playing' && !gameOver && !victory) setPaused(true);
+      saveProgress();
       previousFrameTime = null;
       accumulatedTime = 0;
     });
@@ -1073,6 +1308,13 @@
     victoryRestartBtn.addEventListener('click', returnToMenuFromVictory);
 
     window.addEventListener('keydown', (e) => {
+      if (collectionDialog.open || challengeDialog.open) return;
+      if (e.code === 'Escape' && gameState === 'playing') {
+        e.preventDefault();
+        if (!e.repeat) setPaused(!paused);
+        return;
+      }
+      if (gameState === 'menu') return;
       if (e.code === 'Space' || e.code === 'ArrowUp') {
         e.preventDefault();
         // A held key must not consume the second jump through auto-repeat.
@@ -1082,7 +1324,28 @@
     });
 
     canvas.addEventListener('pointerdown', jump);
+    jumpBtn.addEventListener('pointerdown', (e) => { e.preventDefault(); jump(); });
+    pauseBtn.addEventListener('click', () => setPaused(!paused));
+    resumeBtn.addEventListener('click', () => setPaused(false));
+    pauseRetryBtn.addEventListener('click', beginRunFromMenu);
+    retryBtn.addEventListener('click', beginRunFromMenu);
+    pauseHomeBtn.addEventListener('click', backToMenu);
+    endHomeBtn.addEventListener('click', backToMenu);
+    collectionBtn.addEventListener('click', () => { renderCollection(); collectionDialog.showModal(); });
+    closeCollectionBtn.addEventListener('click', () => collectionDialog.close());
+    challengeBtn.addEventListener('click', () => challengeDialog.showModal());
+    closeChallengeBtn.addEventListener('click', () => challengeDialog.close());
+    releasedGrid.addEventListener('click', (e) => {
+      const button = e.target.closest('[data-equip]');
+      if (!button) return;
+      const index = Number(button.dataset.equip);
+      if (!progress.released.includes(index)) return;
+      progress.equipped = index; saveProgress(); updateHome(); renderCollection();
+    });
+    window.addEventListener('pagehide', saveProgress);
 
+    resizeGame();
+    window.addEventListener('resize', resizeGame);
     updateToolControls();
     updateHUD();
     backToMenu();
