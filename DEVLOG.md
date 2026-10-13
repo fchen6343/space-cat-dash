@@ -144,3 +144,30 @@ Food-score bonuses change score, not the one-credit-per-food wallet rate. All ba
 Dependency-free simulations checked growth without skin replacement; real speed/jump/size modifiers; mode and difficulty gating; Developer Mode exclusions; legacy save migration without duplicate credits; purchases, insufficient funds, level caps and persistence; actual extended magnet attraction and shield protection; all six Boss reward routes; weak-Boss failure and strong-Boss continuation; distance-triggered encounters; all three failure paths; replay; pause; multi-refresh-rate timing and repeated-key double-jump protection.
 
 Browser checks covered a real workshop purchase followed by reload, the phone workshop layout, and controlled local QA scenes rendering the airborne cat, Mighty form, Boss result and all three failure animations. The QA scene controls are not shipped in the public game. These checks do not establish a measured difficulty balance or exhaustive compatibility with every phone.
+
+
+## 2026-10-13 — Expedition, interactive Wardens, chapters and portable saves
+
+### Product decisions
+
+The user approved six improvements: interactive Boss combat, clearer growth, actionable results, changing endless environments, skin effects and short chapters. They also requested save export/import, sounds and settings. The relaxing-game intent remains the guide; no login, extra currency or daily attendance mechanics were added.
+
+### Changes
+
+- Replaced automatic strength comparison with a timed Warden fight. Red ground meteors require jumping; the gold weak-point window accepts J or the on-screen PULSE button. The button visibly changes state and is disabled outside the opening or during cooldown. Strong cats need three hits and have four hearts; weaker cats need five hits and have two hearts. A skilled low-growth cat can win. Shield absorbs one combat impact, consuming its remaining charge. Forty-second timeout prevents an indefinite encounter.
+- Kept six mode/difficulty-specific Boss skin rewards. Normal victories resume the endless run; Developer Mode still grants no progression. Boss success effects follow the equipped skin's colour.
+- Added a short growth ring and level banner plus exact remaining-food guidance. Retained size and jump changes; reduced pace multipliers to 0.97 / 1.00 / 1.02 / 1.04 / 1.06 to avoid a large speed increase from eating. Growth resets each run without changing the equipped skin.
+- Results now show banked food, growth advice, newly earned skins and relevant task progress with the run's contribution. Boss failure explains the dodge/pulse strategy rather than declaring that strength alone decides the outcome.
+- Added Moonrise, Orbital Station (900m) and Violet Nebula (1,800m), distinct backdrops and obstacle palettes. Station cargo drones can be passed underneath; nebula clusters have spaced follow-up obstacles. On a region transition existing obstacles are cleared and new obstacle spawns pause for four seconds. Boss instructions take priority over region/growth canvas text.
+- Added colour-coded jump particles: dots, rings and legendary star shapes. Existing crowned/winged/halo legendary looks remain. Particle count is bounded at 30; reduced-effects mode removes these particles and the growth ring while preserving useful text. Existing bonus choices remain alternatives: magnet range, item duration, food score, running score or jump height.
+- Released three sequential Easy practice chapters: Double-jump Flight (2,200m, eight food, a double jump), Power-up Patrol (2,600m, five items), and Warden Trial (2,000m plus fight). First clears award 20 / 30 / 40 food once. Replay retains the selected chapter; completion is saved. The displayed three stars indicate completion, not a measured performance score. Chapters use a fixed themed region and do not award endless mode skins or advance their route-specific tasks.
+- Added generated Web Audio sounds for jumps, food, growth, hits, pulses and wins. Sound waits for a user gesture, supports mute/volume, and falls back to silent play if unavailable. Settings are stored locally.
+- Added JSON save export and import, covering food, skins, upgrades, achievements, chapters, best score and settings. Import validates file size, game identifier, format/version, totals, skin IDs, upgrade bounds and task data before showing a preview. A separate replace button applies it. The UI explains overwrite semantics and recommends exporting the current save first. No save content is uploaded to a server. Legacy local progress is normalized to version 3 with empty chapters; existing achievements and one-time wallet migration remain intact.
+
+### Verification
+
+Dependency-free simulations passed for all six Boss reward routes, actual projectile damage/failure, skilled Hungry victory, strength advantage, combat pause, normal/Developer reward separation, region transition grace, all three chapter rewards and replay without duplicate bonuses, strict save rejection and replacement, legacy migration, storage fallback, sound/effects persistence and bounded particles. Earlier checks for timing at 30/60/120/144/240 Hz, double-jump repeat protection, growth, upgrade purchases/effects and old saves remain in the suite.
+
+Browser checks verified an actual JSON download and its contents, rejection of an unrelated file, preview and successful re-import of the exported file, saved reduced-effects preferences, chapter entry/locks and double-jump objective progress. Controlled local-only QA scenes were used to inspect the Boss, growth, all three regions and results; those controls are excluded from the release. At a 390px viewport the battle had no horizontal overflow; clicking the PULSE button reduced Boss weak points from three to two. The settings dialog remained scrollable and usable. These checks do not measure typical-player completion times, subjective audio quality, difficulty balance or every real phone/browser combination.
+
+The original source and previous release remain preserved locally and in Git history.

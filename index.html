@@ -290,6 +290,15 @@
     .skin-card.rare { border-color:#ffbc6477; }
     #upgradeGrid { grid-template-columns:repeat(2,minmax(0,1fr)); }
     @media(max-width:380px) { #upgradeGrid { grid-template-columns:1fr; } }
+    .settings-form { display:grid; gap:16px; margin:18px 0; }
+    .settings-form label { line-height:1.5; }
+    input[type=range] { width:100%; accent-color:#79e7a6; }
+    .file-label { display:block; margin:18px 0 8px; }
+    input[type=file] { max-width:100%; color:#d7ecff; }
+    .boss-action { width:100%; min-height:48px; border-radius:0; }
+    .end-details { font-size:12px; color:#b8d5ff; line-height:1.6; margin-bottom:16px; }
+    .overlay-card { max-height:95%; overflow:auto; }
+    @media(max-width:600px) { .goal-bar { flex-wrap:wrap; } .goal-bar span { white-space:normal; } }
   </style>
 </head>
 <body>
@@ -313,6 +322,7 @@
           <div class="tool-row hidden" id="devToolsPanel"><label><input id="magnetToggle" type="checkbox" disabled /> Starting Magnet (attracts food for 5s)</label><label><input id="shieldToggle" type="checkbox" disabled /> Starting Shield (invincible for 5s)</label></div>
         </div>
         <button class="btn-start" id="startBtn">Start Endless Run</button>
+        <button class="btn-secondary" id="settingsBtn">Settings &amp; Save · 设置与存档</button>
         <button class="btn-secondary" id="workshopBtn">Power-up Workshop · 道具升级</button>
         <div class="home-actions"><button id="collectionBtn" class="btn-secondary">Skin Cabinet · 收藏柜</button><button id="challengeBtn" class="btn-secondary">Challenge Mode · 闯关</button></div>
         <p class="helper" id="equippedText">Equipped: Snowball</p>
@@ -329,9 +339,9 @@
       <div class="canvas-shell">
         <canvas id="game" width="1080" height="400" aria-label="Space Cat Dash"></canvas>
         <div id="pausePanel" class="overlay hidden"><div class="overlay-card"><h2>Paused</h2><p>Take a breather. Your run is waiting.</p><div class="panel-actions"><button id="resumeBtn" class="btn-start">Continue</button><button id="pauseRetryBtn" class="btn-secondary">Restart run</button><button id="pauseHomeBtn" class="btn-secondary">Back to home</button></div><p class="helper">Esc to continue</p></div></div>
-        <div id="endPanel" class="overlay hidden"><div class="overlay-card"><h2 id="endTitle">Run complete</h2><p id="endSummary"></p><div class="panel-actions"><button id="retryBtn" class="btn-start">Play again</button><button id="victoryRestartBtn" class="btn-restart hidden">Back to home</button><button id="endHomeBtn" class="btn-secondary">Back to home</button></div></div></div>
+        <div id="endPanel" class="overlay hidden"><div class="overlay-card"><h2 id="endTitle">Run complete</h2><p id="endSummary"></p><div id="endDetails" class="end-details"></div><div class="panel-actions"><button id="retryBtn" class="btn-start">Play again</button><button id="victoryRestartBtn" class="btn-restart hidden">Back to home</button><button id="endHomeBtn" class="btn-secondary">Back to home</button></div></div></div>
       </div>
-      <div id="bossText" class="goal-bar">Boss ahead</div>
+      <div id="bossText" class="goal-bar">Boss ahead</div><button id="attackBtn" class="btn-start boss-action hidden">PULSE · J · Hit the gold weak point</button>
       <div class="hint" id="hint">Press Space / ↑ or tap to jump.</div>
       <button id="jumpBtn" class="mobile-jump">JUMP · Tap twice for a double jump</button>
     </section>
@@ -347,14 +357,18 @@
   </dialog>
   <dialog id="challengeDialog" aria-labelledby="challengeTitle">
     <div class="dialog-header"><h2 id="challengeTitle">Challenge Mode · 闯关模式</h2><button id="closeChallengeBtn" class="icon-button" aria-label="Close challenge mode">×</button></div>
-    <div class="coming-hero" aria-hidden="true">✦</div><h3 style="text-align:center">Coming Soon · 待推出</h3>
-    <p class="dialog-intro" style="text-align:center">A new journey is on the horizon. Levels are not available yet.<br>Endless runs and Boss encounters are available from the home screen.</p>
+    <p class="dialog-intro">Three short practice chapters. Clear each to open the next. Earn a one-time food reward; replay whenever you like. Chapters do not unlock endless mode skins.</p><div id="challengeGrid" class="collection-grid"></div>
   </dialog>
 
   <dialog id="workshopDialog" aria-labelledby="workshopTitle">
     <div class="dialog-header"><h2 id="workshopTitle">Power-up Workshop · 道具升级</h2><button class="icon-button" id="closeWorkshopBtn" aria-label="Close workshop">×</button></div>
     <p class="dialog-intro" id="walletText"></p><p class="dialog-intro">Each food item collected in a normal run earns one food credit. Upgrades last across runs. Level costs: 10, 20, 30, 40 and 50 food.</p>
     <div id="upgradeGrid" class="collection-grid"></div>
+  </dialog>
+  <dialog id="settingsDialog" aria-labelledby="settingsTitle">
+    <div class="dialog-header"><h2 id="settingsTitle">Settings &amp; Save · 设置与存档</h2><button id="closeSettingsBtn" class="icon-button" aria-label="Close settings">×</button></div>
+    <div class="settings-form"><label><input type="checkbox" id="soundToggle"> Sound effects · 音效</label><label for="volumeSlider">Volume · 音量</label><input type="range" id="volumeSlider" min="0" max="100" step="1"><button id="soundTestBtn" class="btn-secondary">Preview sound</button><label><input type="checkbox" id="effectsToggle"> Reduce visual effects · 减少视觉特效</label></div>
+    <p id="settingsStatus" class="dialog-intro" role="status"></p><h3>Save backup · 存档备份</h3><p class="dialog-intro">Export downloads a JSON backup. Import replaces your food, skins, upgrades, chapters, best score and settings after confirmation. Export your current save first.</p><button id="exportBtn" class="btn-secondary">Export save · 导出存档</button><label class="file-label" for="importFile">Choose save file · 选择存档</label><input type="file" id="importFile" accept=".json,application/json"><p id="importPreview" class="dialog-intro" role="status"></p><button id="applyImportBtn" class="btn-secondary" disabled>Replace current save · 确认覆盖当前存档</button>
   </dialog>
   <script>
     const canvas = document.getElementById('game');
@@ -452,15 +466,15 @@
     let storageAvailable=true;
     function safeRead(key,fallback){try{return localStorage.getItem(key)||fallback;}catch{storageAvailable=false;return fallback;}}
     function safeWrite(key,value){try{localStorage.setItem(key,value);}catch{storageAvailable=false;}storageNotice.classList.toggle('hidden',storageAvailable);}
-    function loadProgress(){
-      let p;try{p=JSON.parse(safeRead('spacecat_collection_v1','{}'));}catch{p={};}if(!p||typeof p!=='object')p={};
+    function loadProgress(){let p;try{p=JSON.parse(safeRead('spacecat_collection_v1','{}'));}catch{p={};}return normalizeProgress(p);}
+    function normalizeProgress(p){if(!p||typeof p!=='object')p={};
       const num=n=>Number.isFinite(n)?Math.max(0,n):0;
       const modeStats={};for(const mode of ['classic','items'])for(const difficulty of ['easy','medium','hard']){
         const key=mode+'_'+difficulty,r=p.modeStats?.[key]||{};
         modeStats[key]=Object.fromEntries(['meters','bestMeters','strongBestMeters','food','items','bosses'].map(k=>[k,num(r[k])]));
       }
       const released=[...new Set([0,...(Array.isArray(p.released)?p.released.filter(n=>Number.isInteger(n)&&n>=0&&n<CAT_SKINS.length):[])])];
-      return {version:2,wins:Math.floor(num(p.wins)),totalMeters:num(p.totalMeters),totalFood:Math.floor(num(p.totalFood)),totalItems:Math.floor(num(p.totalItems)),runs:Math.floor(num(p.runs)),wallet:Math.floor(num(p.wallet===undefined?p.totalFood:p.wallet)),
+      return {version:3,challenges:[0,1,2].map(i=>Math.min(3,Math.floor(num(p.challenges?.[i])))),wins:Math.floor(num(p.wins)),totalMeters:num(p.totalMeters),totalFood:Math.floor(num(p.totalFood)),totalItems:Math.floor(num(p.totalItems)),runs:Math.floor(num(p.runs)),wallet:Math.floor(num(p.wallet===undefined?p.totalFood:p.wallet)),
         winsByDifficulty:Object.fromEntries(['easy','medium','hard'].map(k=>[k,Math.floor(num(p.winsByDifficulty?.[k]))])),modeStats,
         upgrades:Object.fromEntries(['magnetRange','magnetTime','shieldTime','shieldArea'].map(k=>[k,Math.min(5,Math.floor(num(p.upgrades?.[k])))])),
         released,upcoming:Array.isArray(p.upcoming)?p.upcoming.filter(n=>Number.isInteger(n)&&n>=1&&n<=10):[],equipped:released.includes(p.equipped)?p.equipped:0};
@@ -500,11 +514,11 @@
       {id:10,name:'Three Star Pilot',mode:'classic',difficulty:'hard',field:'bosses',target:10,condition:'Classic · Hard: defeat 10 Bosses',bonus:'Running score +20%'}
     ];
     const GROWTH=[
-      {name:'Hungry',food:0,scale:.74,speed:.9,jump:.9},
+      {name:'Hungry',food:0,scale:.74,speed:.97,jump:.9},
       {name:'Fed',food:5,scale:.87,speed:1,jump:1},
-      {name:'Fit',food:12,scale:1,speed:1.06,jump:1.06},
-      {name:'Strong',food:20,scale:1.12,speed:1.12,jump:1.13},
-      {name:'Mighty',food:35,scale:1.2,speed:1.18,jump:1.2}
+      {name:'Fit',food:12,scale:1,speed:1.02,jump:1.06},
+      {name:'Strong',food:20,scale:1.12,speed:1.04,jump:1.13},
+      {name:'Mighty',food:35,scale:1.2,speed:1.06,jump:1.2}
     ];
     const BOSS_INTERVAL={easy:1200,medium:1500,hard:1800};
     const BOSS_NAMES={classic:{easy:'Stone Warden',medium:'Solar Warden',hard:'Void Warden'},items:{easy:'Lunar Warden',medium:'Aurora Warden',hard:'Nebula Warden'}};
@@ -558,16 +572,16 @@
     function recordRun(){if(!runStarted||runRecorded)return;runRecorded=true;if(!devMode)saveProgress();}
     function updateGrowth(){
       const previous=growthLevel;growthLevel=GROWTH.reduce((level,stage,i)=>foodCount>=stage.food?i:level,0);
-      if(previous!==growthLevel)hint.textContent=`${growthStage().name}! Faster running and higher jumps. Keep preparing for the Boss.`;
+      if(previous!==growthLevel){growthFlash=120;hint.textContent=`${growthStage().name}! ${growthHint()}.`;playSound('grow');}
     }
     function collectFood(){
-      foodCount++;score+=45*difficultyCfg.scoreMul*(activeBonus.food||1);updateGrowth();
-      if(!devMode){progress.totalFood++;progress.wallet++;modeRecord().food++;if(growthLevel>=3)modeRecord().strongBestMeters=Math.max(modeRecord().strongBestMeters,runMeters);saveProgress();}
+      playSound('food');foodCount++;score+=45*difficultyCfg.scoreMul*(activeBonus.food||1);updateGrowth();
+      if(!devMode){progress.totalFood++;progress.wallet++;runWallet++;if(!challengeId){modeRecord().food++;if(growthLevel>=3)modeRecord().strongBestMeters=Math.max(modeRecord().strongBestMeters,runMeters);}saveProgress();}
     }
     function collectTool(type){
-      runItems++;if(type==='magnet')magnetTicks=itemDuration('magnet');else shieldTicks=itemDuration('shield');
+      playSound('food');runItems++;if(type==='magnet')magnetTicks=itemDuration('magnet');else shieldTicks=itemDuration('shield');
       hint.textContent=`${type==='magnet'?'Magnet':'Shield'} collected · ${(itemDuration(type)/60).toFixed(1)}s`;
-      if(!devMode){progress.totalItems++;modeRecord().items++;saveProgress();}
+      if(!devMode){progress.totalItems++;if(!challengeId)modeRecord().items++;saveProgress();}
     }
     function setPaused(value){
       if(gameState!=='playing'||gameOver)return;paused=value;pausePanel.classList.toggle('hidden',!paused);
@@ -575,42 +589,30 @@
     }
     function updateRunPanels(){
       endPanel.classList.toggle('hidden',!(gameOver&&failureTick>=FAILURE_TICKS));
-      endTitle.textContent=failureReason==='boss'?'Not strong enough':'One more try?';
-      endSummary.textContent=`${failureStyle==='tumble'?'A rough landing':failureStyle==='orbit'?'Lost in orbit':'Caught in a meteor storm'} · ${Math.floor(runMeters)}m · ${foodCount} food · ${growthStage().name}${devMode?' · Developer run (not banked)':''}`;
-      endHomeBtn.classList.remove('hidden');victoryRestartBtn.classList.add('hidden');pauseBtn.disabled=gameState==='menu'||gameOver;jumpBtn.disabled=paused||gameOver||!!bossEncounter;
+      endTitle.textContent=challengeWon?'Chapter complete!':failureReason==='boss'?'The Warden got you':'One more try?';
+      endSummary.textContent=`${Math.floor(runMeters)}m · ${foodCount} food · ${growthStage().name} · ${runBossWins} Bosses`;
+      const unlocked=progress.released.filter(i=>!runSkinStart.includes(i)).map(i=>CAT_SKINS[i].name);
+      const tip=challengeWon?'Try the next chapter from home.':failureReason==='boss'?'Jump over red meteors; pulse only when gold. More food gives extra hearts and fewer weak points.':`${growthHint()}. Keep a second jump ready for food and obstacles.`;
+      endDetails.textContent=`${devMode?'Developer run: no food banked':`Banked this run: ${runWallet} food credits`}. ${tip} ${unlocked.length?'New skins: '+unlocked.join(', ')+'. ':''}${taskFeedback()}`;
+      endHomeBtn.classList.remove('hidden');victoryRestartBtn.classList.add('hidden');pauseBtn.disabled=gameState==='menu'||gameOver;jumpBtn.disabled=paused||gameOver;
+      const open=bossEncounter&&bossEncounter.tick>=90&&bossEncounter.tick%210>=80&&bossEncounter.tick%210<=145&&!bossEncounter.won;
+      attackBtn.classList.toggle('hidden',!bossEncounter||gameOver);attackBtn.disabled=paused||!open||bossEncounter.cooldown>0;
+      attackBtn.textContent=open?'PULSE NOW · J · Hit the gold weak point':'Weak point closed · Wait for gold';
     }
-    function startBoss(){
-      bossNumber++;const required=(difficultyKey==='hard'||bossNumber>1)?4:3;
-      bossEncounter={tick:0,required,won:growthLevel>=required,reward:5+({easy:0,medium:1,hard:2}[difficultyKey])+(itemMode?3:0),name:BOSS_NAMES[itemMode?'items':'classic'][difficultyKey],credited:false};
-      obstacles.length=0;foods.length=0;toolItems.length=0;player.y=GROUND_Y-player.h;player.vy=0;player.onGround=true;player.jumpsUsed=0;
-      hint.textContent=`${bossEncounter.name} approaches! Requires ${GROWTH[required].name}. You are ${growthStage().name}.`;
-    }
-    function creditBoss(){
-      if(!bossEncounter||bossEncounter.credited)return;bossEncounter.credited=true;
-      score+=500*difficultyCfg.scoreMul;
-      if(!devMode){progress.wins++;progress.winsByDifficulty[difficultyKey]++;modeRecord().bosses++;if(!progress.released.includes(bossEncounter.reward))progress.released.push(bossEncounter.reward);saveProgress();}
-      best=Math.max(best,Math.floor(score));safeWrite('spacecat_best',String(best));
-      hint.textContent=devMode?'Boss defeated · test reward not saved':`Boss defeated! ${CAT_SKINS[bossEncounter.reward].name} is in your cabinet. Keep running!`;
-    }
-    function updateBoss(){
-      bossEncounter.tick++;
-      if(bossEncounter.tick===120){if(bossEncounter.won)creditBoss();else{failRun('boss');return;}}
-      if(bossEncounter.tick>=240){bossEncounter=null;nextBossAt+=BOSS_INTERVAL[difficultyKey];}
-    }
+
+
+
+
+
+
+
     function failRun(reason){
       if(gameOver)return;recordRun();gameOver=true;running=false;failureTick=0;failureReason=reason;
       failureStyle=runMeters<500?'tumble':runMeters<1500?'orbit':'storm';
       best=Math.max(best,Math.floor(score));safeWrite('spacecat_best',String(best));hint.textContent=reason==='boss'?`The Boss needed more strength. Eat more food before your next encounter.`:'Your food credits and collection progress are safe. Try again!';updateHUD();
     }
-    function drawBoss(){
-      if(!bossEncounter)return;const b=bossEncounter,t=b.tick,x=canvas.width-100-Math.min(180,t*1.8),y=220;
-      ctx.save();ctx.translate(x,y);ctx.globalAlpha=b.won&&t>120?Math.max(0,1-(t-120)/100):1;
-      ctx.fillStyle=['#a59086','#e2a756','#9560c4'][{easy:0,medium:1,hard:2}[difficultyKey]];ctx.beginPath();ctx.arc(0,0,60+Math.sin(t*.05)*3,0,Math.PI*2);ctx.fill();
-      ctx.fillStyle='#2e2046';ctx.fillRect(-30,-20,18,12);ctx.fillRect(12,-20,18,12);ctx.fillRect(-25,20,50,8);
-      if(itemMode){ctx.strokeStyle='#6de7ff';ctx.lineWidth=5;ctx.beginPath();ctx.ellipse(0,0,90,35,t*.015,0,Math.PI*2);ctx.stroke();}
-      if(t>=90){ctx.strokeStyle=b.won?'#79e7a6':'#ff5d8f';ctx.lineWidth=6;ctx.beginPath();ctx.moveTo(-40,0);ctx.lineTo(player.x-x+26,player.y-y+22);ctx.stroke();}
-      ctx.restore();ctx.fillStyle='#fff0c0';ctx.font='bold 22px Trebuchet MS';ctx.textAlign='center';ctx.fillText(t<120?`${b.name} · ${GROWTH[b.required].name} required`:b.won?'BOSS DEFEATED':'NOT STRONG ENOUGH',canvas.width/2,60);ctx.textAlign='left';
-    }
+
+
     function resizeGame(){canvas.width=window.innerWidth<=600?640:1080;if(typeof render==='function')render();}
 
     let gameState = 'menu';
@@ -688,16 +690,22 @@
       updateToolControls();
     }
 
-    function beginRunFromMenu() {
+    function beginRunFromMenu(level = 0) {
+      unlockAudio();
+      challengeId = Number.isInteger(level) && LEVELS[level] ? level : 0;
+      challengeWon=false;challengeBossWon=false;doubleJumps=0;runWallet=0;runBossWins=0;regionIndex=0;regionTick=0;growthFlash=0;celebrationTick=0;skinParticles=[];
+      runSkinStart=[...progress.released];runTaskStart=SKIN_TASKS.map(task=>task?milestoneValue(task):0);
       recordRun(false);
       playerName = (nicknameInput.value || '').trim().slice(0, 12) || 'Player';
       difficultyKey = Object.hasOwn(DIFFICULTY, difficultySelect.value) ? difficultySelect.value : 'medium';
+      if(challengeId) difficultyKey='easy';
       difficultyCfg = DIFFICULTY[difficultyKey] || DIFFICULTY.medium;
 
       activeBonus = RELEASED_BONUSES[progress.equipped];
       liveUpgrades = {...progress.upgrades};
       itemMode = itemModeToggle.checked;
-      devMode = devModeToggle.checked;
+      devMode = challengeId ? false : devModeToggle.checked;
+      if(challengeId) itemMode=challengeId===2;
       magnetTicks = devMode && magnetToggle.checked ? itemDuration("magnet") : 0;
       shieldTicks = devMode && shieldToggle.checked ? itemDuration("shield") : 0;
 
@@ -712,7 +720,7 @@
       saveTicks = 0;
       activeBonus = RELEASED_BONUSES[progress.equipped];
       growthLevel = 0; bossEncounter = null; bossNumber = 0; failureTick = 0; runItems = 0;
-      nextBossAt = BOSS_INTERVAL[difficultyKey];
+      nextBossAt = challengeId===3 ? LEVELS[3].meters : challengeId ? Infinity : BOSS_INTERVAL[difficultyKey];
       liveUpgrades = {...progress.upgrades};
       gameArea.classList.remove('hidden');
       pausePanel.classList.add('hidden');
@@ -756,6 +764,7 @@
       pausePanel.classList.add('hidden');
       endPanel.classList.add('hidden');
       pauseBtn.disabled = true;
+      challengeId=0;challengeWon=false;bossEncounter=null;pauseBtn.textContent='Ⅱ';pauseBtn.setAttribute('aria-label','Pause game');
       updateHome();
       gameState = 'menu';
       running = false;
@@ -779,22 +788,23 @@
       scoreText.textContent=`Score ${String(Math.floor(score)).padStart(5,'0')}`;
       foodText.textContent=`Food ${foodCount} · Items ${runItems}`;skinText.textContent=`${growthStage().name} · Lv ${growthLevel+1}`;
       const next=GROWTH[growthLevel+1];foodProgress.max=next?next.food-growthStage().food:1;foodProgress.value=next?foodCount-growthStage().food:1;
-      growthGoal.textContent=next?`${next.name}: ${foodCount}/${next.food} food`:'Mighty · full strength';
+      growthGoal.textContent=growthHint();
       jumpText.textContent=`Jumps ${Math.max(0,2-player.jumpsUsed)}/2`;distanceText.textContent=`Distance ${Math.floor(runMeters)}m`;
       bestText.textContent=`Best ${String(Math.floor(best)).padStart(5,'0')}`;nameText.textContent=`Name ${playerName}`;
       difficultyText.textContent=`${itemMode?'Items':'Classic'} · ${difficultyCfg.label}`;
       const tools=[];if(devMode)tools.push('Developer');if(magnetTicks>0)tools.push(`Magnet ${(magnetTicks/60).toFixed(1)}s`);if(shieldTicks>0)tools.push(`Shield ${(shieldTicks/60).toFixed(1)}s`);
       toolText.textContent=`Items ${tools.join(' · ')||'None'}`;shieldText.textContent=`Shield ${(shieldTicks/60).toFixed(1)}s`;
       const required=(difficultyKey==='hard'||bossNumber>0)?4:3;
-      bossText.textContent=bossEncounter?`${bossEncounter.name} · ${GROWTH[bossEncounter.required].name} required · You: ${growthStage().name}`:`Boss in ${Math.max(0,Math.ceil(nextBossAt-runMeters))}m · Need ${GROWTH[required].name}`;
+      bossText.textContent=bossEncounter?`${bossEncounter.name} · ${bossEncounter.hp} weak points · ${bossEncounter.lives} hearts`:challengeId?`${LEVELS[challengeId].name} · ${Math.floor(runMeters)}/${LEVELS[challengeId].meters}m · Food ${foodCount}/${LEVELS[challengeId].food} · Items ${runItems}/${LEVELS[challengeId].items}${challengeId===1?` · Double jump ${doubleJumps>0?'✓':'needed'}`:''}`:`${REGIONS[regionIndex].name} · Boss in ${Math.max(0,Math.ceil(nextBossAt-runMeters))}m · ${GROWTH[required].name} gives an advantage`;
       updateRunPanels();
     }
 
     function jump() {
-      if (gameState === 'menu' || paused || bossEncounter || (gameOver && failureTick < FAILURE_TICKS)) return;
+      unlockAudio();
+      if (gameState === 'menu' || paused || (bossEncounter && bossEncounter.won) || (gameOver && failureTick < FAILURE_TICKS)) return;
 
       if (gameOver || victory) {
-        if (gameOver) beginRunFromMenu();
+        if (gameOver) beginRunFromMenu(challengeId);
         return;
       }
 
@@ -811,6 +821,8 @@
         player.vy = JUMP_VELOCITY * growthStage().jump * (activeBonus.jump || 1);
         player.onGround = false;
         player.jumpsUsed += 1;
+        if(player.jumpsUsed===2)doubleJumps++;
+        emitSkinEffect();playSound('jump');
       }
     }
 
@@ -819,18 +831,21 @@
       const size = type < 0.7 ? 30 + Math.random() * 16 : 20 + Math.random() * 12;
       const h = size;
       const w = size + (Math.random() * 10 - 3);
+      const drone=regionIndex===1&&Math.random()<.4;
       obstacles.push({
+        kind:drone?'drone':regionIndex===2?'crystal':'rock',
         x: canvas.width + 20,
-        y: GROUND_Y - h,
+        y: drone?GROUND_Y-155:GROUND_Y-h,
         w,
         h,
         rot: Math.random() * Math.PI,
         spin: (Math.random() * 0.06 + 0.01) * (Math.random() < 0.5 ? -1 : 1)
       });
+      if(regionIndex===2&&Math.random()<.35&&!challengeId)obstacles.push({kind:'crystal',x:canvas.width+200,y:GROUND_Y-24,w:24,h:24,rot:0,spin:.02});
     }
 
     function spawnFood() {
-      const y = GROUND_Y - 36 - Math.random() * difficultyCfg.foodHeightRange;
+      const y = GROUND_Y - 36 - Math.random() * (challengeId ? 35 : difficultyCfg.foodHeightRange);
       foods.push({
         x: canvas.width + 24,
         y,
@@ -842,7 +857,7 @@
 
     function spawnToolItem() {
       const type = Math.random() < 0.5 ? 'magnet' : 'shield';
-      const y = GROUND_Y - 34 - Math.random() * (difficultyCfg.foodHeightRange * 0.75);
+      const y = GROUND_Y - 34 - Math.random() * (challengeId ? 30 : difficultyCfg.foodHeightRange * 0.75);
       toolItems.push({
         type,
         x: canvas.width + 24,
@@ -872,6 +887,7 @@
 
     function update(){
       if(paused)return;
+      updateEffects();
       if(gameOver){failureTick=Math.min(FAILURE_TICKS,failureTick+1);updateHUD();return;}
       for(const s of stars){s.x-=(s.s+speed*.07);if(s.x< -2){s.x=canvas.width+Math.random()*100;s.y=Math.random()*(GROUND_Y-40);}}
       if(gameState==='menu'){updateHUD();return;}
@@ -882,16 +898,16 @@
       if(player.y>=GROUND_Y-player.h){player.y=GROUND_Y-player.h;player.vy=0;player.onGround=true;player.jumpsUsed=0;}
       speed=Math.min(difficultyCfg.maxSpeed||12,speed+difficultyCfg.speedUp);
       const pace=speed*growthStage().speed;
-      runMeters+=pace/10;
-      if(!devMode){const r=modeRecord();progress.totalMeters+=pace/10;r.meters+=pace/10;r.bestMeters=Math.max(r.bestMeters,runMeters);if(growthLevel>=3)r.strongBestMeters=Math.max(r.strongBestMeters,runMeters);if(++saveTicks>=60){saveTicks=0;saveProgress();}}
+      runMeters+=pace/10;updateRegion();
+      if(!devMode&&!challengeId){const r=modeRecord();progress.totalMeters+=pace/10;r.meters+=pace/10;r.bestMeters=Math.max(r.bestMeters,runMeters);if(growthLevel>=3)r.strongBestMeters=Math.max(r.strongBestMeters,runMeters);if(++saveTicks>=60){saveTicks=0;saveProgress();}}
       score+=pace*.11*difficultyCfg.scoreMul*(activeBonus.score||1);
       if(runMeters>=nextBossAt){startBoss();updateHUD();return;}
       spawnTick++;foodSpawnTick++;itemSpawnTick++;
       const obstacleGap=Math.max(difficultyCfg.obstacleGapMin,difficultyCfg.obstacleBaseGap-pace*7);
-      if(spawnTick>obstacleGap+Math.random()*40){spawnObstacle();spawnTick=0;}
-      const foodGap=difficultyKey==='easy'?65:difficultyKey==='medium'?50:30;
+      if(regionTick>240&&spawnTick>obstacleGap+Math.random()*40){spawnObstacle();spawnTick=0;}
+      const foodGap=challengeId?28:difficultyKey==='easy'?65:difficultyKey==='medium'?50:30;
       if(foodSpawnTick>foodGap+Math.random()*15){spawnFood();foodSpawnTick=0;}
-      if(itemMode&&itemSpawnTick>180+Math.random()*60){spawnToolItem();itemSpawnTick=0;}
+      if(itemMode&&itemSpawnTick>(challengeId===2?65:180)+Math.random()*30){spawnToolItem();itemSpawnTick=0;}
       for(let i=obstacles.length-1;i>=0;i--){const o=obstacles[i];o.x-=pace;o.rot+=o.spin;if(o.x+o.w< -20)obstacles.splice(i,1);}
       for(let i=foods.length-1;i>=0;i--){const f=foods[i];f.x-=pace*.92;f.wobble+=.08;f.y+=Math.sin(f.wobble)*.35;
         if(magnetTicks>0){const dx=player.x+player.w/2-f.x-f.w/2,dy=player.y+player.h/2-f.y-f.h/2,dist=Math.hypot(dx,dy),range=150+liveUpgrades.magnetRange*25+(activeBonus.magnetRange||0);if(dist<range&&dist>.01){const pull=(range-dist)/range;f.x+=dx/dist*(1.4+pull*3.2);f.y+=dy/dist*(1.2+pull*2.8);}}
@@ -900,11 +916,11 @@
       for(let i=obstacles.length-1;i>=0;i--){const o=obstacles[i],radius=liveUpgrades.shieldArea*15;
         const aura=shieldTicks>0&&radius>0&&Math.hypot(o.x+o.w/2-player.x-player.w/2,o.y+o.h/2-player.y-player.h/2)<radius+35;
         if(aura){obstacles.splice(i,1);continue;}if(collide(player,o)){if(shieldTicks>0)obstacles.splice(i,1);else{failRun('meteor');break;}}}
-      updateHUD();
+      updateChallenge();updateHUD();
     }
 
     function drawGround() {
-      ctx.strokeStyle = '#6de7ff99';
+      ctx.strokeStyle = REGIONS[regionIndex].ground;
       ctx.lineWidth = 2;
       ctx.beginPath();
       ctx.moveTo(0, GROUND_Y + 1);
@@ -1005,6 +1021,7 @@
       const size = growthStage().scale;
       ctx.translate(x + player.w * (1 - size) / 2, y + player.h * (1 - size));
       ctx.scale(size, size);
+      if((celebrationTick>0||challengeWon)&&!settings.reducedEffects){if(currentSkin%3===1){ctx.fillStyle=skin.body;ctx.fillRect(43,4,8,18);}else if(currentSkin%3===2){ctx.rotate(Math.sin(celebrationTick*.1)*.08);}}
 
       if (currentSkin === 7 || currentSkin === 10) {
         ctx.fillStyle = skin.ear; ctx.beginPath(); ctx.moveTo(6, 18); ctx.lineTo(-10, 8); ctx.lineTo(4, 34); ctx.moveTo(42, 18); ctx.lineTo(60, 8); ctx.lineTo(46, 34); ctx.fill();
@@ -1065,7 +1082,7 @@
       ctx.save();
       ctx.translate(o.x + o.w / 2, o.y + o.h / 2);
       ctx.rotate(o.rot);
-      ctx.fillStyle = '#7d6a7f';
+      ctx.fillStyle = o.kind==='drone'?'#66ccb3':o.kind==='crystal'?'#b181de':'#7d6a7f';
       ctx.beginPath();
       ctx.arc(0, 0, o.w / 2, 0, Math.PI * 2);
       ctx.fill();
@@ -1078,7 +1095,7 @@
     }
 
     function drawGameOver(){
-      if(!gameOver)return;
+      if(!gameOver||challengeWon)return;
       const t=failureTick/FAILURE_TICKS;
       ctx.save();ctx.fillStyle=`rgba(2,8,25,${Math.min(.7,t*.8)})`;ctx.fillRect(0,0,canvas.width,canvas.height);
       if(failureStyle==='tumble'){
@@ -1098,14 +1115,14 @@
 
     function render() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      drawStars();
+      drawRegion();drawStars();
       drawGround();
       for (const o of obstacles) drawMeteor(o);
       for (const f of foods) drawFood(f);
       for (const t of toolItems) drawToolItem(t);
-      if (!gameOver) drawPlayer();
+      if (!gameOver) {const celebrating=celebrationTick>0;const bounce=celebrating&&!settings.reducedEffects?Math.abs(Math.sin(celebrationTick*.12))*(currentSkin===7||currentSkin===10?24:currentSkin%3===0?12:6):0;drawPlayer(player.x,player.y-bounce);}else if(challengeWon)drawPlayer(player.x,GROUND_Y-player.h);
       drawGameOver();
-      drawBoss();
+      drawBoss();drawEffects();
     }
 
     // Preserve the original 60 Hz gameplay pace on any display refresh rate.
@@ -1141,7 +1158,8 @@
     victoryRestartBtn.addEventListener('click', backToMenu);
 
     window.addEventListener('keydown', (e) => {
-      if (collectionDialog.open || challengeDialog.open || workshopDialog.open) return;
+      if (collectionDialog.open || challengeDialog.open || workshopDialog.open || settingsDialog.open) return;
+      if(e.code==='KeyJ'&&gameState==='playing'){e.preventDefault();if(!e.repeat)attackBoss();return;}
       if (e.code === 'Escape' && gameState === 'playing') {
         e.preventDefault();
         if (!e.repeat) setPaused(!paused);
@@ -1160,13 +1178,13 @@
     jumpBtn.addEventListener('pointerdown', (e) => { e.preventDefault(); jump(); });
     pauseBtn.addEventListener('click', () => setPaused(!paused));
     resumeBtn.addEventListener('click', () => setPaused(false));
-    pauseRetryBtn.addEventListener('click', beginRunFromMenu);
-    retryBtn.addEventListener('click', beginRunFromMenu);
+    pauseRetryBtn.addEventListener('click', ()=>beginRunFromMenu(challengeId));
+    retryBtn.addEventListener('click', ()=>beginRunFromMenu(challengeId));
     pauseHomeBtn.addEventListener('click', backToMenu);
     endHomeBtn.addEventListener('click', backToMenu);
     collectionBtn.addEventListener('click', () => { renderCollection(); collectionDialog.showModal(); });
     closeCollectionBtn.addEventListener('click', () => collectionDialog.close());
-    challengeBtn.addEventListener('click', () => challengeDialog.showModal());
+    challengeBtn.addEventListener('click', () => {renderChallenges();challengeDialog.showModal();});
     closeChallengeBtn.addEventListener('click', () => challengeDialog.close());
     releasedGrid.addEventListener('click', (e) => {
       const button = e.target.closest('[data-equip]');
@@ -1182,6 +1200,120 @@
       if (button) { buyUpgrade(button.dataset.upgrade); renderWorkshop(); updateHome(); }
     });
     window.addEventListener('pagehide', saveProgress);
+
+    // Offline expedition update: all visuals and sounds are generated locally.
+    const settingsBtn=byId('settingsBtn'),settingsDialog=byId('settingsDialog'),closeSettingsBtn=byId('closeSettingsBtn');
+    const soundToggle=byId('soundToggle'),volumeSlider=byId('volumeSlider'),effectsToggle=byId('effectsToggle'),settingsStatus=byId('settingsStatus');
+    const exportBtn=byId('exportBtn'),importFile=byId('importFile'),importPreview=byId('importPreview'),applyImportBtn=byId('applyImportBtn');
+    const challengeGrid=byId('challengeGrid'),attackBtn=byId('attackBtn'),endDetails=byId('endDetails');
+    const REGIONS=[{name:'Moonrise · 月球',sky:'#172a4b',ground:'#83c7e5',intro:'Low rocks ahead. Jump once; save your second jump.'},{name:'Orbital Station · 空间站',sky:'#122d37',ground:'#7be2c7',intro:'Cargo drones ahead. Some fly high: stay low to pass.'},{name:'Violet Nebula · 星云',sky:'#2c1748',ground:'#d9a1ff',intro:'Small meteor clusters ahead. Watch the spacing.'}];
+    const LEVELS=[null,{name:'Double-jump Flight',goal:'Reach 2,200m, eat 8 food and use a double jump.',meters:2200,food:8,items:0,reward:20},{name:'Power-up Patrol',goal:'Reach 2,600m and collect 5 random power-ups.',meters:2600,food:0,items:5,reward:30},{name:'Warden Trial',goal:'Reach the Warden at 2,000m, then win the fight.',meters:2000,food:0,items:0,reward:40}];
+    let challengeId=0,challengeWon=false,doubleJumps=0,challengeBossWon=false,runWallet=0,runSkinStart=[],runTaskStart=[],runBossWins=0;
+    let regionIndex=0,regionTick=0,growthFlash=0,celebrationTick=0,skinParticles=[],pendingImport=null,audio=null,audioFailed=false;
+    function normalizeSettings(p){return {sound:typeof p?.sound==='boolean'?p.sound:true,volume:typeof p?.volume==='number'&&Number.isFinite(p.volume)?Math.max(0,Math.min(1,p.volume)):.3,reducedEffects:typeof p?.reducedEffects==='boolean'?p.reducedEffects:false};}
+    let settings;try{settings=normalizeSettings(JSON.parse(safeRead('spacecat_settings_v1','{}')));}catch{settings=normalizeSettings({});}
+    function unlockAudio(){
+      if(!settings.sound||audioFailed)return;
+      try{const Audio=window.AudioContext||window.webkitAudioContext;if(!Audio){audioFailed=true;return;}if(!audio)audio=new Audio();if(audio.state==='suspended')audio.resume().catch(()=>{audioFailed=true;});}catch{audioFailed=true;}
+    }
+    function playSound(kind){
+      if(!settings.sound||!audio||audio.state!=='running'||paused)return;
+      const notes={jump:[330,440],food:[740,990],grow:[440,660,880],hit:[130,90],pulse:[520,780],win:[523,659,784,1047],click:[440]}[kind]||[440];
+      try{notes.forEach((freq,i)=>{const oscillator=audio.createOscillator(),gain=audio.createGain(),t=audio.currentTime+i*.075;oscillator.type=kind==='hit'?'triangle':'sine';oscillator.frequency.setValueAtTime(freq,t);gain.gain.setValueAtTime(0,t);gain.gain.linearRampToValueAtTime(settings.volume*.16,t+.008);gain.gain.exponentialRampToValueAtTime(.0001,t+.09);oscillator.connect(gain);gain.connect(audio.destination);oscillator.start(t);oscillator.stop(t+.1);});}catch{audioFailed=true;}
+    }
+    function showSettings(){soundToggle.checked=settings.sound;volumeSlider.value=String(Math.round(settings.volume*100));effectsToggle.checked=settings.reducedEffects;settingsStatus.textContent=audioFailed?'Sound is unavailable in this browser. Gameplay and saves still work.':'Settings and saves stay on this browser. Export a backup before switching devices.';pendingImport=null;applyImportBtn.disabled=true;importPreview.textContent='Import shows a preview before replacing your current progress.';settingsDialog.showModal();}
+    function saveSettings(){settings=normalizeSettings({sound:soundToggle.checked,volume:Number(volumeSlider.value)/100,reducedEffects:effectsToggle.checked});safeWrite('spacecat_settings_v1',JSON.stringify(settings));unlockAudio();settingsStatus.textContent=storageAvailable?'Settings saved.':'Storage is unavailable; settings last for this session.';}
+    function makeSave(){saveProgress();return JSON.stringify({game:'Space Cat Dash',format:1,exportedAt:new Date().toISOString(),progress,settings,best:Math.floor(best)},null,2);}
+    function downloadSave(){
+      try{const blob=new Blob([makeSave()],{type:'application/json'}),url=URL.createObjectURL(blob),link=document.createElement('a');link.href=url;link.download='space-cat-dash-save.json';document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);settingsStatus.textContent='Backup downloaded. Keep it somewhere safe.';}catch{settingsStatus.textContent='Download is unavailable in this browser.';}
+    }
+    function parseSave(text){
+      if(typeof text!=='string'||text.length>100000)throw Error('Save is too large.');
+      let p;try{p=JSON.parse(text);}catch{throw Error('This is not valid JSON.');}
+      if(!p||p.game!=='Space Cat Dash'||p.format!==1||!p.progress||Array.isArray(p.progress))throw Error('Choose a Space Cat Dash exported save.');
+      const r=p.progress,validNumber=n=>typeof n==='number'&&Number.isFinite(n)&&n>=0&&n<=1e9;
+      if(![1,2,3].includes(r.version)||!validNumber(r.wallet)||!validNumber(r.totalFood)||!Array.isArray(r.released)||r.released.some(n=>!Number.isInteger(n)||n<0||n>=CAT_SKINS.length)||!validNumber(p.best))throw Error('Unsupported version or invalid progress.');
+      for(const k of ['wins','totalMeters','totalItems','runs'])if(!validNumber(r[k]))throw Error('Invalid progress totals.');
+      for(const k of Object.keys(UPGRADE_INFO))if(!Number.isInteger(r.upgrades?.[k])||r.upgrades[k]<0||r.upgrades[k]>5)throw Error('Invalid upgrade levels.');
+      for(const mode of ['classic','items'])for(const difficulty of ['easy','medium','hard'])for(const k of ['meters','bestMeters','strongBestMeters','food','items','bosses'])if(!validNumber(r.modeStats?.[mode+'_'+difficulty]?.[k]))throw Error('Invalid task progress.');
+      if(r.version===3&&(!Array.isArray(r.challenges)||r.challenges.length!==3||r.challenges.some(n=>!Number.isInteger(n)||n<0||n>3)))throw Error('Invalid chapter progress.');
+      return {progress:normalizeProgress(r),settings:normalizeSettings(p.settings),best:Math.floor(p.best)};
+    }
+    async function previewSaveFile(file){
+      pendingImport=null;applyImportBtn.disabled=true;
+      try{if(!file||file.size>100000)throw Error('Choose a JSON save smaller than 100 KB.');pendingImport=parseSave(await file.text());const r=pendingImport.progress;importPreview.textContent=`Preview: ${r.wallet} food credits · ${r.released.length} skins · ${r.challenges.filter(Boolean).length}/3 chapters. Applying REPLACES your current progress and settings. Export a backup first.`;applyImportBtn.disabled=false;}catch(e){importPreview.textContent='Import rejected: '+e.message;}
+    }
+    function applySave(){
+      if(!pendingImport||gameState!=='menu')return false;
+      Object.assign(progress,pendingImport.progress);settings=pendingImport.settings;best=pendingImport.best;currentSkin=progress.equipped;activeBonus=RELEASED_BONUSES[currentSkin];liveUpgrades={...progress.upgrades};
+      saveProgress();safeWrite('spacecat_best',String(best));safeWrite('spacecat_settings_v1',JSON.stringify(settings));pendingImport=null;applyImportBtn.disabled=true;updateHome();soundToggle.checked=settings.sound;volumeSlider.value=String(settings.volume*100);effectsToggle.checked=settings.reducedEffects;importPreview.textContent=storageAvailable?'Save imported. Existing progress was replaced.':'Save imported for this session only: browser storage is unavailable.';return true;
+    }
+    function renderChallenges(){challengeGrid.innerHTML=LEVELS.slice(1).map((level,i)=>{const id=i+1,locked=id>1&&!progress.challenges[id-2],stars=progress.challenges[i];return `<article class="skin-card"><span class="skin-badge">Chapter ${id} · ${stars?'★'.repeat(stars):'Not completed'}</span><h3>${level.name}</h3><p>${level.goal}</p><p>Practice pace · about 1–3 minutes. First clear: ${level.reward} food credits.</p><button class="btn-secondary" data-level="${id}" ${locked?'disabled':''}>${locked?'Clear previous chapter':stars?'Replay chapter':'Start chapter'}</button></article>`;}).join('');}
+    function startChallenge(id){if(!LEVELS[id]||(id>1&&!progress.challenges[id-2]))return false;challengeDialog.close();beginRunFromMenu(id);return true;}
+    function finishChallenge(){
+      if(!challengeId||gameOver)return;challengeWon=true;challengeBossWon=true;celebrationTick=180;recordRun();gameOver=true;running=false;failureReason='challengeComplete';failureTick=FAILURE_TICKS;
+      if(!devMode){const first=!progress.challenges[challengeId-1];progress.challenges[challengeId-1]=Math.max(progress.challenges[challengeId-1],runBossWins||challengeId<3?3:1);if(first){progress.wallet+=LEVELS[challengeId].reward;runWallet+=LEVELS[challengeId].reward;}saveProgress();}playSound('win');hint.textContent='Chapter complete! Your next mission is waiting.';updateHUD();
+    }
+    function updateChallenge(){if(!challengeId||gameOver||bossEncounter)return;const l=LEVELS[challengeId];if(challengeId<3&&runMeters>=l.meters&&foodCount>=l.food&&runItems>=l.items&&(challengeId!==1||doubleJumps>0))finishChallenge();}
+    function growthHint(){const next=GROWTH[growthLevel+1];return next?`${next.food-foodCount} more food to ${next.name}`:'Mighty · full strength';}
+    function taskFeedback(){
+      const candidates=SKIN_TASKS.map((task,i)=>({task,i})).filter(({task,i})=>task&&task.mode===(itemMode?'items':'classic')&&task.difficulty===difficultyKey&&!progress.released.includes(i));
+      if(challengeId)return `Chapter objective: ${LEVELS[challengeId].goal}`;
+      return candidates.slice(0,2).map(({task,i})=>`${CAT_SKINS[i].name}: ${Math.floor(Math.min(task.target,milestoneValue(task)))}/${task.target} (+${Math.max(0,Math.floor(milestoneValue(task)-(runTaskStart[i]||0)))} this run)`).join(' · ')||'All released skins for this route are collected. Try another mode or difficulty.';
+    }
+    function physicsStep(){player.vy+=GRAVITY;player.y+=player.vy;if(player.y>=GROUND_Y-player.h){player.y=GROUND_Y-player.h;player.vy=0;player.onGround=true;player.jumpsUsed=0;}}
+    function updateRegion(){const next=challengeId?challengeId-1:Math.min(2,Math.floor(runMeters/900));if(next!==regionIndex){regionIndex=next;regionTick=0;obstacles.length=0;hint.textContent=REGIONS[next].name+' · '+REGIONS[next].intro;}regionTick++;}
+    function updateEffects(){if(growthFlash>0)growthFlash--;if(celebrationTick>0)celebrationTick--;if(settings.reducedEffects){skinParticles.length=0;return;}for(const p of skinParticles){p.x-=p.vx;p.life--;}skinParticles=skinParticles.filter(p=>p.life>0);}
+    function emitSkinEffect(){if(settings.reducedEffects||currentSkin===0)return;skinParticles.push({x:player.x+player.w/2,y:player.y+player.h*.7,life:25,vx:1.6,color:CAT_SKINS[currentSkin].ear,shape:currentSkin===7||currentSkin===10?'star':currentSkin%3===0?'ring':'dot'});if(skinParticles.length>30)skinParticles.shift();}
+    function drawRegion(){
+      const r=REGIONS[regionIndex];ctx.fillStyle=r.sky;ctx.fillRect(0,0,canvas.width,canvas.height);ctx.save();ctx.globalAlpha=.28;
+      if(regionIndex===0){ctx.fillStyle='#cddbeb';ctx.beginPath();ctx.arc(canvas.width-120,80,45,0,Math.PI*2);ctx.fill();ctx.fillStyle='#8194ad';for(let i=0;i<4;i++){ctx.beginPath();ctx.arc(canvas.width-135+i*12,75+i%2*14,7,0,Math.PI*2);ctx.fill();}}
+      else if(regionIndex===1){ctx.strokeStyle='#73e8d4';ctx.lineWidth=7;for(let x=0;x<canvas.width;x+=170){ctx.strokeRect(x,100,100,180);ctx.beginPath();ctx.moveTo(x,100);ctx.lineTo(x+100,280);ctx.stroke();}}
+      else{ctx.fillStyle='#bc75e7';for(let i=0;i<6;i++){ctx.beginPath();ctx.ellipse(i*200,160,150,70,i*.4,0,Math.PI*2);ctx.fill();}}
+      ctx.restore();ctx.fillStyle='#c9dbff';ctx.font='12px Trebuchet MS';ctx.fillText(r.name,18,24);
+      if(regionTick<240&&!bossEncounter){ctx.fillStyle='#fff0c0';ctx.textAlign='center';ctx.fillText(r.intro,canvas.width/2,45);ctx.textAlign='left';}
+    }
+    function drawEffects(){
+      if(!settings.reducedEffects){for(const p of skinParticles){ctx.save();ctx.globalAlpha=p.life/25;ctx.fillStyle=p.color;ctx.strokeStyle=p.color;if(p.shape==='star'){ctx.fillRect(p.x-4,p.y-1,8,2);ctx.fillRect(p.x-1,p.y-4,2,8);}else{ctx.beginPath();ctx.arc(p.x,p.y,3,0,Math.PI*2);p.shape==='ring'?ctx.stroke():ctx.fill();}ctx.restore();}}
+      if(growthFlash>0&&!bossEncounter){ctx.save();ctx.fillStyle='#79e7a6';ctx.textAlign='center';ctx.font='bold 20px Trebuchet MS';ctx.fillText(`${growthStage().name}! · ${growthHint()}`,canvas.width/2,112);if(!settings.reducedEffects){ctx.strokeStyle='#79e7a688';ctx.beginPath();ctx.arc(player.x+26,player.y+25,40+(120-growthFlash)*.2,0,Math.PI*2);ctx.stroke();}ctx.restore();}
+      if(celebrationTick>0||challengeWon){ctx.save();ctx.fillStyle=CAT_SKINS[currentSkin].head;ctx.textAlign='center';ctx.font='bold 22px Trebuchet MS';ctx.fillText(challengeWon?'CHAPTER COMPLETE':'WARDEN DEFEATED',canvas.width/2,80);if(!settings.reducedEffects)for(let i=0;i<12;i++)ctx.fillRect(canvas.width/2+Math.cos(i)*100,100+Math.sin(i)*30,4,4);ctx.restore();}
+    }
+    function attackBoss(){
+      unlockAudio();if(paused||gameOver||!bossEncounter||bossEncounter.won)return false;const b=bossEncounter;
+      if(b.tick<90||b.tick%210<80||b.tick%210>145||b.cooldown>0){hint.textContent='Wait for the gold OPEN signal, then press J or PULSE.';return false;}
+      b.hp--;b.cooldown=35;playSound('pulse');hint.textContent=`Direct hit! ${b.hp} weak points remaining.`;
+      if(b.hp<=0){b.won=true;b.winTick=0;creditBoss();celebrationTick=180;playSound('win');}return true;
+    }
+    function startBoss(){
+      bossNumber++;const required=(difficultyKey==='hard'||bossNumber>1)?4:3,strong=growthLevel>=required;
+      bossEncounter={tick:0,required,strong,won:false,reward:5+({easy:0,medium:1,hard:2}[difficultyKey])+(itemMode?3:0),name:challengeId?'Training Warden':BOSS_NAMES[itemMode?'items':'classic'][difficultyKey],credited:false,hp:strong?3:5,maxHp:strong?3:5,lives:strong?4:2,maxLives:strong?4:2,cooldown:0,invulnerable:0,shots:[],winTick:0};
+      obstacles.length=0;foods.length=0;toolItems.length=0;player.y=GROUND_Y-player.h;player.vy=0;player.onGround=true;player.jumpsUsed=0;
+      hint.textContent='Dodge red meteors. Gold OPEN = press J / PULSE. Strong cats need fewer hits and can take more damage.';playSound('hit');
+    }
+    function creditBoss(){
+      if(!bossEncounter||bossEncounter.credited)return;bossEncounter.credited=true;runBossWins++;score+=500*difficultyCfg.scoreMul;
+      if(!devMode&&!challengeId){progress.wins++;progress.winsByDifficulty[difficultyKey]++;modeRecord().bosses++;if(!progress.released.includes(bossEncounter.reward))progress.released.push(bossEncounter.reward);saveProgress();}
+      best=Math.max(best,Math.floor(score));safeWrite('spacecat_best',String(best));hint.textContent=challengeId?'Warden defeated! Chapter complete.':devMode?'Boss defeated · test reward not saved':`Boss defeated! ${CAT_SKINS[bossEncounter.reward].name} is in your cabinet.`;
+    }
+    function updateBoss(){
+      const b=bossEncounter;b.tick++;physicsStep();if(magnetTicks>0)magnetTicks--;if(shieldTicks>0)shieldTicks--;if(b.cooldown>0)b.cooldown--;if(b.invulnerable>0)b.invulnerable--;
+      if(b.won){b.winTick++;if(b.winTick>=120){bossEncounter=null;nextBossAt+=BOSS_INTERVAL[difficultyKey];if(challengeId===3)finishChallenge();}return;}
+      const phase=b.tick%210;
+      if(b.tick>=90&&(phase===160||(difficultyKey==='hard'&&phase===190))){b.shots.push({x:Math.min(canvas.width-140,460),y:GROUND_Y-20,w:24,h:24});}
+      for(const shot of b.shots){shot.x-=5.5;if(collide(player,shot,4)&&b.invulnerable===0){if(shieldTicks>0){shieldTicks=0;hint.textContent='Shield absorbed the hit.';}else{b.lives--;playSound('hit');}b.invulnerable=90;shot.x=-40;if(b.lives<=0){failRun('boss');return;}}}b.shots=b.shots.filter(s=>s.x>-30);
+      if(b.tick>=2400)failRun('boss');
+    }
+    function drawBoss(){
+      if(!bossEncounter)return;const b=bossEncounter,x=canvas.width-105,y=205,open=b.tick>=90&&b.tick%210>=80&&b.tick%210<=145&&!b.won;
+      ctx.save();ctx.translate(x,y);ctx.globalAlpha=b.won?Math.max(0,1-b.winTick/120):1;ctx.fillStyle=['#a59086','#e2a756','#9560c4'][{easy:0,medium:1,hard:2}[difficultyKey]];ctx.beginPath();ctx.arc(0,0,58,0,Math.PI*2);ctx.fill();ctx.fillStyle='#2e2046';ctx.fillRect(-30,-20,18,12);ctx.fillRect(12,-20,18,12);ctx.fillRect(-25,20,50,8);ctx.fillStyle=open?'#ffd166':'#ff5d8f';ctx.beginPath();ctx.arc(0,5,12,0,Math.PI*2);ctx.fill();ctx.restore();
+      for(const shot of b.shots){ctx.fillStyle='#ff5d8f';ctx.beginPath();ctx.arc(shot.x+12,shot.y+12,12,0,Math.PI*2);ctx.fill();}
+      ctx.save();ctx.textAlign='center';ctx.fillStyle='#fff0c0';ctx.font='bold 18px Trebuchet MS';ctx.fillText(b.name,canvas.width/2,65);ctx.font='14px Trebuchet MS';ctx.fillText(`Warden ${b.hp}/${b.maxHp} · Your hearts ${b.lives}/${b.maxLives} · ${b.strong?'Strong advantage':'Skill route'}`,canvas.width/2,87);ctx.fillStyle=open?'#ffd166':'#b8d5ff';ctx.fillText(b.won?'DEFEATED':b.tick<90?'Get ready: jump over red meteors, pulse when gold.':open?'OPEN · J / PULSE NOW':'DODGE · Jump over red meteors',canvas.width/2,112);ctx.restore();
+    }
+    settingsBtn.addEventListener('click',showSettings);closeSettingsBtn.addEventListener('click',()=>settingsDialog.close());soundToggle.addEventListener('change',saveSettings);volumeSlider.addEventListener('input',saveSettings);effectsToggle.addEventListener('change',saveSettings);
+    byId('soundTestBtn').addEventListener('click',()=>{unlockAudio();playSound('food');settingsStatus.textContent=audioFailed?'Sound is unavailable in this browser.':'Sound preview uses your current volume.';});
+    exportBtn.addEventListener('click',downloadSave);importFile.addEventListener('change',()=>previewSaveFile(importFile.files?.[0]));applyImportBtn.addEventListener('click',applySave);
+    challengeGrid.addEventListener('click',e=>{const button=e.target.closest('[data-level]');if(button)startChallenge(Number(button.dataset.level));});
+    attackBtn.addEventListener('click',attackBoss);
 
     resizeGame();
     window.addEventListener('resize', resizeGame);

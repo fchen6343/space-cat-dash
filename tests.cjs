@@ -33,14 +33,6 @@ for(const g of [baselineMagnet,upgradedMagnet]){begin(g,'items');g.read('collect
 assert(upgradedMagnet.read('foods[0].x')<baselineMagnet.read('foods[0].x'));
 // Upgraded shield reach destroys an obstacle outside the un-upgraded collision box.
 shop.read('obstacles.length=0; foods.length=0; player.y=280; player.vy=0; obstacles.push({x:160,y:285,w:30,h:30,rot:0,spin:0}); update()');assert.equal(shop.read('obstacles.length'),0);
-// Boss encounters: weak cats fail, strong ones win and keep running; route-specific loot.
-for(const difficulty of ['easy','medium','hard'])for(const mode of ['classic','items']){
- const g=create();begin(g,mode,difficulty);for(let i=0;i<35;i++)g.read('collectFood()');g.read('runMeters=nextBossAt; startBoss()');for(let i=0;i<240;i++)g.read('update()');
- assert.equal(g.read('gameOver'),false);assert.equal(g.read('bossEncounter'),null);assert.equal(g.read('running'),true);assert.equal(g.read('progress.wins'),1);
- const reward=5+({easy:0,medium:1,hard:2}[difficulty])+(mode==='items'?3:0);assert(g.read(`progress.released.includes(${reward})`));assert(create(g.store).read(`progress.released.includes(${reward})`));
-}
-const weak=create();begin(weak);weak.read('runMeters=nextBossAt; startBoss()');for(let i=0;i<120;i++)weak.read('update()');assert.equal(weak.read('gameOver'),true);assert.equal(weak.read('failureReason'),'boss');assert.equal(weak.read('progress.wins'),0);
-const bossDev=create();begin(bossDev,'items','hard',true);for(let i=0;i<35;i++)bossDev.read('collectFood()');bossDev.read('startBoss()');for(let i=0;i<240;i++)bossDev.read('update()');assert.equal(bossDev.read('progress.wins'),0);assert.equal(bossDev.read('progress.released.length'),1);
 // Actual distance triggers the encounter; collecting 20 food never ends the run.
 const distance=create();begin(distance);distance.read('spawnObstacle=()=>{};spawnFood=()=>{};');for(let i=0;i<20;i++)distance.read('collectFood()');for(let i=0;i<2500&&!distance.read('bossEncounter');i++)distance.read('update()');assert(distance.read('bossEncounter!==null'));assert(distance.read('runMeters>=1200'));
 // There must be enough food opportunities before the first Boss, even on Hard.
@@ -55,4 +47,36 @@ const pause=create();begin(pause);pause.read('collectTool("shield");');pause.key
 let baseline;for(const hz of [30,60,120,144,240]){const g=create();begin(g);g.read('spawnObstacle=()=>{};');for(let i=1;i<=hz*4;i++)g.frame(i*1000/hz);const value=g.read('JSON.stringify({score,runMeters,speed})');if(baseline)assert.equal(value,baseline);baseline=value;}
 const jump=create();begin(jump);jump.frame(1000/60);for(let i=0;i<5;i++)jump.key('Space',true);assert.equal(jump.read('player.jumpsUsed'),1);jump.key('Space');assert.equal(jump.read('player.jumpsUsed'),2);assert.equal(jump.read('player.vy'),jump.read('JUMP_VELOCITY*growthStage().jump'));
 create({},390,true);create({spacecat_collection_v1:'broken'});assert.equal(create({},390).els.game.width,640);
-console.log('PASS: no blue bars; growth; mode/difficulty locks; currency and 4 upgrade tracks; migration; Boss success/failure/loot; endless continuation; 3 failure animations; pause, replay, timing and jumps.');
+// Bosses require actual input and offer a viable skilled route at low growth.
+function fight(g){for(let i=0;i<1800&&g.read('bossEncounter&&!gameOver');i++){
+ if(g.read('bossEncounter.shots.some(s=>s.x<220&&s.x>70)&&player.onGround'))g.key('Space');
+ g.key('KeyJ');g.read('update();render()');
+}}
+for(const difficulty of ['easy','medium','hard'])for(const mode of ['classic','items']){
+ const g=create();begin(g,mode,difficulty);for(let i=0;i<35;i++)g.read('collectFood()');g.read('runMeters=nextBossAt;startBoss()');
+ assert.equal(g.read('bossEncounter.won'),false);assert.equal(g.read('bossEncounter.hp'),3);assert.equal(g.read('bossEncounter.lives'),4);
+ assert.equal(g.read('attackBoss()'),false);fight(g);assert(!g.read('gameOver'));assert.equal(g.read('bossEncounter'),null);assert.equal(g.read('progress.wins'),1);
+ const reward=5+({easy:0,medium:1,hard:2}[difficulty])+(mode==='items'?3:0);assert(g.read(`progress.released.includes(${reward})`));assert(create(g.store).read(`progress.released.includes(${reward})`));
+}
+const skilled=create();begin(skilled);skilled.read('startBoss()');assert.equal(skilled.read('bossEncounter.hp'),5);assert.equal(skilled.read('bossEncounter.lives'),2);fight(skilled);assert(!skilled.read('gameOver'));assert.equal(skilled.read('progress.wins'),1);
+const idle=create();begin(idle);idle.read('startBoss()');for(let i=0;i<1000&&!idle.read('gameOver');i++)idle.read('update()');assert(idle.read('gameOver'));assert.equal(idle.read('failureReason'),'boss');assert.equal(idle.read('progress.wins'),0);
+const bossDev=create();begin(bossDev,'items','hard',true);for(let i=0;i<35;i++)bossDev.read('collectFood()');bossDev.read('startBoss()');fight(bossDev);assert.equal(bossDev.read('progress.wins'),0);assert.equal(bossDev.read('progress.wallet'),0);
+const combatPause=create();begin(combatPause);combatPause.read('startBoss()');combatPause.key('Escape');const frozenBoss=combatPause.read('JSON.stringify(bossEncounter)');for(let i=0;i<100;i++){combatPause.key('KeyJ');combatPause.read('update()');}assert.equal(combatPause.read('JSON.stringify(bossEncounter)'),frozenBoss);
+// Regional transition clears obstacles and introduces the new hazards safely.
+const region=create();begin(region);region.read('runMeters=900;obstacles.push({x:100});updateRegion();');assert.equal(region.read('regionIndex'),1);assert.equal(region.read('obstacles.length'),0);for(let i=0;i<100;i++)region.read('update()');assert.equal(region.read('obstacles.length'),0);assert(region.els.hint.textContent.includes('drones'));
+region.read('Math.random=()=>.1;spawnObstacle()');assert.equal(region.read('obstacles[0].kind'),'drone');assert(region.read('obstacles[0].y<GROUND_Y-100'));
+// Chapters preserve mode-specific gates and reward first clears only once.
+const chapters=create();assert(!chapters.read('startChallenge(2)'));assert(chapters.read('startChallenge(1)'));chapters.key('Space');chapters.key('Space');for(let i=0;i<8;i++)chapters.read('collectFood()');chapters.read('runMeters=2200;updateChallenge();');assert(chapters.read('challengeWon'));assert.equal(chapters.read('progress.challenges[0]'),3);assert.equal(chapters.read('progress.wallet'),28);assert.equal(chapters.read('progress.modeStats.classic_easy.food'),0);assert.equal(chapters.read('progress.modeStats.classic_easy.bosses'),0);
+chapters.els.retryBtn.click();assert.equal(chapters.read('challengeId'),1);assert.equal(chapters.read('runMeters'),0);chapters.key('Space');chapters.key('Space');for(let i=0;i<8;i++)chapters.read('collectFood()');chapters.read('runMeters=2200;updateChallenge()');assert.equal(chapters.read('progress.wallet'),36);
+assert(chapters.read('startChallenge(2)'));chapters.key('Space');for(let i=0;i<5;i++)chapters.read('collectTool("magnet")');chapters.read('runMeters=2600;updateChallenge()');assert.equal(chapters.read('progress.wallet'),66);assert.equal(chapters.read('progress.modeStats.items_easy.items'),0);
+assert(chapters.read('startChallenge(3)'));chapters.key('Space');chapters.read('runMeters=2000;startBoss()');fight(chapters);assert(chapters.read('challengeWon'));assert.equal(chapters.read('progress.wallet'),106);assert.equal(chapters.read('progress.wins'),0);assert(!chapters.read('progress.released.includes(5)'));assert.equal(create(chapters.store).read('progress.challenges.join(",")'),'3,3,3');
+// Validate real file serialization, replacement, old-version migration and rejection.
+chapters.read('backToMenu()');const exported=chapters.read('makeSave()');const target=create();target.read(`pendingImport=parseSave(${JSON.stringify(exported)})`);assert(target.read('applySave()'));assert.equal(target.read('progress.wallet'),106);assert.equal(target.read('progress.challenges[2]'),3);assert.equal(create(target.store).read('progress.wallet'),106);
+const legacy=JSON.parse(exported);legacy.progress.version=2;delete legacy.progress.challenges;assert.equal(target.read(`parseSave(${JSON.stringify(JSON.stringify(legacy))}).progress.challenges.join(',')`),'0,0,0');
+const before=target.read('JSON.stringify(progress)');for(const bad of ['bad','{}',JSON.stringify({...legacy,game:'Other'}),JSON.stringify({...legacy,format:99}),JSON.stringify({...legacy,progress:{...legacy.progress,wallet:-1}}),JSON.stringify({...legacy,progress:{...legacy.progress,upgrades:{...legacy.progress.upgrades,magnetTime:99}}}),JSON.stringify({...legacy,progress:{...legacy.progress,modeStats:{}}})]){assert.throws(()=>target.read(`parseSave(${JSON.stringify(bad)})`));assert.equal(target.read('JSON.stringify(progress)'),before);}
+const blocked=create({},1080,true);blocked.read(`pendingImport=parseSave(${JSON.stringify(exported)})`);assert(blocked.read('applySave()'));assert.equal(blocked.read('progress.wallet'),106);assert.equal(blocked.read('storageAvailable'),false);
+// Stored sound/effects preferences, silent fallback and bounded cosmetic particles.
+target.els.soundToggle.checked=false;target.els.volumeSlider.value='25';target.els.effectsToggle.checked=true;target.els.soundToggle.change();assert.equal(create(target.store).read('settings.volume'),.25);assert.equal(create(target.store).read('settings.sound'),false);assert.equal(create(target.store).read('settings.reducedEffects'),true);
+target.read('settings.reducedEffects=true;currentSkin=7;emitSkinEffect()');assert.equal(target.read('skinParticles.length'),0);target.read('settings.reducedEffects=false;');for(let i=0;i<50;i++)target.read('emitSkinEffect()');assert.equal(target.read('skinParticles.length'),30);assert.equal(target.read('skinParticles[0].shape'),'star');
+const sound=create();sound.read(`window.AudioContext=class{constructor(){this.state='running';this.currentTime=0;this.destination={};}createOscillator(){return{frequency:{setValueAtTime(){}},connect(){},start(){},stop(){}}}createGain(){return{gain:{setValueAtTime(){},linearRampToValueAtTime(){},exponentialRampToValueAtTime(){}},connect(){}}}};unlockAudio();playSound('grow')`);assert.equal(sound.read('audioFailed'),false);
+console.log('PASS: six Boss routes, skilled weak-cat victory, real damage/failure, pause, regional grace, all chapters/rewards/replay, strict save validation/import/migration, sound/effects settings and bounded particles.');
