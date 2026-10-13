@@ -2,6 +2,12 @@
 
 An offline Canvas runner about a space cat dodging meteors, eating food, growing stronger and fighting Wardens. It uses one HTML file, with no backend, external assets or online APIs.
 
+## Language and pixel style
+
+Choose English or Simplified Chinese from the top-bar Language selector or Settings & Save. The game remembers your choice, and switching during a run pauses play. Menus, HUD, skin tasks, chapters, Boss messages and save prompts are localized. Nicknames and existing progress are preserved. Save backups include the preference; older backups keep the current language.
+
+The presentation now uses shaded pixel cats, four running poses, pixel planets and layered terrain, clear item/Boss sprites and bounded square-particle feedback. Retro square/triangle sound motifs retain mute/volume and offline play. Reduced-effects settings suppress optional particles.
+
 ## Play
 
 [Play in your browser](https://fchen6343.github.io/space-cat-dash/), or download `index.html` and open it offline.

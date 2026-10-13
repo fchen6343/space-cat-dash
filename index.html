@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Space Cat Dash</title>
+  <title>Space Cat Dash</title><link rel="icon" href="data:,">
   <style>
     :root {
       --bg-top: #0a1028;
@@ -299,76 +299,95 @@
     .end-details { font-size:12px; color:#b8d5ff; line-height:1.6; margin-bottom:16px; }
     .overlay-card { max-height:95%; overflow:auto; }
     @media(max-width:600px) { .goal-bar { flex-wrap:wrap; } .goal-bar span { white-space:normal; } }
+    :root { --bg-top:#253148; --bg-bottom:#495a79; --panel:#263550; --line:#c0d9e5; --accent:#f2c48f; --text:#edf2f6; }
+    .game-wrap { border:2px solid #a9c4d0; border-radius:6px; box-shadow:7px 7px 0 #1b273d70; }
+    .brand,.start-title { font-family:Consolas,"Microsoft YaHei",monospace; }
+    .topbar { background:#263550; flex-wrap:wrap; }
+    .language-control { margin-left:auto; display:flex; gap:8px; align-items:center; font-size:12px; }
+    .language-control select { width:auto; font-size:13px; padding:7px; min-height:36px; border-radius:3px; }
+    .topbar-note { display:none; }
+    .start-panel,.overlay-card,.skin-card { border-radius:5px; }
+    .start-panel { background:#273650; border:2px solid #7d97ae; }
+    .start-screen { background:#30415b; }
+    .btn-start,.btn-restart { background:#edc08d; border-radius:3px; box-shadow:inset 0 -3px #b88657; }
+    .btn-secondary,.icon-button,.btn-mini { border-radius:3px; }
+    .hud { grid-template-columns:repeat(5,minmax(0,1fr)); background:#25344b; font-size:12px; }
+    .goal-bar { background:#293a53; }
+    .mobile-jump { background:#47627c; }
+    #game { image-rendering:pixelated; }
+    dialog { border-radius:5px; border:2px solid #8faec0; background:#25354f; }
+    .dialog-header { background:#25354f; }
+    @media(max-width:600px){.hud {grid-template-columns:repeat(4,minmax(0,1fr));font-size:11px;} .hud #toolText{grid-column:span 3;} .brand{font-size:14px;} .language-control{gap:4px;font-size:11px;} .language-control select{font-size:12px;} .topbar{gap:6px;} }
   </style>
 </head>
 <body>
   <div class="game-wrap">
     <header class="topbar">
-      <button id="pauseBtn" class="icon-button" aria-label="Pause game" title="Pause / Esc" disabled>Ⅱ</button>
-      <span class="brand">Space Cat Dash</span>
-      <span class="topbar-note">Double jump · Offline play</span>
+      <button id="pauseBtn" class="icon-button" aria-label="Pause game" title="Pause / Esc" disabled data-aria-en="Pause game" data-title-en="Pause / Esc">Ⅱ</button>
+      <span class="brand"><span data-en="Space Cat Dash">Space Cat Dash</span></span><label class="language-control"><span><span data-en="Language">Language</span></span><select id="languageSelect" aria-label="Language" data-aria-en="Language"><option value="en">English</option><option value="zh-CN">简体中文</option></select></label>
+      <span class="topbar-note"><span data-en="Double jump · Offline play">Double jump · Offline play</span></span>
     </header>
     <main class="start-screen" id="startScreen">
       <div class="start-panel">
-        <h1 class="start-title">Ready for Takeoff</h1>
-        <p class="goal-copy">Run endlessly. Eat food to grow from <strong>Hungry → Strong → Mighty</strong>.<br>Prepare for the next Boss. Press Space / ↑ or tap twice to double jump.</p>
+        <h1 class="start-title"><span data-en="Ready for Takeoff">Ready for Takeoff</span></h1>
+        <p class="goal-copy"><span data-en="Run endlessly. Eat food to grow from ">Run endlessly. Eat food to grow from </span><strong><span data-en="Hungry → Strong → Mighty">Hungry → Strong → Mighty</span></strong>.<br><span data-en="Prepare for the next Boss. Press Space / ↑ or tap twice to double jump.">Prepare for the next Boss. Press Space / ↑ or tap twice to double jump.</span></p>
         <div class="home-stats" id="homeStats"></div>
-        <div><label class="field-label" for="nicknameInput">Name</label><input id="nicknameInput" type="text" maxlength="12" placeholder="Enter your nickname" value="Player" /></div>
-        <div><label class="field-label" for="difficultySelect">Difficulty</label><select id="difficultySelect"><option value="easy">Easy</option><option value="medium" selected>Medium</option><option value="hard">Hard</option></select></div>
+        <div><label class="field-label" for="nicknameInput"><span data-en="Name">Name</span></label><input id="nicknameInput" type="text" maxlength="12" placeholder="Enter your nickname" value="Player" /></div>
+        <div><label class="field-label" for="difficultySelect"><span data-en="Difficulty">Difficulty</span></label><select id="difficultySelect"><option value="easy">Easy</option><option value="medium" selected>Medium</option><option value="hard">Hard</option></select></div>
         <div class="tool-box">
-          <span class="field-label">Power-ups</span>
-          <div class="tool-row"><label><input id="itemModeToggle" type="checkbox" /> Item Mode (random power-ups)</label></div>
-          <div class="tool-row" id="toolOptionsRow"><label><input id="devModeToggle" type="checkbox" /> Developer Mode (choose starting power-ups)</label><button id="devToolsToggleBtn" class="btn-mini hidden" type="button">Show Options</button></div>
-          <div class="tool-row hidden" id="devToolsPanel"><label><input id="magnetToggle" type="checkbox" disabled /> Starting Magnet (attracts food for 5s)</label><label><input id="shieldToggle" type="checkbox" disabled /> Starting Shield (invincible for 5s)</label></div>
+          <span class="field-label"><span data-en="Power-ups">Power-ups</span></span>
+          <div class="tool-row"><label><input id="itemModeToggle" type="checkbox" /><span data-en=" Item Mode (random power-ups)"> Item Mode (random power-ups)</span></label></div>
+          <div class="tool-row" id="toolOptionsRow"><label><input id="devModeToggle" type="checkbox" /><span data-en=" Developer Mode (choose starting power-ups)"> Developer Mode (choose starting power-ups)</span></label><button id="devToolsToggleBtn" class="btn-mini hidden" type="button"><span data-en="Show Options">Show Options</span></button></div>
+          <div class="tool-row hidden" id="devToolsPanel"><label><input id="magnetToggle" type="checkbox" disabled /><span data-en=" Starting Magnet (attracts food for 5s)"> Starting Magnet (attracts food for 5s)</span></label><label><input id="shieldToggle" type="checkbox" disabled /><span data-en=" Starting Shield (invincible for 5s)"> Starting Shield (invincible for 5s)</span></label></div>
         </div>
-        <button class="btn-start" id="startBtn">Start Endless Run</button>
-        <button class="btn-secondary" id="settingsBtn">Settings &amp; Save · 设置与存档</button>
-        <button class="btn-secondary" id="workshopBtn">Power-up Workshop · 道具升级</button>
-        <div class="home-actions"><button id="collectionBtn" class="btn-secondary">Skin Cabinet · 收藏柜</button><button id="challengeBtn" class="btn-secondary">Challenge Mode · 闯关</button></div>
-        <p class="helper" id="equippedText">Equipped: Snowball</p>
-        <p class="helper">Bank food from normal runs to upgrade power-ups. Developer Mode does not earn food, skins or achievements.</p>
-        <p class="storage-note hidden" id="storageNotice">Saving is unavailable in this browser. Progress will last for this session only.</p>
+        <button class="btn-start" id="startBtn"><span data-en="Start Endless Run">Start Endless Run</span></button>
+        <button class="btn-secondary" id="settingsBtn"><span data-en="Settings and Save · 设置与存档">Settings and Save · 设置与存档</span></button>
+        <button class="btn-secondary" id="workshopBtn"><span data-en="Power-up Workshop · 道具升级">Power-up Workshop · 道具升级</span></button>
+        <div class="home-actions"><button id="collectionBtn" class="btn-secondary"><span data-en="Skin Cabinet · 收藏柜">Skin Cabinet · 收藏柜</span></button><button id="challengeBtn" class="btn-secondary"><span data-en="Challenge Mode · 闯关">Challenge Mode · 闯关</span></button></div>
+        <p class="helper" id="equippedText"><span data-en="Equipped: Snowball">Equipped: Snowball</span></p>
+        <p class="helper"><span data-en="Bank food from normal runs to upgrade power-ups. Developer Mode does not earn food, skins or achievements.">Bank food from normal runs to upgrade power-ups. Developer Mode does not earn food, skins or achievements.</span></p>
+        <p class="storage-note hidden" id="storageNotice"><span data-en="Saving is unavailable in this browser. Progress will last for this session only.">Saving is unavailable in this browser. Progress will last for this session only.</span></p>
       </div>
     </main>
-    <section id="gameArea" class="hidden" aria-label="Current run">
+    <section id="gameArea" class="hidden" aria-label="Current run" data-aria-en="Current run">
       <div class="hud">
-        <div id="nameText">Name Player</div><div id="difficultyText">Difficulty Medium</div><div id="scoreText">Score 00000</div><div id="bestText">Best 00000</div>
-        <div id="foodText">Food 0</div><div id="skinText">Hungry · Lv 1</div><div id="jumpText">Jumps 2/2</div><div id="distanceText">Distance 0m</div><div id="toolText">Items None</div><div id="shieldText">Shield 0.0s</div>
+        <div id="nameText"><span data-en="Name Player">Name Player</span></div><div id="difficultyText"><span data-en="Difficulty Medium">Difficulty Medium</span></div><div id="scoreText"><span data-en="Score 00000">Score 00000</span></div><div id="bestText"><span data-en="Best 00000">Best 00000</span></div>
+        <div id="foodText"><span data-en="Food 0">Food 0</span></div><div id="skinText"><span data-en="Hungry · Lv 1">Hungry · Lv 1</span></div><div id="jumpText"><span data-en="Jumps 2/2">Jumps 2/2</span></div><div id="distanceText"><span data-en="Distance 0m">Distance 0m</span></div><div id="toolText"><span data-en="Items None">Items None</span></div><div id="shieldText"><span data-en="Shield 0.0s">Shield 0.0s</span></div>
       </div>
-      <div class="goal-bar"><span id="growthGoal">Growth</span><progress id="foodProgress" max="5" value="0" aria-label="Food toward next strength level"></progress></div>
+      <div class="goal-bar"><span id="growthGoal"><span data-en="Growth">Growth</span></span><progress id="foodProgress" max="5" value="0" aria-label="Food toward next strength level" data-aria-en="Food toward next strength level"></progress></div>
       <div class="canvas-shell">
-        <canvas id="game" width="1080" height="400" aria-label="Space Cat Dash"></canvas>
-        <div id="pausePanel" class="overlay hidden"><div class="overlay-card"><h2>Paused</h2><p>Take a breather. Your run is waiting.</p><div class="panel-actions"><button id="resumeBtn" class="btn-start">Continue</button><button id="pauseRetryBtn" class="btn-secondary">Restart run</button><button id="pauseHomeBtn" class="btn-secondary">Back to home</button></div><p class="helper">Esc to continue</p></div></div>
-        <div id="endPanel" class="overlay hidden"><div class="overlay-card"><h2 id="endTitle">Run complete</h2><p id="endSummary"></p><div id="endDetails" class="end-details"></div><div class="panel-actions"><button id="retryBtn" class="btn-start">Play again</button><button id="victoryRestartBtn" class="btn-restart hidden">Back to home</button><button id="endHomeBtn" class="btn-secondary">Back to home</button></div></div></div>
+        <canvas id="game" width="1080" height="400" aria-label="Space Cat Dash" data-aria-en="Space Cat Dash"></canvas>
+        <div id="pausePanel" class="overlay hidden"><div class="overlay-card"><h2><span data-en="Paused">Paused</span></h2><p><span data-en="Take a breather. Your run is waiting.">Take a breather. Your run is waiting.</span></p><div class="panel-actions"><button id="resumeBtn" class="btn-start"><span data-en="Continue">Continue</span></button><button id="pauseRetryBtn" class="btn-secondary"><span data-en="Restart run">Restart run</span></button><button id="pauseHomeBtn" class="btn-secondary"><span data-en="Back to home">Back to home</span></button></div><p class="helper"><span data-en="Esc to continue">Esc to continue</span></p></div></div>
+        <div id="endPanel" class="overlay hidden"><div class="overlay-card"><h2 id="endTitle"><span data-en="Run complete">Run complete</span></h2><p id="endSummary"></p><div id="endDetails" class="end-details"></div><div class="panel-actions"><button id="retryBtn" class="btn-start"><span data-en="Play again">Play again</span></button><button id="victoryRestartBtn" class="btn-restart hidden"><span data-en="Back to home">Back to home</span></button><button id="endHomeBtn" class="btn-secondary"><span data-en="Back to home">Back to home</span></button></div></div></div>
       </div>
-      <div id="bossText" class="goal-bar">Boss ahead</div><button id="attackBtn" class="btn-start boss-action hidden">PULSE · J · Hit the gold weak point</button>
-      <div class="hint" id="hint">Press Space / ↑ or tap to jump.</div>
-      <button id="jumpBtn" class="mobile-jump">JUMP · Tap twice for a double jump</button>
+      <div id="bossText" class="goal-bar"><span data-en="Boss ahead">Boss ahead</span></div><button id="attackBtn" class="btn-start boss-action hidden"><span data-en="PULSE · J · Hit the gold weak point">PULSE · J · Hit the gold weak point</span></button>
+      <div class="hint" id="hint"><span data-en="Press Space / ↑ or tap to jump.">Press Space / ↑ or tap to jump.</span></div>
+      <button id="jumpBtn" class="mobile-jump"><span data-en="JUMP · Tap twice for a double jump">JUMP · Tap twice for a double jump</span></button>
     </section>
   </div>
   <dialog id="collectionDialog" aria-labelledby="collectionTitle">
-    <div class="dialog-header"><h2 id="collectionTitle">Skin Cabinet · 皮肤收藏柜</h2><button id="closeCollectionBtn" class="icon-button" aria-label="Close skin cabinet">×</button></div>
-    <p class="dialog-intro">Skins stay equipped while your cat grows stronger. Complete the specified mode and difficulty tasks to unlock looks. Legacy collections are preserved. Boss skins must be earned in their matching mode and difficulty.</p>
+    <div class="dialog-header"><h2 id="collectionTitle"><span data-en="Skin Cabinet · 皮肤收藏柜">Skin Cabinet · 皮肤收藏柜</span></h2><button id="closeCollectionBtn" class="icon-button" aria-label="Close skin cabinet" data-aria-en="Close skin cabinet">×</button></div>
+    <p class="dialog-intro"><span data-en="Skins stay equipped while your cat grows stronger. Complete the specified mode and difficulty tasks to unlock looks. Legacy collections are preserved. Boss skins must be earned in their matching mode and difficulty.">Skins stay equipped while your cat grows stronger. Complete the specified mode and difficulty tasks to unlock looks. Legacy collections are preserved. Boss skins must be earned in their matching mode and difficulty.</span></p>
     <div id="releasedGrid" class="collection-grid"></div>
-    <h3 class="future-heading">Future designs · 10 待推出皮肤</h3>
-    <p class="dialog-intro">Meet each condition to reserve a permanent unlock. Previews stay <strong>?</strong> until release. Planned bonuses become active only after release and equipping.</p>
+    <h3 class="future-heading"><span data-en="Future designs · 10 待推出皮肤">Future designs · 10 待推出皮肤</span></h3>
+    <p class="dialog-intro"><span data-en="Meet each condition to reserve a permanent unlock. Previews stay ">Meet each condition to reserve a permanent unlock. Previews stay </span><strong>?</strong><span data-en=" until release. Planned bonuses become active only after release and equipping."> until release. Planned bonuses become active only after release and equipping.</span></p>
     <div id="futureGrid" class="collection-grid"></div>
-    <p class="helper">Unlocked progress is stored locally. Developer Mode is excluded.</p>
+    <p class="helper"><span data-en="Unlocked progress is stored locally. Developer Mode is excluded.">Unlocked progress is stored locally. Developer Mode is excluded.</span></p>
   </dialog>
   <dialog id="challengeDialog" aria-labelledby="challengeTitle">
-    <div class="dialog-header"><h2 id="challengeTitle">Challenge Mode · 闯关模式</h2><button id="closeChallengeBtn" class="icon-button" aria-label="Close challenge mode">×</button></div>
-    <p class="dialog-intro">Three short practice chapters. Clear each to open the next. Earn a one-time food reward; replay whenever you like. Chapters do not unlock endless mode skins.</p><div id="challengeGrid" class="collection-grid"></div>
+    <div class="dialog-header"><h2 id="challengeTitle"><span data-en="Challenge Mode · 闯关模式">Challenge Mode · 闯关模式</span></h2><button id="closeChallengeBtn" class="icon-button" aria-label="Close challenge mode" data-aria-en="Close challenge mode">×</button></div>
+    <p class="dialog-intro"><span data-en="Three short practice chapters. Clear each to open the next. Earn a one-time food reward; replay whenever you like. Chapters do not unlock endless mode skins.">Three short practice chapters. Clear each to open the next. Earn a one-time food reward; replay whenever you like. Chapters do not unlock endless mode skins.</span></p><div id="challengeGrid" class="collection-grid"></div>
   </dialog>
 
   <dialog id="workshopDialog" aria-labelledby="workshopTitle">
-    <div class="dialog-header"><h2 id="workshopTitle">Power-up Workshop · 道具升级</h2><button class="icon-button" id="closeWorkshopBtn" aria-label="Close workshop">×</button></div>
-    <p class="dialog-intro" id="walletText"></p><p class="dialog-intro">Each food item collected in a normal run earns one food credit. Upgrades last across runs. Level costs: 10, 20, 30, 40 and 50 food.</p>
+    <div class="dialog-header"><h2 id="workshopTitle"><span data-en="Power-up Workshop · 道具升级">Power-up Workshop · 道具升级</span></h2><button class="icon-button" id="closeWorkshopBtn" aria-label="Close workshop" data-aria-en="Close workshop">×</button></div>
+    <p class="dialog-intro" id="walletText"></p><p class="dialog-intro"><span data-en="Each food item collected in a normal run earns one food credit. Upgrades last across runs. Level costs: 10, 20, 30, 40 and 50 food.">Each food item collected in a normal run earns one food credit. Upgrades last across runs. Level costs: 10, 20, 30, 40 and 50 food.</span></p>
     <div id="upgradeGrid" class="collection-grid"></div>
   </dialog>
   <dialog id="settingsDialog" aria-labelledby="settingsTitle">
-    <div class="dialog-header"><h2 id="settingsTitle">Settings &amp; Save · 设置与存档</h2><button id="closeSettingsBtn" class="icon-button" aria-label="Close settings">×</button></div>
-    <div class="settings-form"><label><input type="checkbox" id="soundToggle"> Sound effects · 音效</label><label for="volumeSlider">Volume · 音量</label><input type="range" id="volumeSlider" min="0" max="100" step="1"><button id="soundTestBtn" class="btn-secondary">Preview sound</button><label><input type="checkbox" id="effectsToggle"> Reduce visual effects · 减少视觉特效</label></div>
-    <p id="settingsStatus" class="dialog-intro" role="status"></p><h3>Save backup · 存档备份</h3><p class="dialog-intro">Export downloads a JSON backup. Import replaces your food, skins, upgrades, chapters, best score and settings after confirmation. Export your current save first.</p><button id="exportBtn" class="btn-secondary">Export save · 导出存档</button><label class="file-label" for="importFile">Choose save file · 选择存档</label><input type="file" id="importFile" accept=".json,application/json"><p id="importPreview" class="dialog-intro" role="status"></p><button id="applyImportBtn" class="btn-secondary" disabled>Replace current save · 确认覆盖当前存档</button>
+    <div class="dialog-header"><h2 id="settingsTitle"><span data-en="Settings and Save · 设置与存档">Settings and Save · 设置与存档</span></h2><button id="closeSettingsBtn" class="icon-button" aria-label="Close settings" data-aria-en="Close settings">×</button></div>
+    <div class="settings-form"><label><span data-en="Language">Language</span><select id="settingsLanguage" aria-label="Language" data-aria-en="Language"><option value="en">English</option><option value="zh-CN">简体中文</option></select></label><label><input type="checkbox" id="soundToggle"><span data-en=" Sound effects · 音效"> Sound effects · 音效</span></label><label for="volumeSlider"><span data-en="Volume · 音量">Volume · 音量</span></label><input type="range" id="volumeSlider" min="0" max="100" step="1"><button id="soundTestBtn" class="btn-secondary"><span data-en="Preview sound">Preview sound</span></button><label><input type="checkbox" id="effectsToggle"><span data-en=" Reduce visual effects · 减少视觉特效"> Reduce visual effects · 减少视觉特效</span></label></div>
+    <p id="settingsStatus" class="dialog-intro" role="status"></p><h3><span data-en="Save backup · 存档备份">Save backup · 存档备份</span></h3><p class="dialog-intro"><span data-en="Export downloads a JSON backup. Import replaces your food, skins, upgrades, chapters, best score and settings after confirmation. Export your current save first.">Export downloads a JSON backup. Import replaces your food, skins, upgrades, chapters, best score and settings after confirmation. Export your current save first.</span></p><button id="exportBtn" class="btn-secondary"><span data-en="Export save · 导出存档">Export save · 导出存档</span></button><label class="file-label" for="importFile"><span data-en="Choose save file · 选择存档">Choose save file · 选择存档</span></label><input type="file" id="importFile" accept=".json,application/json"><p id="importPreview" class="dialog-intro" role="status"></p><button id="applyImportBtn" class="btn-secondary" disabled><span data-en="Replace current save · 确认覆盖当前存档">Replace current save · 确认覆盖当前存档</span></button>
   </dialog>
   <script>
     const canvas = document.getElementById('game');
@@ -542,25 +561,25 @@
       safeWrite('spacecat_collection_v1',JSON.stringify(progress));
     }
     function updateHome(){
-      homeStats.textContent=`${progress.wallet} food credits · ${progress.wins} wins / Bosses · ${Math.floor(progress.totalMeters).toLocaleString()}m · ${progress.released.length}/${CAT_SKINS.length} skins`;
-      equippedText.textContent=`Equipped: ${CAT_SKINS[progress.equipped].name} · ${RELEASED_BONUSES[progress.equipped].label}`;
+      setText(homeStats,`${progress.wallet} food credits · ${progress.wins} wins / Bosses · ${Math.floor(progress.totalMeters).toLocaleString()}m · ${progress.released.length}/${CAT_SKINS.length} skins`);
+      setText(equippedText,`Equipped: ${CAT_SKINS[progress.equipped].name} · ${RELEASED_BONUSES[progress.equipped].label}`);
       storageNotice.classList.toggle('hidden',storageAvailable);
     }
     function renderCollection(){
       saveProgress();
-      releasedGrid.innerHTML=CAT_SKINS.map((skin,index)=>{
+      setMarkup(releasedGrid,CAT_SKINS.map((skin,index)=>{
         const owned=progress.released.includes(index),task=SKIN_TASKS[index],value=task?Math.min(task.target,Math.floor(milestoneValue(task))):1;
         const rarity=index===7||index===10?'Legendary':index>=5?'Rare':'Original';
         return `<article class="skin-card ${owned?'earned':''} ${rarity.toLowerCase()}"><div class="skin-preview">${owned?`<span class="mini-cat" style="--cat:${skin.body}"></span>`:'?'}</div><h3>${skin.name}</h3><span class="skin-badge">${rarity} · ${owned?'Collected · 已收藏':'Locked · 待解锁'}</span><p>${task?task.condition:'Your original companion.'}</p>${task?`<progress value="${value}" max="${task.target}" aria-label="${skin.name} task progress"></progress><p>${owned&&value<task.target?'Previously collected · carried over':`${value.toLocaleString()} / ${task.target.toLocaleString()}`}</p>`:''}<p>Bonus: ${RELEASED_BONUSES[index].label}</p><button class="btn-secondary" data-equip="${index}" ${!owned||progress.equipped===index?'disabled':''}>${progress.equipped===index?'Equipped':owned?'Equip':'Not unlocked'}</button></article>`;
-      }).join('');
-      futureGrid.innerHTML=FUTURE_SKINS.map(task=>{const earned=progress.upcoming.includes(task.id),value=Math.min(task.target,Math.floor(milestoneValue(task)));return `<article class="skin-card ${earned?'earned':''}"><div class="skin-preview" aria-label="Unrevealed skin">?</div><h3>Slot ${String(task.id).padStart(2,'0')} · ${task.name}</h3><span class="skin-badge">Coming Soon · 待推出</span><p>${task.condition}</p><progress max="${task.target}" value="${value}" aria-label="${task.name} unlock progress"></progress><p>${value.toLocaleString()} / ${task.target.toLocaleString()} · ${earned?'Reserved unlock · 已保留':'Locked · 待解锁'}</p><p>Planned bonus: ${task.bonus}</p><p>Available after release · 推出后生效</p></article>`;}).join('');
+      }).join(''));
+      setMarkup(futureGrid,FUTURE_SKINS.map(task=>{const earned=progress.upcoming.includes(task.id),value=Math.min(task.target,Math.floor(milestoneValue(task)));return `<article class="skin-card ${earned?'earned':''}"><div class="skin-preview" aria-label="Unrevealed skin">?</div><h3>Slot ${String(task.id).padStart(2,'0')} · ${task.name}</h3><span class="skin-badge">Coming Soon · 待推出</span><p>${task.condition}</p><progress max="${task.target}" value="${value}" aria-label="${task.name} unlock progress"></progress><p>${value.toLocaleString()} / ${task.target.toLocaleString()} · ${earned?'Reserved unlock · 已保留':'Locked · 待解锁'}</p><p>Planned bonus: ${task.bonus}</p><p>Available after release · 推出后生效</p></article>`;}).join(''));
     }
     function renderWorkshop(){
-      walletText.textContent=`Available food: ${progress.wallet}. Permanent upgrades apply to your next run; skin bonuses stack with them.`;
-      upgradeGrid.innerHTML=Object.entries(UPGRADE_INFO).map(([key,info])=>{
+      setText(walletText,`Available food: ${progress.wallet}. Permanent upgrades apply to your next run; skin bonuses stack with them.`);
+      setMarkup(upgradeGrid,Object.entries(UPGRADE_INFO).map(([key,info])=>{
         const level=progress.upgrades[key],cost=(level+1)*10,max=level>=5;
         return `<article class="skin-card"><h3>${info.name}</h3><span class="skin-badge">Level ${level}/5</span><p>Current: ${info.description(level)}</p><p>${max?'Maximum level':`Next: ${info.next(level)}`}</p><button data-upgrade="${key}" class="btn-secondary" ${max||progress.wallet<cost?'disabled':''}>${max?'Max level':`Upgrade · ${cost} food`}</button></article>`;
-      }).join('');
+      }).join(''));
     }
     function buyUpgrade(key){
       if(gameState!=='menu'||!Object.hasOwn(UPGRADE_INFO,key))return false;
@@ -572,32 +591,32 @@
     function recordRun(){if(!runStarted||runRecorded)return;runRecorded=true;if(!devMode)saveProgress();}
     function updateGrowth(){
       const previous=growthLevel;growthLevel=GROWTH.reduce((level,stage,i)=>foodCount>=stage.food?i:level,0);
-      if(previous!==growthLevel){growthFlash=120;hint.textContent=`${growthStage().name}! ${growthHint()}.`;playSound('grow');}
+      if(previous!==growthLevel){growthFlash=120;pixelBurst('grow',player.x+26,player.y+15,18);setText(hint,`${growthStage().name}! ${growthHint()}.`);playSound('grow');}
     }
     function collectFood(){
-      playSound('food');foodCount++;score+=45*difficultyCfg.scoreMul*(activeBonus.food||1);updateGrowth();
+      pixelBurst('food',player.x+26,player.y+18,8);playSound('food');foodCount++;score+=45*difficultyCfg.scoreMul*(activeBonus.food||1);updateGrowth();
       if(!devMode){progress.totalFood++;progress.wallet++;runWallet++;if(!challengeId){modeRecord().food++;if(growthLevel>=3)modeRecord().strongBestMeters=Math.max(modeRecord().strongBestMeters,runMeters);}saveProgress();}
     }
     function collectTool(type){
       playSound('food');runItems++;if(type==='magnet')magnetTicks=itemDuration('magnet');else shieldTicks=itemDuration('shield');
-      hint.textContent=`${type==='magnet'?'Magnet':'Shield'} collected · ${(itemDuration(type)/60).toFixed(1)}s`;
+      setText(hint,`${type==='magnet'?'Magnet':'Shield'} collected · ${(itemDuration(type)/60).toFixed(1)}s`);
       if(!devMode){progress.totalItems++;if(!challengeId)modeRecord().items++;saveProgress();}
     }
     function setPaused(value){
       if(gameState!=='playing'||gameOver)return;paused=value;pausePanel.classList.toggle('hidden',!paused);
-      pauseBtn.textContent=paused?'▶':'Ⅱ';pauseBtn.setAttribute('aria-label',paused?'Continue game':'Pause game');if(paused)saveProgress();updateHUD();
+      setText(pauseBtn,paused?'▶':'Ⅱ');setLabel(pauseBtn,paused?'Continue game':'Pause game');if(paused)saveProgress();updateHUD();
     }
     function updateRunPanels(){
       endPanel.classList.toggle('hidden',!(gameOver&&failureTick>=FAILURE_TICKS));
-      endTitle.textContent=challengeWon?'Chapter complete!':failureReason==='boss'?'The Warden got you':'One more try?';
-      endSummary.textContent=`${Math.floor(runMeters)}m · ${foodCount} food · ${growthStage().name} · ${runBossWins} Bosses`;
+      setText(endTitle,challengeWon?'Chapter complete!':failureReason==='boss'?'The Warden got you':'One more try?');
+      setText(endSummary,`${Math.floor(runMeters)}m · ${foodCount} food · ${growthStage().name} · ${runBossWins} Bosses`);
       const unlocked=progress.released.filter(i=>!runSkinStart.includes(i)).map(i=>CAT_SKINS[i].name);
       const tip=challengeWon?'Try the next chapter from home.':failureReason==='boss'?'Jump over red meteors; pulse only when gold. More food gives extra hearts and fewer weak points.':`${growthHint()}. Keep a second jump ready for food and obstacles.`;
-      endDetails.textContent=`${devMode?'Developer run: no food banked':`Banked this run: ${runWallet} food credits`}. ${tip} ${unlocked.length?'New skins: '+unlocked.join(', ')+'. ':''}${taskFeedback()}`;
+      setText(endDetails,`${devMode?'Developer run: no food banked':`Banked this run: ${runWallet} food credits`}. ${tip} ${unlocked.length?'New skins: '+unlocked.join(', ')+'. ':''}${taskFeedback()}`);
       endHomeBtn.classList.remove('hidden');victoryRestartBtn.classList.add('hidden');pauseBtn.disabled=gameState==='menu'||gameOver;jumpBtn.disabled=paused||gameOver;
       const open=bossEncounter&&bossEncounter.tick>=90&&bossEncounter.tick%210>=80&&bossEncounter.tick%210<=145&&!bossEncounter.won;
       attackBtn.classList.toggle('hidden',!bossEncounter||gameOver);attackBtn.disabled=paused||!open||bossEncounter.cooldown>0;
-      attackBtn.textContent=open?'PULSE NOW · J · Hit the gold weak point':'Weak point closed · Wait for gold';
+      setText(attackBtn,open?'PULSE NOW · J · Hit the gold weak point':'Weak point closed · Wait for gold');
     }
 
 
@@ -609,7 +628,7 @@
     function failRun(reason){
       if(gameOver)return;recordRun();gameOver=true;running=false;failureTick=0;failureReason=reason;
       failureStyle=runMeters<500?'tumble':runMeters<1500?'orbit':'storm';
-      best=Math.max(best,Math.floor(score));safeWrite('spacecat_best',String(best));hint.textContent=reason==='boss'?`The Boss needed more strength. Eat more food before your next encounter.`:'Your food credits and collection progress are safe. Try again!';updateHUD();
+      best=Math.max(best,Math.floor(score));safeWrite('spacecat_best',String(best));setText(hint,reason==='boss'?`The Boss needed more strength. Eat more food before your next encounter.`:'Your food credits and collection progress are safe. Try again!');updateHUD();
     }
 
 
@@ -675,10 +694,10 @@
         devToolsOpen = false;
         devToolsPanel.classList.add('hidden');
         devToolsToggleBtn.classList.add('hidden');
-        devToolsToggleBtn.textContent = 'Show Options';
+        setText(devToolsToggleBtn,'Show Options');
       } else {
         devToolsToggleBtn.classList.remove('hidden');
-        devToolsToggleBtn.textContent = devToolsOpen ? 'Hide Options' : 'Show Options';
+        setText(devToolsToggleBtn,devToolsOpen ? 'Hide Options' : 'Show Options');
         if (devToolsOpen) devToolsPanel.classList.remove('hidden');
         else devToolsPanel.classList.add('hidden');
       }
@@ -693,7 +712,7 @@
     function beginRunFromMenu(level = 0) {
       unlockAudio();
       challengeId = Number.isInteger(level) && LEVELS[level] ? level : 0;
-      challengeWon=false;challengeBossWon=false;doubleJumps=0;runWallet=0;runBossWins=0;regionIndex=0;regionTick=0;growthFlash=0;celebrationTick=0;skinParticles=[];
+      challengeWon=false;challengeBossWon=false;doubleJumps=0;runWallet=0;runBossWins=0;regionIndex=0;regionTick=0;growthFlash=0;celebrationTick=0;skinParticles=[];pixelEffects=[];
       runSkinStart=[...progress.released];runTaskStart=SKIN_TASKS.map(task=>task?milestoneValue(task):0);
       recordRun(false);
       playerName = (nicknameInput.value || '').trim().slice(0, 12) || 'Player';
@@ -726,8 +745,8 @@
       pausePanel.classList.add('hidden');
       endPanel.classList.add('hidden');
       pauseBtn.disabled = false;
-      pauseBtn.textContent = 'Ⅱ';
-      pauseBtn.setAttribute('aria-label', 'Pause game');
+      setText(pauseBtn,'Ⅱ');
+      setLabel(pauseBtn,'Pause game');
 
       score = 0;
       speed = difficultyCfg.startSpeed;
@@ -751,7 +770,7 @@
 
       startScreen.classList.add('hidden');
       victoryRestartBtn.classList.add('hidden');
-      hint.textContent = `${playerName}, press Space / ↑ or tap to start running.`;
+      setText(hint,`${playerName}, press Space / ↑ or tap to start running.`);
       updateHUD();
       render();
     }
@@ -764,7 +783,7 @@
       pausePanel.classList.add('hidden');
       endPanel.classList.add('hidden');
       pauseBtn.disabled = true;
-      challengeId=0;challengeWon=false;bossEncounter=null;pauseBtn.textContent='Ⅱ';pauseBtn.setAttribute('aria-label','Pause game');
+      challengeId=0;challengeWon=false;bossEncounter=null;setText(pauseBtn,'Ⅱ');setLabel(pauseBtn,'Pause game');
       updateHome();
       gameState = 'menu';
       running = false;
@@ -779,23 +798,23 @@
       speed = difficultyCfg.startSpeed;
       victoryRestartReady = false;
       victoryRestartBtn.classList.add('hidden');
-      hint.textContent = 'Choose your nickname, difficulty and power-ups to begin.';
+      setText(hint,'Choose your nickname, difficulty and power-ups to begin.');
       startScreen.classList.remove('hidden');
       updateHUD();
     }
 
     function updateHUD(){
-      scoreText.textContent=`Score ${String(Math.floor(score)).padStart(5,'0')}`;
-      foodText.textContent=`Food ${foodCount} · Items ${runItems}`;skinText.textContent=`${growthStage().name} · Lv ${growthLevel+1}`;
+      setText(scoreText,`Score ${String(Math.floor(score)).padStart(5,'0')}`);
+      setText(foodText,`Food ${foodCount} · Items ${runItems}`);setText(skinText,`${growthStage().name} · Lv ${growthLevel+1}`);
       const next=GROWTH[growthLevel+1];foodProgress.max=next?next.food-growthStage().food:1;foodProgress.value=next?foodCount-growthStage().food:1;
-      growthGoal.textContent=growthHint();
-      jumpText.textContent=`Jumps ${Math.max(0,2-player.jumpsUsed)}/2`;distanceText.textContent=`Distance ${Math.floor(runMeters)}m`;
-      bestText.textContent=`Best ${String(Math.floor(best)).padStart(5,'0')}`;nameText.textContent=`Name ${playerName}`;
-      difficultyText.textContent=`${itemMode?'Items':'Classic'} · ${difficultyCfg.label}`;
+      setText(growthGoal,growthHint());
+      setText(jumpText,`Jumps ${Math.max(0,2-player.jumpsUsed)}/2`);setText(distanceText,`Distance ${Math.floor(runMeters)}m`);
+      setText(bestText,`Best ${String(Math.floor(best)).padStart(5,'0')}`);setText(nameText,`Name ${playerName}`);
+      setText(difficultyText,`${itemMode?'Items':'Classic'} · ${difficultyCfg.label}`);
       const tools=[];if(devMode)tools.push('Developer');if(magnetTicks>0)tools.push(`Magnet ${(magnetTicks/60).toFixed(1)}s`);if(shieldTicks>0)tools.push(`Shield ${(shieldTicks/60).toFixed(1)}s`);
-      toolText.textContent=`Items ${tools.join(' · ')||'None'}`;shieldText.textContent=`Shield ${(shieldTicks/60).toFixed(1)}s`;
+      setText(toolText,`Items ${tools.join(' · ')||'None'}`);setText(shieldText,`Shield ${(shieldTicks/60).toFixed(1)}s`);
       const required=(difficultyKey==='hard'||bossNumber>0)?4:3;
-      bossText.textContent=bossEncounter?`${bossEncounter.name} · ${bossEncounter.hp} weak points · ${bossEncounter.lives} hearts`:challengeId?`${LEVELS[challengeId].name} · ${Math.floor(runMeters)}/${LEVELS[challengeId].meters}m · Food ${foodCount}/${LEVELS[challengeId].food} · Items ${runItems}/${LEVELS[challengeId].items}${challengeId===1?` · Double jump ${doubleJumps>0?'✓':'needed'}`:''}`:`${REGIONS[regionIndex].name} · Boss in ${Math.max(0,Math.ceil(nextBossAt-runMeters))}m · ${GROWTH[required].name} gives an advantage`;
+      setText(bossText,bossEncounter?`${bossEncounter.name} · ${bossEncounter.hp} weak points · ${bossEncounter.lives} hearts`:challengeId?`${LEVELS[challengeId].name} · ${Math.floor(runMeters)}/${LEVELS[challengeId].meters}m · Food ${foodCount}/${LEVELS[challengeId].food} · Items ${runItems}/${LEVELS[challengeId].items}${challengeId===1?` · Double jump ${doubleJumps>0?'✓':'needed'}`:''}`:`${REGIONS[regionIndex].name} · Boss in ${Math.max(0,Math.ceil(nextBossAt-runMeters))}m · ${GROWTH[required].name} gives an advantage`);
       updateRunPanels();
     }
 
@@ -814,7 +833,7 @@
           runStarted = true;
           if (!devMode) { progress.runs += 1; saveProgress(); }
         }
-        hint.textContent = `${playerName}, eat food to grow stronger before the Boss arrives!`;
+        setText(hint,`${playerName}, eat food to grow stronger before the Boss arrives!`);
       }
 
       if (player.jumpsUsed < player.maxJumps) {
@@ -919,180 +938,17 @@
       updateChallenge();updateHUD();
     }
 
-    function drawGround() {
-      ctx.strokeStyle = REGIONS[regionIndex].ground;
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.moveTo(0, GROUND_Y + 1);
-      ctx.lineTo(canvas.width, GROUND_Y + 1);
-      ctx.stroke();
 
-      ctx.strokeStyle = '#6de7ff44';
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      for (let x = 0; x < canvas.width; x += 26) {
-        const y = GROUND_Y + (Math.sin((x + performance.now() * 0.02) * 0.04) * 2.4);
-        if (x === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
-      }
-      ctx.stroke();
-    }
 
-    function drawStars() {
-      for (const s of stars) {
-        ctx.fillStyle = '#e7f5ff';
-        ctx.globalAlpha = 0.6 + Math.sin((s.x + s.y) * 0.03) * 0.35;
-        ctx.beginPath();
-        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-        ctx.fill();
-      }
-      ctx.globalAlpha = 1;
-    }
 
-    function drawFood(f) {
-      ctx.save();
-      ctx.translate(f.x + f.w / 2, f.y + f.h / 2);
-      const pulse = 1 + Math.sin(f.wobble * 2) * 0.08;
-      ctx.scale(pulse, pulse);
 
-      ctx.fillStyle = '#ffdb66';
-      ctx.beginPath();
-      ctx.moveTo(-10, -2);
-      ctx.quadraticCurveTo(0, -14, 10, -2);
-      ctx.quadraticCurveTo(6, 10, -6, 10);
-      ctx.closePath();
-      ctx.fill();
 
-      ctx.fillStyle = '#ffbe44';
-      ctx.fillRect(-3, 8, 6, 8);
 
-      ctx.fillStyle = '#fff4c2';
-      ctx.fillRect(-6, -2, 3, 2);
-      ctx.fillRect(2, -4, 3, 2);
 
-      if (magnetTicks > 0 && running) {
-        ctx.strokeStyle = '#9df3ff99';
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.arc(0, 0, 14, 0, Math.PI * 2);
-        ctx.stroke();
-      }
 
-      ctx.restore();
-    }
 
-    function drawToolItem(t) {
-      ctx.save();
-      ctx.translate(t.x + t.w / 2, t.y + t.h / 2);
-      ctx.rotate(Math.sin(t.spin) * 0.25);
 
-      if (t.type === 'magnet') {
-        ctx.strokeStyle = '#8de8ff';
-        ctx.lineWidth = 4;
-        ctx.beginPath();
-        ctx.arc(0, 0, 8, 0.2, Math.PI - 0.2);
-        ctx.stroke();
-        ctx.fillStyle = '#ff6e7a';
-        ctx.fillRect(-9, -9, 6, 5);
-        ctx.fillRect(3, -9, 6, 5);
-      } else {
-        ctx.fillStyle = '#79e7a6';
-        ctx.beginPath();
-        ctx.moveTo(0, -10);
-        ctx.lineTo(9, -4);
-        ctx.lineTo(6, 10);
-        ctx.lineTo(-6, 10);
-        ctx.lineTo(-9, -4);
-        ctx.closePath();
-        ctx.fill();
-        ctx.strokeStyle = '#e9fff2';
-        ctx.lineWidth = 1.4;
-        ctx.stroke();
-      }
 
-      ctx.restore();
-    }
-
-    function drawPlayer(x = player.x, y = player.y) {
-      const skin = CAT_SKINS[currentSkin];
-      player.blinkTimer += 1;
-
-      ctx.save();
-      const size = growthStage().scale;
-      ctx.translate(x + player.w * (1 - size) / 2, y + player.h * (1 - size));
-      ctx.scale(size, size);
-      if((celebrationTick>0||challengeWon)&&!settings.reducedEffects){if(currentSkin%3===1){ctx.fillStyle=skin.body;ctx.fillRect(43,4,8,18);}else if(currentSkin%3===2){ctx.rotate(Math.sin(celebrationTick*.1)*.08);}}
-
-      if (currentSkin === 7 || currentSkin === 10) {
-        ctx.fillStyle = skin.ear; ctx.beginPath(); ctx.moveTo(6, 18); ctx.lineTo(-10, 8); ctx.lineTo(4, 34); ctx.moveTo(42, 18); ctx.lineTo(60, 8); ctx.lineTo(46, 34); ctx.fill();
-        ctx.strokeStyle = '#ffd166'; ctx.lineWidth = 2; ctx.beginPath(); ctx.ellipse(30, -12, 15, 4, 0, 0, Math.PI * 2); ctx.stroke();
-      }
-      ctx.fillStyle = skin.body;
-      ctx.fillRect(10, 14, 30, 24);
-      if (growthLevel >= 3) { ctx.fillRect(6, 20, 8, 16); ctx.fillRect(36, 20, 8, 16); }
-      if (currentSkin >= 5) { ctx.fillStyle = '#fff0b8'; ctx.fillRect(22, 1, 4, 5); ctx.fillRect(31, -2, 4, 8); ctx.fillRect(40, 1, 4, 5); }
-
-      ctx.fillStyle = skin.head;
-      ctx.fillRect(16, 4, 26, 18);
-
-      ctx.fillStyle = skin.ear;
-      ctx.beginPath();
-      ctx.moveTo(18, 6); ctx.lineTo(23, -4); ctx.lineTo(28, 6);
-      ctx.moveTo(34, 6); ctx.lineTo(39, -4); ctx.lineTo(44, 6);
-      ctx.fill();
-
-      const blink = Math.floor(player.blinkTimer / 18) % 12 === 0;
-      ctx.fillStyle = '#111';
-      if (blink) {
-        ctx.fillRect(24, 12, 6, 2);
-        ctx.fillRect(35, 12, 6, 2);
-      } else {
-        ctx.fillRect(24, 10, 4, 4);
-        ctx.fillRect(36, 10, 4, 4);
-      }
-
-      ctx.fillStyle = skin.mark;
-      ctx.fillRect(31, 14, 4, 3);
-
-      ctx.fillStyle = skin.leg;
-      const legOffset = player.onGround ? Math.sin(performance.now() * 0.03) * 2 : 0;
-      ctx.fillRect(12, 38, 8, 10 + legOffset);
-      ctx.fillRect(30, 38, 8, 10 - legOffset);
-
-      ctx.fillStyle = skin.tail;
-      ctx.fillRect(6, 20, 8, 4);
-
-      if (!player.onGround) {
-        // No jump exhaust bars: the cat's feet remain clear.
-      }
-
-      if (shieldTicks > 0 && gameState === 'playing') {
-        const pulse = 20 + progress.upgrades.shieldArea * 15 + Math.sin(performance.now() * 0.015) * 3;
-        ctx.strokeStyle = '#79e7a688';
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.arc(26, 22, pulse, 0, Math.PI * 2);
-        ctx.stroke();
-      }
-
-      ctx.restore();
-    }
-
-    function drawMeteor(o) {
-      ctx.save();
-      ctx.translate(o.x + o.w / 2, o.y + o.h / 2);
-      ctx.rotate(o.rot);
-      ctx.fillStyle = o.kind==='drone'?'#66ccb3':o.kind==='crystal'?'#b181de':'#7d6a7f';
-      ctx.beginPath();
-      ctx.arc(0, 0, o.w / 2, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.fillStyle = '#5c4f68';
-      ctx.beginPath();
-      ctx.arc(-o.w * 0.12, -o.h * 0.1, o.w * 0.12, 0, Math.PI * 2);
-      ctx.arc(o.w * 0.18, o.h * 0.04, o.w * 0.08, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.restore();
-    }
 
     function drawGameOver(){
       if(!gameOver||challengeWon)return;
@@ -1109,7 +965,7 @@
         ctx.globalAlpha=Math.max(0,1-t);drawPlayer(player.x,player.y-60*t);
       }
       ctx.restore();ctx.fillStyle='#fff0c0';ctx.textAlign='center';ctx.font='bold 24px Trebuchet MS';
-      ctx.fillText(failureStyle==='tumble'?'A ROUGH LANDING':failureStyle==='orbit'?'LOST IN ORBIT':'METEOR STORM',canvas.width/2,80);ctx.textAlign='left';
+      ctx.fillText(loc(failureStyle==='tumble'?'A ROUGH LANDING':failureStyle==='orbit'?'LOST IN ORBIT':'METEOR STORM'),canvas.width/2,80);ctx.textAlign='left';
     }
 
 
@@ -1132,6 +988,7 @@
 
     function loop(timestamp = performance.now()) {
       if (previousFrameTime === null) previousFrameTime = timestamp;
+      if(controlledTime){render();requestAnimationFrame(loop);return;}
       const elapsed = Math.min(100, Math.max(0, timestamp - previousFrameTime));
       previousFrameTime = timestamp;
       accumulatedTime += elapsed;
@@ -1158,6 +1015,7 @@
     victoryRestartBtn.addEventListener('click', backToMenu);
 
     window.addEventListener('keydown', (e) => {
+      if(e.target&&['INPUT','SELECT','TEXTAREA'].includes(e.target.tagName))return;
       if (collectionDialog.open || challengeDialog.open || workshopDialog.open || settingsDialog.open) return;
       if(e.code==='KeyJ'&&gameState==='playing'){e.preventDefault();if(!e.repeat)attackBoss();return;}
       if (e.code === 'Escape' && gameState === 'playing') {
@@ -1216,16 +1074,12 @@
       if(!settings.sound||audioFailed)return;
       try{const Audio=window.AudioContext||window.webkitAudioContext;if(!Audio){audioFailed=true;return;}if(!audio)audio=new Audio();if(audio.state==='suspended')audio.resume().catch(()=>{audioFailed=true;});}catch{audioFailed=true;}
     }
-    function playSound(kind){
-      if(!settings.sound||!audio||audio.state!=='running'||paused)return;
-      const notes={jump:[330,440],food:[740,990],grow:[440,660,880],hit:[130,90],pulse:[520,780],win:[523,659,784,1047],click:[440]}[kind]||[440];
-      try{notes.forEach((freq,i)=>{const oscillator=audio.createOscillator(),gain=audio.createGain(),t=audio.currentTime+i*.075;oscillator.type=kind==='hit'?'triangle':'sine';oscillator.frequency.setValueAtTime(freq,t);gain.gain.setValueAtTime(0,t);gain.gain.linearRampToValueAtTime(settings.volume*.16,t+.008);gain.gain.exponentialRampToValueAtTime(.0001,t+.09);oscillator.connect(gain);gain.connect(audio.destination);oscillator.start(t);oscillator.stop(t+.1);});}catch{audioFailed=true;}
-    }
-    function showSettings(){soundToggle.checked=settings.sound;volumeSlider.value=String(Math.round(settings.volume*100));effectsToggle.checked=settings.reducedEffects;settingsStatus.textContent=audioFailed?'Sound is unavailable in this browser. Gameplay and saves still work.':'Settings and saves stay on this browser. Export a backup before switching devices.';pendingImport=null;applyImportBtn.disabled=true;importPreview.textContent='Import shows a preview before replacing your current progress.';settingsDialog.showModal();}
-    function saveSettings(){settings=normalizeSettings({sound:soundToggle.checked,volume:Number(volumeSlider.value)/100,reducedEffects:effectsToggle.checked});safeWrite('spacecat_settings_v1',JSON.stringify(settings));unlockAudio();settingsStatus.textContent=storageAvailable?'Settings saved.':'Storage is unavailable; settings last for this session.';}
-    function makeSave(){saveProgress();return JSON.stringify({game:'Space Cat Dash',format:1,exportedAt:new Date().toISOString(),progress,settings,best:Math.floor(best)},null,2);}
+
+    function showSettings(){soundToggle.checked=settings.sound;volumeSlider.value=String(Math.round(settings.volume*100));effectsToggle.checked=settings.reducedEffects;setText(settingsStatus,audioFailed?'Sound is unavailable in this browser. Gameplay and saves still work.':'Settings and saves stay on this browser. Export a backup before switching devices.');pendingImport=null;applyImportBtn.disabled=true;setText(importPreview,'Import shows a preview before replacing your current progress.');settingsDialog.showModal();}
+    function saveSettings(){settings=normalizeSettings({sound:soundToggle.checked,volume:Number(volumeSlider.value)/100,reducedEffects:effectsToggle.checked});safeWrite('spacecat_settings_v1',JSON.stringify(settings));unlockAudio();setText(settingsStatus,storageAvailable?'Settings saved.':'Storage is unavailable; settings last for this session.');}
+    function makeSave(){saveProgress();return JSON.stringify({game:'Space Cat Dash',format:1,exportedAt:new Date().toISOString(),progress,settings,language,best:Math.floor(best)},null,2);}
     function downloadSave(){
-      try{const blob=new Blob([makeSave()],{type:'application/json'}),url=URL.createObjectURL(blob),link=document.createElement('a');link.href=url;link.download='space-cat-dash-save.json';document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);settingsStatus.textContent='Backup downloaded. Keep it somewhere safe.';}catch{settingsStatus.textContent='Download is unavailable in this browser.';}
+      try{const blob=new Blob([makeSave()],{type:'application/json'}),url=URL.createObjectURL(blob),link=document.createElement('a');link.href=url;link.download='space-cat-dash-save.json';document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);setText(settingsStatus,'Backup downloaded. Keep it somewhere safe.');}catch{setText(settingsStatus,'Download is unavailable in this browser.');}
     }
     function parseSave(text){
       if(typeof text!=='string'||text.length>100000)throw Error('Save is too large.');
@@ -1237,22 +1091,22 @@
       for(const k of Object.keys(UPGRADE_INFO))if(!Number.isInteger(r.upgrades?.[k])||r.upgrades[k]<0||r.upgrades[k]>5)throw Error('Invalid upgrade levels.');
       for(const mode of ['classic','items'])for(const difficulty of ['easy','medium','hard'])for(const k of ['meters','bestMeters','strongBestMeters','food','items','bosses'])if(!validNumber(r.modeStats?.[mode+'_'+difficulty]?.[k]))throw Error('Invalid task progress.');
       if(r.version===3&&(!Array.isArray(r.challenges)||r.challenges.length!==3||r.challenges.some(n=>!Number.isInteger(n)||n<0||n>3)))throw Error('Invalid chapter progress.');
-      return {progress:normalizeProgress(r),settings:normalizeSettings(p.settings),best:Math.floor(p.best)};
+      if(p.language!==undefined&&!['en','zh-CN'].includes(p.language))throw Error('Unsupported language.');return {progress:normalizeProgress(r),settings:normalizeSettings(p.settings),language:p.language||language,best:Math.floor(p.best)};
     }
     async function previewSaveFile(file){
       pendingImport=null;applyImportBtn.disabled=true;
-      try{if(!file||file.size>100000)throw Error('Choose a JSON save smaller than 100 KB.');pendingImport=parseSave(await file.text());const r=pendingImport.progress;importPreview.textContent=`Preview: ${r.wallet} food credits · ${r.released.length} skins · ${r.challenges.filter(Boolean).length}/3 chapters. Applying REPLACES your current progress and settings. Export a backup first.`;applyImportBtn.disabled=false;}catch(e){importPreview.textContent='Import rejected: '+e.message;}
+      try{if(!file||file.size>100000)throw Error('Choose a JSON save smaller than 100 KB.');pendingImport=parseSave(await file.text());const r=pendingImport.progress;setText(importPreview,`Preview: ${r.wallet} food credits · ${r.released.length} skins · ${r.challenges.filter(Boolean).length}/3 chapters. Applying REPLACES your current progress and settings. Export a backup first.`);applyImportBtn.disabled=false;}catch(e){setText(importPreview,'Import rejected: '+e.message);}
     }
     function applySave(){
       if(!pendingImport||gameState!=='menu')return false;
-      Object.assign(progress,pendingImport.progress);settings=pendingImport.settings;best=pendingImport.best;currentSkin=progress.equipped;activeBonus=RELEASED_BONUSES[currentSkin];liveUpgrades={...progress.upgrades};
-      saveProgress();safeWrite('spacecat_best',String(best));safeWrite('spacecat_settings_v1',JSON.stringify(settings));pendingImport=null;applyImportBtn.disabled=true;updateHome();soundToggle.checked=settings.sound;volumeSlider.value=String(settings.volume*100);effectsToggle.checked=settings.reducedEffects;importPreview.textContent=storageAvailable?'Save imported. Existing progress was replaced.':'Save imported for this session only: browser storage is unavailable.';return true;
+      Object.assign(progress,pendingImport.progress);settings=pendingImport.settings;setLanguage(pendingImport.language);best=pendingImport.best;currentSkin=progress.equipped;activeBonus=RELEASED_BONUSES[currentSkin];liveUpgrades={...progress.upgrades};
+      saveProgress();safeWrite('spacecat_best',String(best));safeWrite('spacecat_settings_v1',JSON.stringify(settings));pendingImport=null;applyImportBtn.disabled=true;updateHome();soundToggle.checked=settings.sound;volumeSlider.value=String(settings.volume*100);effectsToggle.checked=settings.reducedEffects;setText(importPreview,storageAvailable?'Save imported. Existing progress was replaced.':'Save imported for this session only: browser storage is unavailable.');return true;
     }
-    function renderChallenges(){challengeGrid.innerHTML=LEVELS.slice(1).map((level,i)=>{const id=i+1,locked=id>1&&!progress.challenges[id-2],stars=progress.challenges[i];return `<article class="skin-card"><span class="skin-badge">Chapter ${id} · ${stars?'★'.repeat(stars):'Not completed'}</span><h3>${level.name}</h3><p>${level.goal}</p><p>Practice pace · about 1–3 minutes. First clear: ${level.reward} food credits.</p><button class="btn-secondary" data-level="${id}" ${locked?'disabled':''}>${locked?'Clear previous chapter':stars?'Replay chapter':'Start chapter'}</button></article>`;}).join('');}
+    function renderChallenges(){setMarkup(challengeGrid,LEVELS.slice(1).map((level,i)=>{const id=i+1,locked=id>1&&!progress.challenges[id-2],stars=progress.challenges[i];return `<article class="skin-card"><span class="skin-badge">Chapter ${id} · ${stars?'★'.repeat(stars):'Not completed'}</span><h3>${level.name}</h3><p>${level.goal}</p><p>Practice pace · about 1–3 minutes. First clear: ${level.reward} food credits.</p><button class="btn-secondary" data-level="${id}" ${locked?'disabled':''}>${locked?'Clear previous chapter':stars?'Replay chapter':'Start chapter'}</button></article>`;}).join(''));}
     function startChallenge(id){if(!LEVELS[id]||(id>1&&!progress.challenges[id-2]))return false;challengeDialog.close();beginRunFromMenu(id);return true;}
     function finishChallenge(){
       if(!challengeId||gameOver)return;challengeWon=true;challengeBossWon=true;celebrationTick=180;recordRun();gameOver=true;running=false;failureReason='challengeComplete';failureTick=FAILURE_TICKS;
-      if(!devMode){const first=!progress.challenges[challengeId-1];progress.challenges[challengeId-1]=Math.max(progress.challenges[challengeId-1],runBossWins||challengeId<3?3:1);if(first){progress.wallet+=LEVELS[challengeId].reward;runWallet+=LEVELS[challengeId].reward;}saveProgress();}playSound('win');hint.textContent='Chapter complete! Your next mission is waiting.';updateHUD();
+      if(!devMode){const first=!progress.challenges[challengeId-1];progress.challenges[challengeId-1]=Math.max(progress.challenges[challengeId-1],runBossWins||challengeId<3?3:1);if(first){progress.wallet+=LEVELS[challengeId].reward;runWallet+=LEVELS[challengeId].reward;}saveProgress();}playSound('win');setText(hint,'Chapter complete! Your next mission is waiting.');updateHUD();
     }
     function updateChallenge(){if(!challengeId||gameOver||bossEncounter)return;const l=LEVELS[challengeId];if(challengeId<3&&runMeters>=l.meters&&foodCount>=l.food&&runItems>=l.items&&(challengeId!==1||doubleJumps>0))finishChallenge();}
     function growthHint(){const next=GROWTH[growthLevel+1];return next?`${next.food-foodCount} more food to ${next.name}`:'Mighty · full strength';}
@@ -1262,59 +1116,164 @@
       return candidates.slice(0,2).map(({task,i})=>`${CAT_SKINS[i].name}: ${Math.floor(Math.min(task.target,milestoneValue(task)))}/${task.target} (+${Math.max(0,Math.floor(milestoneValue(task)-(runTaskStart[i]||0)))} this run)`).join(' · ')||'All released skins for this route are collected. Try another mode or difficulty.';
     }
     function physicsStep(){player.vy+=GRAVITY;player.y+=player.vy;if(player.y>=GROUND_Y-player.h){player.y=GROUND_Y-player.h;player.vy=0;player.onGround=true;player.jumpsUsed=0;}}
-    function updateRegion(){const next=challengeId?challengeId-1:Math.min(2,Math.floor(runMeters/900));if(next!==regionIndex){regionIndex=next;regionTick=0;obstacles.length=0;hint.textContent=REGIONS[next].name+' · '+REGIONS[next].intro;}regionTick++;}
-    function updateEffects(){if(growthFlash>0)growthFlash--;if(celebrationTick>0)celebrationTick--;if(settings.reducedEffects){skinParticles.length=0;return;}for(const p of skinParticles){p.x-=p.vx;p.life--;}skinParticles=skinParticles.filter(p=>p.life>0);}
+    function updateRegion(){const next=challengeId?challengeId-1:Math.min(2,Math.floor(runMeters/900));if(next!==regionIndex){regionIndex=next;regionTick=0;obstacles.length=0;setText(hint,REGIONS[next].name+' · '+REGIONS[next].intro);}regionTick++;}
+    function updateEffects(){artTick++;if(settings.reducedEffects)pixelEffects.length=0;for(const p of pixelEffects){p.x+=p.vx;p.y+=p.vy;p.vy+=.045;p.life--;}pixelEffects=pixelEffects.filter(p=>p.life>0);if(growthFlash>0)growthFlash--;if(celebrationTick>0)celebrationTick--;if(settings.reducedEffects){skinParticles.length=0;return;}for(const p of skinParticles){p.x-=p.vx;p.life--;}skinParticles=skinParticles.filter(p=>p.life>0);}
     function emitSkinEffect(){if(settings.reducedEffects||currentSkin===0)return;skinParticles.push({x:player.x+player.w/2,y:player.y+player.h*.7,life:25,vx:1.6,color:CAT_SKINS[currentSkin].ear,shape:currentSkin===7||currentSkin===10?'star':currentSkin%3===0?'ring':'dot'});if(skinParticles.length>30)skinParticles.shift();}
-    function drawRegion(){
-      const r=REGIONS[regionIndex];ctx.fillStyle=r.sky;ctx.fillRect(0,0,canvas.width,canvas.height);ctx.save();ctx.globalAlpha=.28;
-      if(regionIndex===0){ctx.fillStyle='#cddbeb';ctx.beginPath();ctx.arc(canvas.width-120,80,45,0,Math.PI*2);ctx.fill();ctx.fillStyle='#8194ad';for(let i=0;i<4;i++){ctx.beginPath();ctx.arc(canvas.width-135+i*12,75+i%2*14,7,0,Math.PI*2);ctx.fill();}}
-      else if(regionIndex===1){ctx.strokeStyle='#73e8d4';ctx.lineWidth=7;for(let x=0;x<canvas.width;x+=170){ctx.strokeRect(x,100,100,180);ctx.beginPath();ctx.moveTo(x,100);ctx.lineTo(x+100,280);ctx.stroke();}}
-      else{ctx.fillStyle='#bc75e7';for(let i=0;i<6;i++){ctx.beginPath();ctx.ellipse(i*200,160,150,70,i*.4,0,Math.PI*2);ctx.fill();}}
-      ctx.restore();ctx.fillStyle='#c9dbff';ctx.font='12px Trebuchet MS';ctx.fillText(r.name,18,24);
-      if(regionTick<240&&!bossEncounter){ctx.fillStyle='#fff0c0';ctx.textAlign='center';ctx.fillText(r.intro,canvas.width/2,45);ctx.textAlign='left';}
-    }
-    function drawEffects(){
-      if(!settings.reducedEffects){for(const p of skinParticles){ctx.save();ctx.globalAlpha=p.life/25;ctx.fillStyle=p.color;ctx.strokeStyle=p.color;if(p.shape==='star'){ctx.fillRect(p.x-4,p.y-1,8,2);ctx.fillRect(p.x-1,p.y-4,2,8);}else{ctx.beginPath();ctx.arc(p.x,p.y,3,0,Math.PI*2);p.shape==='ring'?ctx.stroke():ctx.fill();}ctx.restore();}}
-      if(growthFlash>0&&!bossEncounter){ctx.save();ctx.fillStyle='#79e7a6';ctx.textAlign='center';ctx.font='bold 20px Trebuchet MS';ctx.fillText(`${growthStage().name}! · ${growthHint()}`,canvas.width/2,112);if(!settings.reducedEffects){ctx.strokeStyle='#79e7a688';ctx.beginPath();ctx.arc(player.x+26,player.y+25,40+(120-growthFlash)*.2,0,Math.PI*2);ctx.stroke();}ctx.restore();}
-      if(celebrationTick>0||challengeWon){ctx.save();ctx.fillStyle=CAT_SKINS[currentSkin].head;ctx.textAlign='center';ctx.font='bold 22px Trebuchet MS';ctx.fillText(challengeWon?'CHAPTER COMPLETE':'WARDEN DEFEATED',canvas.width/2,80);if(!settings.reducedEffects)for(let i=0;i<12;i++)ctx.fillRect(canvas.width/2+Math.cos(i)*100,100+Math.sin(i)*30,4,4);ctx.restore();}
-    }
+
+
     function attackBoss(){
       unlockAudio();if(paused||gameOver||!bossEncounter||bossEncounter.won)return false;const b=bossEncounter;
-      if(b.tick<90||b.tick%210<80||b.tick%210>145||b.cooldown>0){hint.textContent='Wait for the gold OPEN signal, then press J or PULSE.';return false;}
-      b.hp--;b.cooldown=35;playSound('pulse');hint.textContent=`Direct hit! ${b.hp} weak points remaining.`;
-      if(b.hp<=0){b.won=true;b.winTick=0;creditBoss();celebrationTick=180;playSound('win');}return true;
+      if(b.tick<90||b.tick%210<80||b.tick%210>145||b.cooldown>0){setText(hint,'Wait for the gold OPEN signal, then press J or PULSE.');return false;}
+      b.hp--;b.cooldown=35;pixelBurst('hit',canvas.width-108,205,24);playSound('pulse');setText(hint,`Direct hit! ${b.hp} weak points remaining.`);
+      if(b.hp<=0){b.won=true;b.winTick=0;creditBoss();celebrationTick=180;pixelBurst('win',player.x+26,player.y,32);playSound('win');}return true;
     }
     function startBoss(){
       bossNumber++;const required=(difficultyKey==='hard'||bossNumber>1)?4:3,strong=growthLevel>=required;
       bossEncounter={tick:0,required,strong,won:false,reward:5+({easy:0,medium:1,hard:2}[difficultyKey])+(itemMode?3:0),name:challengeId?'Training Warden':BOSS_NAMES[itemMode?'items':'classic'][difficultyKey],credited:false,hp:strong?3:5,maxHp:strong?3:5,lives:strong?4:2,maxLives:strong?4:2,cooldown:0,invulnerable:0,shots:[],winTick:0};
       obstacles.length=0;foods.length=0;toolItems.length=0;player.y=GROUND_Y-player.h;player.vy=0;player.onGround=true;player.jumpsUsed=0;
-      hint.textContent='Dodge red meteors. Gold OPEN = press J / PULSE. Strong cats need fewer hits and can take more damage.';playSound('hit');
+      setText(hint,'Dodge red meteors. Gold OPEN = press J / PULSE. Strong cats need fewer hits and can take more damage.');playSound('hit');
     }
     function creditBoss(){
       if(!bossEncounter||bossEncounter.credited)return;bossEncounter.credited=true;runBossWins++;score+=500*difficultyCfg.scoreMul;
       if(!devMode&&!challengeId){progress.wins++;progress.winsByDifficulty[difficultyKey]++;modeRecord().bosses++;if(!progress.released.includes(bossEncounter.reward))progress.released.push(bossEncounter.reward);saveProgress();}
-      best=Math.max(best,Math.floor(score));safeWrite('spacecat_best',String(best));hint.textContent=challengeId?'Warden defeated! Chapter complete.':devMode?'Boss defeated · test reward not saved':`Boss defeated! ${CAT_SKINS[bossEncounter.reward].name} is in your cabinet.`;
+      best=Math.max(best,Math.floor(score));safeWrite('spacecat_best',String(best));setText(hint,challengeId?'Warden defeated! Chapter complete.':devMode?'Boss defeated · test reward not saved':`Boss defeated! ${CAT_SKINS[bossEncounter.reward].name} is in your cabinet.`);
     }
     function updateBoss(){
       const b=bossEncounter;b.tick++;physicsStep();if(magnetTicks>0)magnetTicks--;if(shieldTicks>0)shieldTicks--;if(b.cooldown>0)b.cooldown--;if(b.invulnerable>0)b.invulnerable--;
       if(b.won){b.winTick++;if(b.winTick>=120){bossEncounter=null;nextBossAt+=BOSS_INTERVAL[difficultyKey];if(challengeId===3)finishChallenge();}return;}
       const phase=b.tick%210;
       if(b.tick>=90&&(phase===160||(difficultyKey==='hard'&&phase===190))){b.shots.push({x:Math.min(canvas.width-140,460),y:GROUND_Y-20,w:24,h:24});}
-      for(const shot of b.shots){shot.x-=5.5;if(collide(player,shot,4)&&b.invulnerable===0){if(shieldTicks>0){shieldTicks=0;hint.textContent='Shield absorbed the hit.';}else{b.lives--;playSound('hit');}b.invulnerable=90;shot.x=-40;if(b.lives<=0){failRun('boss');return;}}}b.shots=b.shots.filter(s=>s.x>-30);
+      for(const shot of b.shots){shot.x-=5.5;if(collide(player,shot,4)&&b.invulnerable===0){if(shieldTicks>0){shieldTicks=0;setText(hint,'Shield absorbed the hit.');}else{b.lives--;playSound('hit');}b.invulnerable=90;shot.x=-40;if(b.lives<=0){failRun('boss');return;}}}b.shots=b.shots.filter(s=>s.x>-30);
       if(b.tick>=2400)failRun('boss');
     }
-    function drawBoss(){
-      if(!bossEncounter)return;const b=bossEncounter,x=canvas.width-105,y=205,open=b.tick>=90&&b.tick%210>=80&&b.tick%210<=145&&!b.won;
-      ctx.save();ctx.translate(x,y);ctx.globalAlpha=b.won?Math.max(0,1-b.winTick/120):1;ctx.fillStyle=['#a59086','#e2a756','#9560c4'][{easy:0,medium:1,hard:2}[difficultyKey]];ctx.beginPath();ctx.arc(0,0,58,0,Math.PI*2);ctx.fill();ctx.fillStyle='#2e2046';ctx.fillRect(-30,-20,18,12);ctx.fillRect(12,-20,18,12);ctx.fillRect(-25,20,50,8);ctx.fillStyle=open?'#ffd166':'#ff5d8f';ctx.beginPath();ctx.arc(0,5,12,0,Math.PI*2);ctx.fill();ctx.restore();
-      for(const shot of b.shots){ctx.fillStyle='#ff5d8f';ctx.beginPath();ctx.arc(shot.x+12,shot.y+12,12,0,Math.PI*2);ctx.fill();}
-      ctx.save();ctx.textAlign='center';ctx.fillStyle='#fff0c0';ctx.font='bold 18px Trebuchet MS';ctx.fillText(b.name,canvas.width/2,65);ctx.font='14px Trebuchet MS';ctx.fillText(`Warden ${b.hp}/${b.maxHp} · Your hearts ${b.lives}/${b.maxLives} · ${b.strong?'Strong advantage':'Skill route'}`,canvas.width/2,87);ctx.fillStyle=open?'#ffd166':'#b8d5ff';ctx.fillText(b.won?'DEFEATED':b.tick<90?'Get ready: jump over red meteors, pulse when gold.':open?'OPEN · J / PULSE NOW':'DODGE · Jump over red meteors',canvas.width/2,112);ctx.restore();
-    }
+
     settingsBtn.addEventListener('click',showSettings);closeSettingsBtn.addEventListener('click',()=>settingsDialog.close());soundToggle.addEventListener('change',saveSettings);volumeSlider.addEventListener('input',saveSettings);effectsToggle.addEventListener('change',saveSettings);
-    byId('soundTestBtn').addEventListener('click',()=>{unlockAudio();playSound('food');settingsStatus.textContent=audioFailed?'Sound is unavailable in this browser.':'Sound preview uses your current volume.';});
+    byId('soundTestBtn').addEventListener('click',()=>{unlockAudio();playSound('food');setText(settingsStatus,audioFailed?'Sound is unavailable in this browser.':'Sound preview uses your current volume.');});
     exportBtn.addEventListener('click',downloadSave);importFile.addEventListener('change',()=>previewSaveFile(importFile.files?.[0]));applyImportBtn.addEventListener('click',applySave);
     challengeGrid.addEventListener('click',e=>{const button=e.target.closest('[data-level]');if(button)startChallenge(Number(button.dataset.level));});
     attackBtn.addEventListener('click',attackBoss);
 
+    const languageSelect=byId('languageSelect'),settingsLanguage=byId('settingsLanguage');
+    let language=safeRead('spacecat_language_v1','en')==='zh-CN'?'zh-CN':'en';
+    const textBindings=new Map(),markupBindings=new Map(),labelBindings=new Map();
+    const BILINGUAL={'Settings & Save · 设置与存档':'Settings & Save','Power-up Workshop · 道具升级':'Power-up Workshop','Skin Cabinet · 收藏柜':'Skin Cabinet','Skin Cabinet · 皮肤收藏柜':'Skin Cabinet','Challenge Mode · 闯关':'Challenge Mode','Challenge Mode · 闯关模式':'Challenge Mode','Future designs · 10 待推出皮肤':'Future designs · 10 unreleased skins','Sound effects · 音效':'Sound effects','Volume · 音量':'Volume','Reduce visual effects · 减少视觉特效':'Reduce visual effects','Save backup · 存档备份':'Save backup','Export save · 导出存档':'Export save','Choose save file · 选择存档':'Choose save file','Replace current save · 确认覆盖当前存档':'Replace current save','Collected · 已收藏':'Collected','Locked · 待解锁':'Locked','Coming Soon · 待推出':'Coming Soon','Reserved unlock · 已保留':'Reserved unlock','Available after release · 推出后生效':'Available after release','Moonrise · 月球':'Moonrise','Orbital Station · 空间站':'Orbital Station','Violet Nebula · 星云':'Violet Nebula'};
+    const ZH={
+      'Language':'语言','Ready for Takeoff':'准备出发','Double jump · Offline play':'二段跳 · 离线游玩','Run endlessly. Eat food to grow from':'开启无尽奔跑。收集猫粮，逐步成长：','Prepare for the next Boss. Press Space / ↑ or tap twice to double jump.':'为下一个首领做准备。按空格／↑或轻点两次进行二段跳。',
+      'Name':'昵称','Difficulty':'难度','Easy':'简单','Medium':'中等','Hard':'困难','Power-ups':'道具','Enter your nickname':'输入昵称','Item Mode (random power-ups)':'道具模式（随机道具）','Developer Mode (choose starting power-ups)':'开发者模式（选择初始道具）','Starting Magnet (attracts food for 5s)':'初始磁铁（吸引猫粮，基础持续 5 秒）','Starting Shield (invincible for 5s)':'初始护盾（免受伤害，基础持续 5 秒）','Show Options':'展开选项','Hide Options':'收起选项','Start Endless Run':'开始无尽模式','Settings & Save':'设置与存档','Power-up Workshop':'道具升级','Skin Cabinet':'皮肤收藏柜','Challenge Mode':'闯关模式',
+      'Bank food from normal runs to upgrade power-ups. Developer Mode does not earn food, skins or achievements.':'普通游戏中收集的猫粮可用于升级道具。开发者模式不获得猫粮、皮肤或成就。','Saving is unavailable in this browser. Progress will last for this session only.':'浏览器暂时无法保存。进度仅在本次会话中有效。','Paused':'已暂停','Take a breather. Your run is waiting.':'休息一下，你的游戏正在等待。','Continue':'继续','Restart run':'重新开始本局','Back to home':'返回首页','Esc to continue':'按 Esc 继续','Run complete':'本局结束','Play again':'再玩一次','Current run':'当前游戏','Pause game':'暂停游戏','Continue game':'继续游戏','Pause / Esc':'暂停／Esc','Close skin cabinet':'关闭收藏柜','Close challenge mode':'关闭闯关模式','Close workshop':'关闭道具升级','Close settings':'关闭设置','Food toward next strength level':'下一成长阶段所需猫粮','Unrevealed skin':'尚未公布的皮肤','JUMP · Tap twice for a double jump':'跳跃 · 轻点两次进行二段跳',
+      'Skins stay equipped while your cat grows stronger. Complete the specified mode and difficulty tasks to unlock looks. Legacy collections are preserved. Boss skins must be earned in their matching mode and difficulty.':'猫咪成长时保持当前皮肤。完成指定模式和难度的任务可解锁造型；旧版已获得的皮肤会保留。首领皮肤须在对应模式和难度中获得。','Future designs · 10 unreleased skins':'未来造型 · 10 款待推出皮肤','Meet each condition to reserve a permanent unlock. Previews stay':'达成条件可保留永久解锁资格。预览仍显示','until release. Planned bonuses become active only after release and equipping.':'，正式推出并装备后，加成才会生效。','Unlocked progress is stored locally. Developer Mode is excluded.':'解锁进度保存在本机。开发者模式不计入。','Three short practice chapters. Clear each to open the next. Earn a one-time food reward; replay whenever you like. Chapters do not unlock endless mode skins.':'三个练习关卡。通关后开放下一关，并获得一次性猫粮奖励；可以重复游玩。闯关不解锁无尽模式专属皮肤。','Each food item collected in a normal run earns one food credit. Upgrades last across runs. Level costs: 10, 20, 30, 40 and 50 food.':'普通游戏每收集一份猫粮获得一点余额。升级跨局保留；各级费用为 10、20、30、40、50 份猫粮。',
+      'Sound effects':'音效','Volume':'音量','Reduce visual effects':'减少视觉特效','Preview sound':'试听音效','Save backup':'存档备份','Export downloads a JSON backup. Import replaces your food, skins, upgrades, chapters, best score and settings after confirmation. Export your current save first.':'导出会下载 JSON 备份。导入并确认后，会覆盖猫粮、皮肤、升级、关卡、最高分和设置。建议先导出现有存档。','Export save':'导出存档','Choose save file':'选择存档文件','Replace current save':'确认覆盖当前存档','Sound is unavailable in this browser. Gameplay and saves still work.':'此浏览器暂不支持音效，游戏和存档仍可使用。','Settings and saves stay on this browser. Export a backup before switching devices.':'设置和进度保存在当前浏览器。更换设备前请导出备份。','Import shows a preview before replacing your current progress.':'导入时会先显示预览，确认后才覆盖现有进度。','Settings saved.':'设置已保存。','Storage is unavailable; settings last for this session.':'无法写入存储；设置仅在本次会话中有效。','Backup downloaded. Keep it somewhere safe.':'备份已下载，请妥善保存。','Download is unavailable in this browser.':'此浏览器暂时无法下载文件。','Save imported. Existing progress was replaced.':'存档已导入，原有进度已被替换。','Save imported for this session only: browser storage is unavailable.':'存档已导入，但浏览器无法保存，仅本次会话有效。','Sound is unavailable in this browser.':'此浏览器暂不支持音效。','Sound preview uses your current volume.':'试听使用当前音量。',
+      'Save is too large.':'存档文件过大。','This is not valid JSON.':'文件不是有效的 JSON。','Choose a Space Cat Dash exported save.':'请选择 Space Cat Dash 导出的存档。','Unsupported version or invalid progress.':'存档版本不支持，或进度数据无效。','Invalid progress totals.':'进度总数无效。','Invalid upgrade levels.':'升级等级无效。','Invalid task progress.':'任务进度无效。','Invalid chapter progress.':'关卡进度无效。','Unsupported language.':'不支持该语言。','Choose a JSON save smaller than 100 KB.':'请选择小于 100 KB 的 JSON 存档。','Import rejected:':'导入被拒绝：',
+      'Snowball':'雪球','Marmalade':'橘子酱','Cloud':'云朵','Mint':'薄荷','Starry Night':'星夜','Pebble Pal':'岩石伙伴','Solar Knight':'太阳骑士','Void Sovereign':'虚空君主','Lunar Mechanic':'月球机师','Aurora Hunter':'极光猎手','Nebula Emperor':'星云帝王',
+      'First Flight':'初次飞行','Homeward Bound':'归航','Orbit Keeper':'轨道守护者','Starlight Captain':'星光船长','Moon Walker':'月球漫步者','Comet Chaser':'彗星追逐者','Galaxy Voyager':'银河旅人','Snack Scout':'零食侦察员','Cosmic Chef':'宇宙厨师','Three Star Pilot':'三星飞行员',
+      'Classic':'经典模式','Item Mode':'道具模式','Original':'原始造型','Rare':'稀有','Legendary':'传说','Collected':'已收藏','Locked':'未解锁','Coming Soon':'待推出','Reserved unlock':'已保留解锁资格','Available after release':'推出后生效','Equipped':'已装备','Equip':'装备','Not unlocked':'尚未解锁','Your original companion.':'你的初始伙伴。','Previously collected · carried over':'旧版已获得 · 已保留','Classic balance':'均衡基础属性','Food score':'猫粮得分','Running score':'奔跑得分','jump height':'跳跃高度','Shield duration':'护盾持续时间','Magnet duration':'磁铁持续时间','Magnet range':'磁铁范围','Magnet time':'磁铁持续时间','Shield reach':'护盾范围','Food collection radius':'猫粮收集范围','Bonus:':'加成：','Planned bonus:':'计划加成：','task progress':'任务进度','unlock progress':'解锁进度','Level':'等级','Current:':'当前：','Next:':'下一级：','Maximum level':'已达最高等级','Max level':'已满级','Upgrade':'升级','attraction range':'吸引范围','extra protection radius':'额外保护范围','active':'持续','Moonrise':'月球晨光','Orbital Station':'轨道空间站','Violet Nebula':'紫色星云',
+      'Hungry':'饥饿','Fed':'吃饱','Fit':'健壮','Strong':'强壮','Mighty':'超强壮','Mighty · full strength':'超强壮 · 已达最高体格','Double-jump Flight':'二段跳试飞','Power-up Patrol':'道具巡航','Warden Trial':'首领试炼','Reach 2,200m, eat 8 food and use a double jump.':'跑到 2,200 米，收集 8 份猫粮，并完成一次二段跳。','Reach 2,600m and collect 5 random power-ups.':'跑到 2,600 米，并收集 5 个随机道具。','Reach the Warden at 2,000m, then win the fight.':'在 2,000 米处遇到首领，然后赢得战斗。','Not completed':'尚未通关','Clear previous chapter':'先通关上一关','Replay chapter':'重玩本关','Start chapter':'开始本关','Chapter complete!':'本关已通关！','The Warden got you':'被首领击败了','One more try?':'再试一次？','Try the next chapter from home.':'返回首页挑战下一关。','Jump over red meteors; pulse only when gold. More food gives extra hearts and fewer weak points.':'跳过红色陨石，金色窗口开放时攻击。体格更强会获得更多生命，并减少所需命中次数。','Keep a second jump ready for food and obstacles.':'留好二段跳，收集猫粮并躲避障碍。','All released skins for this route are collected. Try another mode or difficulty.':'这条路线的已发布皮肤都已获得，试试其他模式或难度。','Chapter objective:':'关卡目标：','Developer run: no food banked':'开发者测试：不积累猫粮','Banked this run:':'本局获得：','New skins:':'新皮肤：','this run':'本局',
+      'Low rocks ahead. Jump once; save your second jump.':'前方是低矮岩石，先跳一次，留好二段跳。','Cargo drones ahead. Some fly high: stay low to pass.':'前方有货运无人机；高处的可以从下方通过。','Small meteor clusters ahead. Watch the spacing.':'前方有陨石群，请留意间距。','Wait for the gold OPEN signal, then press J or PULSE.':'等待金色弱点开放，再按 J 或点击攻击。','Dodge red meteors. Gold OPEN = press J / PULSE. Strong cats need fewer hits and can take more damage.':'跳过红色陨石。金色弱点开放时按 J／攻击。体格越强，所需命中次数越少，生命越多。','PULSE NOW · J · Hit the gold weak point':'立即攻击 · J · 命中金色弱点','Weak point closed · Wait for gold':'弱点关闭 · 等待金色窗口','The Boss needed more strength. Eat more food before your next encounter.':'这次战斗失败了，收集更多猫粮可获得体格优势。','Your food credits and collection progress are safe. Try again!':'已获得的猫粮和收藏进度已保留，再试一次！','Chapter complete! Your next mission is waiting.':'本关已通关，下一个任务正在等你。','Warden defeated! Chapter complete.':'首领已击败，本关通关！','Boss defeated · test reward not saved':'首领已击败 · 测试奖励不保存','Shield absorbed the hit.':'护盾挡住了这次攻击。','A ROUGH LANDING':'降落失误','LOST IN ORBIT':'迷失轨道','METEOR STORM':'陨石风暴','CHAPTER COMPLETE':'关卡完成','WARDEN DEFEATED':'首领已击败','DEFEATED':'已击败','Get ready: jump over red meteors, pulse when gold.':'准备：跳过红色陨石，金色窗口时攻击。','OPEN · J / PULSE NOW':'弱点开放 · 按 J／攻击','DODGE · Jump over red meteors':'躲避 · 跳过红色陨石','Strong advantage':'体格优势','Skill route':'技巧挑战','Training Warden':'训练守卫','Stone Warden':'岩石守卫','Solar Warden':'太阳守卫','Void Warden':'虚空守卫','Lunar Warden':'月球守卫','Aurora Warden':'极光守卫','Nebula Warden':'星云守卫','Food':'猫粮','Items':'道具','Magnet':'磁铁','Shield':'护盾','Score':'得分','Best':'最高分','Jumps':'跳跃','Distance':'距离','None':'无','Developer':'开发者','Lv':'级','Double jump':'二段跳','needed':'待完成','Bosses':'首领','Boss':'首领','Growth':'成长','Boss ahead':'前方首领','press Space / ↑ or tap to start running.':'按空格／↑或轻点开始奔跑。','eat food to grow stronger before the Boss arrives!':'首领到来前，收集猫粮让自己更强壮！','Choose your nickname, difficulty and power-ups to begin.':'选择昵称、难度和道具，然后开始。','Press Space / ↑ or tap to jump.':'按空格／↑或轻点跳跃。'
+    };
+    ZH['range']='范围';ZH['both item durations']='两种道具持续时间';
+    const bilingualPairs=Object.entries(BILINGUAL).sort((a,b)=>b[0].length-a[0].length);
+    const dictionaryPattern=new RegExp(Object.keys(ZH).sort((a,b)=>b.length-a.length).map(key=>{const escaped=key.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');return key.length<=4?'\\b'+escaped+'\\b':escaped;}).join('|'),'g');
+    function canonical(value){let s=String(value??'').replaceAll('Settings and Save · 设置与存档','Settings & Save').replaceAll('Settings and Save','Settings & Save');for(const [a,b]of bilingualPairs)s=s.split(a).join(b);return s;}
+    function loc(value){
+      let s=canonical(value);if(language==='en')return s;if(ZH[s.trim()])return s.replace(s.trim(),ZH[s.trim()]);
+      // Player names are never translated, including names matching a skin.
+      if(s.startsWith('Name '))return '昵称 '+s.slice(5);
+      if(s.includes(', press Space')||s.includes(', eat food')){const comma=s.lastIndexOf(', ');return s.slice(0,comma)+'，'+loc(s.slice(comma+2));}
+      s=s.replace(/(\d+) food credits · (\d+) wins \/ Bosses · ([\d,]+)m · (\d+)\/(\d+) skins/g,'$1 份猫粮 · $2 次胜利 · $3 米 · $4/$5 款皮肤');
+      s=s.replace(/Available food: (\d+)\. Permanent upgrades apply to your next run; skin bonuses stack with them\./g,'可用猫粮：$1。永久升级从下一局生效，可与皮肤加成叠加。');
+      s=s.replace(/Preview: (\d+) food credits · (\d+) skins · (\d+)\/3 chapters\. Applying REPLACES your current progress and settings\. Export a backup first\./g,'预览：$1 份猫粮 · $2 款皮肤 · $3/3 关。确认后会覆盖当前进度和设置，请先导出备份。');
+      s=s.replace(/Practice pace · about 1–3 minutes\. First clear: (\d+) food credits\./g,'练习节奏 · 约 1–3 分钟。首次通关奖励：$1 份猫粮。');
+      s=s.replace(/Chapter (\d+)/g,'第 $1 关').replace(/Slot (\d+)/g,'栏位 $1').replace(/(\d+) more food to /g,'还差 $1 份猫粮达到 ');
+      s=s.replace(/Direct hit! (\d+) weak points remaining\./g,'命中！还剩 $1 个弱点。').replace(/Boss defeated! (.*?) is in your cabinet\./g,'首领已击败！$1 已进入收藏柜。');
+      s=s.replace(/Boss in (\d+)m/g,'首领还有 $1 米').replace(/(\d+) weak points/g,'$1 个弱点').replace(/(\d+) hearts/g,'$1 点生命').replace(/Warden ([\d/]+) · Your hearts ([\d/]+)/g,'首领弱点 $1 · 生命 $2');
+      s=s.replace(/collect (\d+) power-ups in total/g,'累计收集 $1 个道具').replace(/collect (\d+) power-ups/g,'收集 $1 个道具').replace(/collect (\d+) food/g,'收集 $1 份猫粮').replace(/defeat (\d+) Bosses/g,'击败 $1 个首领').replace(/defeat the /g,'击败').replace(/reach ([\d,]+)m while Strong or Mighty/g,'在强壮或超强壮状态下跑到 $1 米').replace(/reach ([\d,]+)m in one run/g,'单局跑到 $1 米').replace(/run ([\d,]+)m in total/g,'累计跑到 $1 米');
+      s=s.replace(/([\d.]+)s active/g,'持续 $1 秒').replace(/(\d+) attraction range/g,'吸引范围 $1').replace(/(\d+) extra protection radius/g,'额外保护范围 $1');
+      s=s.replace(/food credits/g,'份猫粮').replace(/\bfood\b/g,'份猫粮').replace(/gives an advantage/g,'可获得体格优势').replace(/collected · ([\d.]+)s/g,'已获得 · $1 秒').replace(/([\d.]+)s/g,'$1 秒').replace(/(\d+)m\b/g,'$1 米');
+      return s.replace(dictionaryPattern,key=>ZH[key]);
+    }
+    function localizedMarkup(value){return canonical(value).replace(/>([^<>]+)</g,(_,text)=>'>'+loc(text)+'<').replace(/aria-label="([^"]+)"/g,(_,text)=>'aria-label="'+loc(text)+'"');}
+    function setText(element,value){const raw=canonical(value);textBindings.set(element,raw);element.textContent=loc(raw);}
+    function setMarkup(element,value){const raw=canonical(value);markupBindings.set(element,raw);element.innerHTML=localizedMarkup(raw);}
+    function setLabel(element,value){const raw=canonical(value);labelBindings.set(element,raw);element.setAttribute('aria-label',loc(raw));}
+    function refreshLanguage(){
+      document.documentElement.setAttribute('lang',language);
+      for(const element of document.querySelectorAll('[data-en]'))element.textContent=loc(element.getAttribute('data-en'));
+      for(const element of document.querySelectorAll('[data-aria-en]'))element.setAttribute('aria-label',loc(element.getAttribute('data-aria-en')));
+      for(const element of document.querySelectorAll('[data-title-en]'))element.setAttribute('title',loc(element.getAttribute('data-title-en')));
+      nicknameInput.setAttribute('placeholder',loc('Enter your nickname'));
+      for(const option of difficultySelect.options||[])option.textContent=loc(DIFFICULTY[option.value].label);
+      for(const [el,value]of textBindings)el.textContent=loc(value);for(const [el,value]of markupBindings)el.innerHTML=localizedMarkup(value);for(const [el,value]of labelBindings)el.setAttribute('aria-label',loc(value));
+      languageSelect.value=language;settingsLanguage.value=language;
+    }
+    function setLanguage(value){if(!['en','zh-CN'].includes(value))return false;language=value;safeWrite('spacecat_language_v1',language);refreshLanguage();render();return true;}
+    languageSelect.addEventListener('focus',()=>{if(gameState==='playing'&&!gameOver)setPaused(true);});
+    languageSelect.addEventListener('change',()=>setLanguage(languageSelect.value));settingsLanguage.addEventListener('change',()=>setLanguage(settingsLanguage.value));
+
+    let artTick=0,pixelEffects=[];
+    function pixelBurst(kind,x,y,count=12){if(settings.reducedEffects)return;const skin=CAT_SKINS[currentSkin];for(let i=0;i<count;i++){const a=i/count*Math.PI*2,s=kind==='hit'?2+i%4:.8+i%3;pixelEffects.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s-1,life:30+i%20,color:i%3===0?'#ffdd8b':i%3===1?skin.head:skin.ear,kind});}if(pixelEffects.length>96)pixelEffects.splice(0,pixelEffects.length-96);}
+    function pixelCross(x,y,size,color){ctx.fillStyle=color;ctx.fillRect(Math.round(x)-size,Math.round(y)-1,size*2+2,2);ctx.fillRect(Math.round(x)-1,Math.round(y)-size,2,size*2+2);}
+    function pixelCircle(x,y,r,color,shade){const unit=6;for(let dy=-r;dy<=r;dy+=unit)for(let dx=-r;dx<=r;dx+=unit)if(dx*dx+dy*dy<r*r){ctx.fillStyle=dx+dy>r*.4?shade:color;ctx.fillRect(Math.round(x+dx),Math.round(y+dy),unit,unit);}}
+    function drawPlayer(x=player.x,y=player.y){
+      const skin=CAT_SKINS[currentSkin],size=growthStage().scale,u=3,frame=Math.floor(artTick/6)%4,blink=Math.floor(artTick/8)%40===0;
+      ctx.save();ctx.translate(Math.round(x+player.w*(1-size)/2),Math.round(y+player.h*(1-size)));ctx.scale(size,size);
+      const block=(a,b,w,h,color)=>{ctx.fillStyle=color;ctx.fillRect(a*u,b*u,w*u,h*u);};
+      // Four running frames, tucked feet in the air; silhouette stays inside the existing collision box.
+      const left=player.onGround?[0,1,0,-1][frame]:-1,right=player.onGround?[0,-1,0,1][frame]:-1;
+      block(3,7,11,8,'#16223a');block(4,8,9,6,skin.body);block(4,10,2,3,skin.head);block(11,10,2,4,skin.leg);
+      block(2,1,13,7,'#16223a');block(3,2,11,5,skin.head);block(2,0,3,3,'#16223a');block(12,0,3,3,'#16223a');block(3,1,2,2,skin.ear);block(12,1,2,2,skin.ear);
+      block(5,4,1,blink?1:2,'#263044');block(11,4,1,blink?1:2,'#263044');if(!blink){block(5,4,1,1,'#ffffff');block(11,4,1,1,'#ffffff');}block(8,6,1,1,skin.mark);block(4,6,1,1,skin.ear);block(12,6,1,1,skin.ear);
+      block(4,14+left,3,2,skin.leg);block(10,14+right,3,2,skin.leg);block(3,14+left,2,1,skin.head);block(11,14+right,2,1,skin.head);
+      block(1,10,3,2,skin.tail);block(0,8+(frame%2),2,3,skin.tail);
+      if(growthLevel>=3){block(2,9,2,5,skin.body);block(13,9,2,5,skin.body);block(6,10,5,1,skin.leg);}
+      if(currentSkin>=5){block(5,-2,1,2,'#ffd778');block(8,-3,1,3,'#ffd778');block(11,-2,1,2,'#ffd778');block(5,0,7,1,'#e9b25c');}
+      if(currentSkin===7||currentSkin===10){block(-2,7,3,2,skin.ear);block(-3,6,2,2,skin.ear);block(15,7,3,2,skin.ear);block(17,6,2,2,skin.ear);block(5,-5,7,1,'#ffe5a3');block(4,-4,1,1,'#ffe5a3');block(12,-4,1,1,'#ffe5a3');}
+      if(celebrationTick>0&&!settings.reducedEffects){block(14,5,2,4,skin.body);pixelCross(23,-6,3,skin.head);}
+      if(shieldTicks>0&&gameState==='playing'){const extra=liveUpgrades.shieldArea*3;ctx.strokeStyle='#a8e2c7';ctx.lineWidth=2;ctx.strokeRect(-7-extra,-9-extra,66+extra*2,65+extra*2);pixelCross(-7-extra,22,3,'#e7fff2');pixelCross(59+extra,22,3,'#e7fff2');}
+      ctx.restore();
+    }
+    function drawStars(){for(const s of stars){ctx.globalAlpha=.35+(Math.floor(s.y)%4)*.12;ctx.fillStyle=s.r>1.4?'#ffdbad':'#c6d8ed';const x=Math.round(s.x/2)*2,y=Math.round(s.y/2)*2;ctx.fillRect(x,y,s.r>1.4?3:2,s.r>1.4?3:2);}ctx.globalAlpha=1;}
+    function drawRegion(){
+      const palettes=[['#26324b','#475577','#94a3c1','#c3d6e0'],['#20344b','#425e75','#829eac','#b9d7df'],['#332d51','#655983','#b099bc','#e4c5d2']],p=palettes[regionIndex];
+      ctx.fillStyle=p[0];ctx.fillRect(0,0,canvas.width,canvas.height);ctx.fillStyle=p[1];ctx.fillRect(0,160,canvas.width,240);
+      const drift=settings.reducedEffects?0:Math.floor(runMeters/25)%40,px=canvas.width-130-drift;
+      pixelCircle(px,110,55,p[3],p[2]);ctx.fillStyle=p[2];ctx.fillRect(px-24,92,18,12);ctx.fillRect(px+12,123,18,6);ctx.fillRect(px+6,72,12,6);
+      if(regionIndex===1){ctx.strokeStyle='#92c9d044';ctx.lineWidth=4;for(let x=-120-drift;x<canvas.width;x+=155){ctx.strokeRect(x,80,94,185);ctx.fillStyle='#87b4c329';ctx.fillRect(x+10,93,73,8);ctx.fillRect(x+10,230,73,14);}}
+      if(regionIndex===2){ctx.globalAlpha=.25;ctx.fillStyle='#d2abd9';for(let i=0;i<6;i++){ctx.fillRect(i*180-drift,120+i%2*20,125,30);ctx.fillRect(i*180+20-drift,100+i%2*20,80,20);}ctx.globalAlpha=1;}
+      for(let layer=0;layer<2;layer++){ctx.fillStyle=layer?p[2]:p[1];ctx.globalAlpha=layer?.28:.7;for(let x=-24;x<canvas.width+24;x+=24){const h=45+Math.floor(Math.sin((x+drift*(layer+1))*.012+layer)*22/8)*8;ctx.fillRect(x,GROUND_Y-h-layer*7,24,h+60);}}ctx.globalAlpha=1;
+      ctx.fillStyle='#dce8f2';ctx.font='12px "Microsoft YaHei", Consolas, monospace';ctx.fillText(loc(REGIONS[regionIndex].name),14,22);
+      if(regionTick<240&&!bossEncounter){ctx.textAlign='center';ctx.fillStyle='#fff2ce';ctx.fillText(loc(REGIONS[regionIndex].intro),canvas.width/2,45);ctx.textAlign='left';}
+    }
+    function drawGround(){
+      ctx.fillStyle='#65718c';ctx.fillRect(0,GROUND_Y+1,canvas.width,canvas.height-GROUND_Y);ctx.fillStyle='#b8cdd2';ctx.fillRect(0,GROUND_Y,canvas.width,3);ctx.fillStyle='#39445c';ctx.fillRect(0,GROUND_Y+12,canvas.width,3);
+      const offset=Math.floor(runMeters*2)%24;for(let x=-24-offset;x<canvas.width;x+=24){ctx.fillStyle='#8996ad';ctx.fillRect(x,GROUND_Y+5,12,3);ctx.fillStyle='#485670';ctx.fillRect(x+8,GROUND_Y+24,3,3);ctx.fillRect(x+17,GROUND_Y+42,6,3);}
+    }
+    function drawFood(f){ctx.save();ctx.translate(Math.round(f.x),Math.round(f.y));ctx.fillStyle='#18263c';ctx.fillRect(2,1,20,21);ctx.fillStyle='#f9d48a';ctx.fillRect(4,3,16,17);ctx.fillStyle='#fff1c6';ctx.fillRect(4,3,16,3);ctx.fillStyle='#dc9b63';ctx.fillRect(4,17,16,3);ctx.fillStyle='#5d6679';ctx.fillRect(8,9,7,4);ctx.fillRect(15,8,3,6);ctx.fillStyle='#fff6d5';ctx.fillRect(9,9,1,1);ctx.restore();}
+    function drawToolItem(t){ctx.save();ctx.translate(Math.round(t.x),Math.round(t.y));ctx.fillStyle='#15253b';ctx.fillRect(1,0,23,25);if(t.type==='magnet'){ctx.fillStyle='#99daeb';ctx.fillRect(5,7,5,12);ctx.fillRect(15,7,5,12);ctx.fillRect(8,17,9,5);ctx.fillStyle='#ee9fa4';ctx.fillRect(5,3,5,5);ctx.fillRect(15,3,5,5);}else{ctx.fillStyle='#9cdfb6';ctx.fillRect(5,3,15,15);ctx.fillRect(8,18,9,4);ctx.fillRect(11,22,3,3);ctx.fillStyle='#e5f6ed';ctx.fillRect(11,7,3,10);ctx.fillRect(8,10,9,3);}ctx.restore();}
+    function drawMeteor(o){ctx.save();ctx.translate(Math.round(o.x),Math.round(o.y));if(o.kind==='drone'){ctx.fillStyle='#24354c';ctx.fillRect(-3,2,o.w+6,o.h-4);ctx.fillStyle='#8eb9bf';ctx.fillRect(0,6,o.w,o.h-12);ctx.fillStyle='#edc185';ctx.fillRect(4,9,6,4);ctx.fillRect(o.w-10,9,6,4);ctx.fillStyle='#638997';ctx.fillRect(-6,-2,14,3);ctx.fillRect(o.w-8,-2,14,3);}else{const color=o.kind==='crystal'?'#b89ac8':'#ae9da9',dark=o.kind==='crystal'?'#775f9c':'#74697f';pixelCircle(o.w/2,o.h/2,o.w/2,color,dark);ctx.fillStyle=dark;ctx.fillRect(o.w*.28,o.h*.25,7,5);ctx.fillRect(o.w*.6,o.h*.57,5,5);}ctx.restore();}
+    function drawBoss(){
+      if(!bossEncounter)return;const b=bossEncounter,x=canvas.width-108,y=205,open=b.tick>=90&&b.tick%210>=80&&b.tick%210<=145&&!b.won;
+      ctx.save();ctx.translate(x,y);ctx.globalAlpha=b.won?Math.max(0,1-b.winTick/120):1;const colors=['#ad9b9d','#dfb780','#a88ac8'];ctx.fillStyle='#1f2942';ctx.fillRect(-48,-48,96,84);ctx.fillRect(-36,-60,72,12);ctx.fillRect(-36,36,72,12);ctx.fillStyle=colors[{easy:0,medium:1,hard:2}[difficultyKey]];ctx.fillRect(-42,-42,84,72);ctx.fillRect(-30,-54,60,12);ctx.fillRect(-30,30,60,12);ctx.fillStyle='#26304a';ctx.fillRect(-27,-24,15,12);ctx.fillRect(12,-24,15,12);ctx.fillRect(-24,21,48,6);ctx.fillStyle=open?'#ffe2a1':'#dc8fa1';ctx.fillRect(-9,-3,18,18);ctx.fillStyle='#fff3cf';ctx.fillRect(-3,0,6,6);if(open){pixelCross(-61,0,5,'#ffe2a1');pixelCross(61,0,5,'#ffe2a1');}ctx.restore();
+      for(const shot of b.shots){ctx.fillStyle='#df8b99';ctx.fillRect(Math.round(shot.x),Math.round(shot.y)+3,24,18);ctx.fillStyle='#ffe1bb';ctx.fillRect(Math.round(shot.x)+4,Math.round(shot.y)+6,8,6);}
+      ctx.save();ctx.textAlign='center';ctx.fillStyle='#fff1cb';ctx.font='bold 18px "Microsoft YaHei", Consolas, monospace';ctx.fillText(loc(b.name),canvas.width/2,65);ctx.font='13px "Microsoft YaHei", Consolas, monospace';ctx.fillText(loc(`Warden ${b.hp}/${b.maxHp} · Your hearts ${b.lives}/${b.maxLives} · ${b.strong?'Strong advantage':'Skill route'}`),canvas.width/2,87);ctx.fillStyle=open?'#ffe2a1':'#c2d4e4';ctx.fillText(loc(b.won?'DEFEATED':b.tick<90?'Get ready: jump over red meteors, pulse when gold.':open?'OPEN · J / PULSE NOW':'DODGE · Jump over red meteors'),canvas.width/2,112);ctx.restore();
+    }
+    function drawEffects(){
+      for(const p of pixelEffects){ctx.globalAlpha=Math.min(1,p.life/18);ctx.fillStyle=p.color;ctx.fillRect(Math.round(p.x/2)*2,Math.round(p.y/2)*2,p.kind==='hit'?4:3,p.kind==='hit'?4:3);}ctx.globalAlpha=1;
+      if(!settings.reducedEffects)for(const p of skinParticles){ctx.globalAlpha=p.life/25;if(p.shape==='star')pixelCross(p.x,p.y,3,p.color);else{ctx.fillStyle=p.color;ctx.fillRect(Math.round(p.x),Math.round(p.y),3,3);}}ctx.globalAlpha=1;
+      if(growthFlash>0&&!bossEncounter){ctx.save();ctx.textAlign='center';ctx.fillStyle='#c2e6cc';ctx.font='bold 19px "Microsoft YaHei", Consolas, monospace';ctx.fillText(loc(GROWTH[growthLevel+1]?`${growthStage().name}! · ${growthHint()}`:`${growthStage().name}!`),canvas.width/2,110);ctx.restore();}
+      if(celebrationTick>0||challengeWon){ctx.save();ctx.textAlign='center';ctx.fillStyle='#ffe3a5';ctx.font='bold 22px "Microsoft YaHei", Consolas, monospace';ctx.fillText(loc(challengeWon?'CHAPTER COMPLETE':'WARDEN DEFEATED'),canvas.width/2,80);ctx.restore();}
+    }
+    function playSound(kind){
+      if(!settings.sound||settings.volume<=0||!audio||audio.state!=='running'||paused)return;
+      const notes={jump:[330,660],food:[784,1047],grow:[392,494,587,784],hit:[130,82],pulse:[587,880],win:[523,659,784,1047],click:[440]}[kind]||[440];
+      try{notes.forEach((freq,i)=>{const o=audio.createOscillator(),g=audio.createGain(),t=audio.currentTime+i*.055,d=kind==='grow'||kind==='win'?.16:.105;o.type=i%2?'triangle':'square';o.frequency.setValueAtTime(freq,t);if(kind==='jump'&&o.frequency.exponentialRampToValueAtTime)o.frequency.exponentialRampToValueAtTime(freq*1.35,t+d);if(kind==='hit'&&o.frequency.exponentialRampToValueAtTime)o.frequency.exponentialRampToValueAtTime(freq*.65,t+d);g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(settings.volume*.075,t+.012);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g);g.connect(audio.destination);o.start(t);o.stop(t+d+.01);});}catch{audioFailed=true;}
+    }
+    // Deterministic inspection hooks for local regression testing; no rewards are bypassed.
+    let controlledTime=false;
+    window.advanceTime=ms=>{controlledTime=true;for(let i=0;i<Math.round(ms/(1000/60));i++)update();render();};
+    window.render_game_to_text=()=>JSON.stringify({mode:gameState,language,paused,developer:devMode,challenge:challengeId,meters:Math.floor(runMeters),food:foodCount,growth:growthStage().name,coordinates:'origin top-left; x right, y down',player:{x:player.x,y:Math.round(player.y),vy:player.vy,jumps:player.jumpsUsed},boss:bossEncounter?{hp:bossEncounter.hp,lives:bossEncounter.lives,tick:bossEncounter.tick}:null,region:regionIndex,particles:pixelEffects.length,gameOver});
+
+    refreshLanguage();
+    const urlLanguage=new URLSearchParams(location.search).get("lang");if(["en","zh-CN"].includes(urlLanguage))setLanguage(urlLanguage);
     resizeGame();
     window.addEventListener('resize', resizeGame);
     updateToolControls();

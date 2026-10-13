@@ -171,3 +171,32 @@ Dependency-free simulations passed for all six Boss reward routes, actual projec
 Browser checks verified an actual JSON download and its contents, rejection of an unrelated file, preview and successful re-import of the exported file, saved reduced-effects preferences, chapter entry/locks and double-jump objective progress. Controlled local-only QA scenes were used to inspect the Boss, growth, all three regions and results; those controls are excluded from the release. At a 390px viewport the battle had no horizontal overflow; clicking the PULSE button reduced Boss weak points from three to two. The settings dialog remained scrollable and usable. These checks do not measure typical-player completion times, subjective audio quality, difficulty balance or every real phone/browser combination.
 
 The original source and previous release remain preserved locally and in Git history.
+
+
+## 2026-10-13 — English / Simplified Chinese and refined pixel art
+
+The user selected the pixel-art direction from the interactive style samples and asked for English / Simplified Chinese language selection.
+
+### Language
+
+- Added a language selector in the top bar and in Settings & Save. English is the initial default; the selected language is saved locally. Focusing the selector during a live run pauses the game so the player can choose without being hit.
+- Localized the home menu, controls, HUD, growth, Boss instructions/results, skin names and mode-specific tasks, upgrade descriptions, chapter objectives/rewards, settings, save previews and validation errors, and accessibility labels.
+- Dynamic messages retain their English source so switching back restores English correctly. Player-entered nicknames are preserved verbatim, including names matching a skin. Internal skin IDs, mode keys, achievements and saved progress remain unchanged.
+- Save exports include an optional language field. New imports restore it; earlier exports without a language field preserve the current preference. Unsupported language values are rejected. Storage-blocked browsers retain the choice for the session.
+- Optional `?lang=en` and `?lang=zh-CN` links select and remember the specified language. Language changes do not reset a run, alter difficulty, spend food or grant rewards. Keyboard input in selectors/text fields is excluded from jump and attack handling.
+
+### Pixel presentation
+
+- Refined the existing cat into a shaded pixel sprite with four running poses, tucked airborne feet, blinking eyes, a moving tail and stronger-body details. Existing skin palettes, crowns, wings and halos are kept. No foot exhaust bars were restored.
+- Added stepped pixel planets, crater detail, layered terrain, station structures, nebula blocks and scrolling platform tiles. Stars, cat-food cans, magnets, shields, drones, meteors and Wardens use crisp pixel shapes.
+- Added bounded square-particle bursts for food collection, growth, successful Boss hits and victory. Cosmetic timing follows the simulation and pauses with it. Reduced-effects mode suppresses bursts; new bursts are limited to 96 particles, alongside the existing bounded skin particles.
+- Tightened the HUD and gave menus/buttons an arcade palette and sharper edges. Chinese text uses a readable system font; the canvas keeps pixel scaling. This changes presentation rather than collision dimensions or progression balance.
+- Replaced uniform beeps with short square/triangle-wave motifs and pitch sweeps for jump, pickup, growth, impact, pulse and victory. Existing mute/volume and silent fallback remain; zero volume schedules no tones. No external media or font downloads are needed.
+
+### Verification
+
+The previous progression, six Boss routes, damage, chapter rewards, upgrades, save validation/migration and refresh-rate tests still pass. New regression checks cover language persistence, invalid language rejection, English/Chinese round trips, preservation of names/gameplay state, translated task/workshop/chapter markup, language-aware save import and old-save compatibility, blocked storage, pixel sprite drawing, pause/reduced-effects particle bounds and deterministic inspection hooks.
+
+The game skill's Playwright loop captured actual English and Chinese double jumps with identical movement state. Controlled local-only scenes were inspected for Boss, growth and victory rendering. The home menu, cabinet, workshop, chapters and save/settings messages were checked in the browser, including language persistence after reload. A 390px Chinese Boss view had no horizontal overflow and kept jump/attack controls visible. Verified browser test runs reported no new page errors. Temporary QA controls are excluded from the release. Checks do not establish exhaustive browser/phone compatibility or measured subjective audio quality.
+
+The original upload and earlier releases remain preserved.
