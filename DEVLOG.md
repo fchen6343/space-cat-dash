@@ -200,3 +200,8 @@ The previous progression, six Boss routes, damage, chapter rewards, upgrades, sa
 The game skill's Playwright loop captured actual English and Chinese double jumps with identical movement state. Controlled local-only scenes were inspected for Boss, growth and victory rendering. The home menu, cabinet, workshop, chapters and save/settings messages were checked in the browser, including language persistence after reload. A 390px Chinese Boss view had no horizontal overflow and kept jump/attack controls visible. Verified browser test runs reported no new page errors. Temporary QA controls are excluded from the release. Checks do not establish exhaustive browser/phone compatibility or measured subjective audio quality.
 
 The original upload and earlier releases remain preserved.
+
+
+## 2026-10-13 — Fixed top-bar language label
+
+Changed only the visible top-bar label to the literal lowercase word language. It is excluded from translation; the English / Simplified Chinese dropdown and its behaviour remain unchanged. The Settings language label still follows the selected UI language.
